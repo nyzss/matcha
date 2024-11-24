@@ -1,12 +1,14 @@
 import fastify from "fastify";
 
-export const server = fastify();
-
-server.get("/", async (request, reply) => {
-    return "hello world\n";
+export const server = fastify({
+    logger: true,
 });
 
-server.listen({ port: 8080 }, (err, address) => {
+server.get("/", async (request, reply) => {
+    return "hello wsdaflkasdjforld\n";
+});
+
+server.listen({ port: 8000 }, (err, address) => {
     if (err) {
         console.error(err);
         process.exit(1);
