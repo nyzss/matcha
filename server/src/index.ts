@@ -1,7 +1,21 @@
 import fastify from "fastify";
+import fs from "node:fs";
+
+const folderName = "./logs";
+
+try {
+    if (!fs.existsSync(folderName)) {
+        fs.mkdirSync(folderName);
+    }
+} catch (err) {
+    console.error(err);
+}
 
 export const server = fastify({
-    logger: true,
+    logger: {
+        level: "info",
+        file: "./logs/server.log",
+    },
 });
 
 server.get("/", async (request, reply) => {

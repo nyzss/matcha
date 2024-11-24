@@ -3,8 +3,8 @@
 # FOR DEVELOPMENT PURPOSES ONLY
 # RUN `docker compose up --build` for prod (42 evaluation)
 
-mkdir -p logs/install
-mkdir -p logs/error
+# mkdir -p
+# mkdir -p logs/error
 
 pkg="npm"
 dir="--prefix"
@@ -19,23 +19,28 @@ fi
 server="$dir ./server"
 client="$dir ./client"
 
-# helper function for logging
-log_and_execute() {
-    command=$1
-    log_file="logs/$2"
-    error_log_file="logs/$3"
+$pkg run $client dev &
+$pkg run $server dev &
 
-    {
-        $command > >(tee -a "$log_file") 2> >(tee -a "$error_log_file" >&2)
-    }
-}
+# will use native logger output from backend and frontend
 
-# install packages
-log_and_execute "$pkg install $client" "install/client-install.log" "error/client-install-error.log"
-log_and_execute "$pkg install $server" "install/server-install.log" "error/server-install-error.log"
+# # helper function for logging
+# log_and_execute() {
+#     command=$1
+#     log_file="logs/$2"
+#     error_log_file="logs/$3"
 
-# run development servers in parallel
-log_and_execute "$pkg run $client dev" "client.log" "error/client-dev-error.log" &
-log_and_execute "$pkg run $server dev" "server.log" "error/server-dev-error.log" &
+#     {
+#         $command > >(tee -a "$log_file") 2> >(tee -a "$error_log_file" >&2)
+#     }
+# }
+
+# # install packages
+# log_and_execute "$pkg install $client" "install/client-install.log" "error/client-install-error.log"
+# log_and_execute "$pkg install $server" "install/server-install.log" "error/server-install-error.log"
+
+# # run development servers in parallel
+# log_and_execute "$pkg run $client dev" "client.log" "error/client-dev-error.log" &
+# log_and_execute "$pkg run $server dev" "server.log" "error/server-dev-error.log" &
 
 wait
