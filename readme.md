@@ -1,6 +1,6 @@
 # Matcha
 
-This is the Matcha project for Ecole 42.
+This is the Matcha project for Ecole 42. Made by [@nyzss](https://github.com/nyzss) and [@thomasbarret](https://github.com/thomasbarret).
 
 ## Tech Stack
 
