@@ -1,25 +1,25 @@
 import fastify from "fastify";
 import fs from "node:fs";
 
-const folderName = "./logs";
+// const folderName = "./logs";
 
-try {
-    if (!fs.existsSync(folderName)) {
-        fs.mkdirSync(folderName);
-    }
-} catch (err) {
-    console.error(err);
-}
+// try {
+//     if (!fs.existsSync(folderName)) {
+//         fs.mkdirSync(folderName);
+//     }
+// } catch (err) {
+//     console.error(err);
+// }
 
 export const server = fastify({
     logger: {
         level: "info",
-        file: "./logs/server.log",
+        // file: "./logs/server.log",
     },
 });
 
 server.get("/", async (request, reply) => {
-    return "hello wsdaflkasdjforld\n";
+    return "hello world\n";
 });
 
 server.listen({ port: 8000 }, (err, address) => {
