@@ -1,7 +1,16 @@
 "use client";
 
-import { AppShell, Burger, Button, Flex, Group } from "@mantine/core";
+import {
+    AppShell,
+    Burger,
+    Button,
+    Flex,
+    Group,
+    rem,
+    TextInput,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { IconSearch } from "@tabler/icons-react";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
     const [opened, { toggle }] = useDisclosure();
@@ -13,7 +22,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             header={{
                 height: { base: 60, md: 60, lg: 60 },
             }}
-            footer={{ height: { base: 60, md: 70, lg: 80 } }}
             navbar={{
                 width: navbarAsideWidth,
                 breakpoint: "sm",
@@ -62,8 +70,23 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </Flex>
             </AppShell.Navbar>
             <AppShell.Main>{children}</AppShell.Main>
-            <AppShell.Aside p="md">Aside</AppShell.Aside>
-            <AppShell.Footer p="md">Footer</AppShell.Footer>
+            <AppShell.Aside p="md">
+                <Flex
+                    direction={"column"}
+                    align={"flex-start"}
+                    justify={"center"}
+                >
+                    <TextInput
+                        leftSection={
+                            <IconSearch
+                                style={{ width: rem(16), height: rem(16) }}
+                            />
+                        }
+                        leftSectionPointerEvents="none"
+                        placeholder="Search"
+                    />
+                </Flex>
+            </AppShell.Aside>
         </AppShell>
     );
 }
