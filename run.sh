@@ -21,6 +21,7 @@ client="$dir ./client"
 
 $pkg run $client dev &
 $pkg run $server dev &
+docker compose up --build &
 
 # will use native logger output from backend and frontend
 
