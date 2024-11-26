@@ -11,15 +11,18 @@
     "dependencies": {
         "@mantine/carousel": "^7.14.1",
         "@mantine/core": "^7.14.1",
+        "@mantine/form": "^7.14.2",
         "@mantine/hooks": "^7.14.1",
         "@mantine/modals": "^7.14.1",
         "@mantine/notifications": "^7.14.1",
         "@mantine/nprogress": "^7.14.1",
         "@tabler/icons-react": "^3.22.0",
         "embla-carousel-react": "^7.1.0",
+        "mantine-form-zod-resolver": "^1.1.0",
         "next": "15.0.3",
         "react": "19.0.0-rc-66855b96-20241106",
-        "react-dom": "19.0.0-rc-66855b96-20241106"
+        "react-dom": "19.0.0-rc-66855b96-20241106",
+        "zod": "^3.23.8"
     },
     "devDependencies": {
         "@types/node": "^20",

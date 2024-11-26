@@ -6,16 +6,21 @@ import {
     Button,
     Flex,
     Group,
+    Modal,
     rem,
     TextInput,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconSearch } from "@tabler/icons-react";
+import { routes } from "./navigations";
+import Link from "next/link";
+import LoginComponent from "../auth/login";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
     const [opened, { toggle }] = useDisclosure();
+    const [modalOpened, { open, close }] = useDisclosure(false);
 
-    const navbarAsideWidth = { base: 200, md: 200, lg: 400, xl: 550 };
+    const navbarAsideWidth = { base: 200, md: 200, lg: 400, xl: 650 };
 
     return (
         <AppShell
@@ -52,22 +57,23 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         base: "center",
                         md: "flex-end",
                     }}
-                    justify={"flex"}
+                    justify={"flex-start"}
                     gap={"md"}
                 >
-                    <Button variant="subtle" size="lg">
-                        Home
-                    </Button>
-                    <Button variant="subtle" size="lg">
-                        Matches
-                    </Button>
-                    <Button variant="subtle" size="lg">
-                        Messages
-                    </Button>
-                    <Button variant="subtle" size="lg">
-                        Profile
-                    </Button>
+                    {routes.map((route) => (
+                        <Link href={route.link} key={route.name}>
+                            <Button
+                                variant="subtle"
+                                size="lg"
+                                leftSection={route.icon}
+                            >
+                                {route.name}
+                            </Button>
+                        </Link>
+                    ))}
                 </Flex>
+                {/* <Stack align="flex-end" justify="flex-start"> */}
+                {/* </Stack> */}
             </AppShell.Navbar>
             <AppShell.Main>{children}</AppShell.Main>
             <AppShell.Aside p="md">
@@ -75,6 +81,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     direction={"column"}
                     align={"flex-start"}
                     justify={"center"}
+                    gap={"md"}
                 >
                     <TextInput
                         leftSection={
@@ -84,7 +91,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         }
                         leftSectionPointerEvents="none"
                         placeholder="Search"
+                        width={"100%"}
                     />
+                    <Button onClick={open}>Login</Button>
+                    <Modal opened={modalOpened} onClose={close} centered>
+                        <LoginComponent />
+                    </Modal>
                 </Flex>
             </AppShell.Aside>
         </AppShell>
