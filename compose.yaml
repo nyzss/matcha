@@ -1,57 +1,63 @@
 services:
-  client:
-    build:
-      context: client
+  db:
+    image: postgres
+    restart: always
+    user: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
     environment:
-      NODE_ENV: ${NODE_ENV}
-    networks:
-      - matcha-network
-    ports:
-      - 3000:3000
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    expose:
+      - 5432
+    # networks:
+    #   - matcha-network
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+#   client:
+#     build:
+#       context: client
+#     environment:
+#       NODE_ENV: ${NODE_ENV}
+#     networks:
+#       - matcha-network
+#     ports:
+#       - 3000:3000
 
 
-  server:
-    build:
-      context: server
-    environment:
-      NODE_ENV: ${NODE_ENV}
-    networks:
-      - matcha-network
+#   server:
+#     build:
+#       context: server
+#     environment:
+#       NODE_ENV: ${NODE_ENV}
+#     networks:
+#       - matcha-network
 
 
-  webserver:
-    build:
-      context: services/webserver
-    networks:
-      - matcha-network
-    ports:
-      - 8000:8000
+#   webserver:
+#     build:
+#       context: services/webserver
+#     networks:
+#       - matcha-network
+#     ports:
+#       - 8000:8000
+
+
+
     # environment:
 
 #     depends_on:
 #       db:
 #         condition: service_healthy
-#   db:
-#     image: postgres
-#     restart: always
-#     user: postgres
-#     volumes:
-#       - db-data:/var/lib/postgresql/data
-#     environment:
-#       POSTGRES_DB: ${DB_NAME}
-#       POSTGRES_PASSWORD: ${DB_PASSWORD}
-#     expose:
-#       - 5432
-#     healthcheck:
-#       test: [ "CMD", "pg_isready" ]
-#       interval: 10s
-#       timeout: 5s
-#       retries: 5
 
+# networks:
+#   matcha-network:
+#     driver: host
 
-networks:
-  matcha-network:
-    driver: bridge
-
-# volumes:
-#   db-data:
+volumes:
+  db-data:
