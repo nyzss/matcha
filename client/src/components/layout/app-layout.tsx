@@ -6,21 +6,23 @@ import {
     Button,
     Flex,
     Group,
-    Modal,
     rem,
     TextInput,
+    useMantineColorScheme,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconSearch } from "@tabler/icons-react";
+import { IconMoon, IconSearch, IconSun } from "@tabler/icons-react";
 import { routes } from "./navigations";
 import Link from "next/link";
-import LoginComponent from "../auth/login";
+import { RegisterModal } from "../auth/register";
+import { LoginModal } from "../auth/login";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
     const [opened, { toggle }] = useDisclosure();
-    const [modalOpened, { open, close }] = useDisclosure(false);
 
     const navbarAsideWidth = { base: 200, md: 200, lg: 400, xl: 650 };
+
+    const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 
     return (
         <AppShell
@@ -93,10 +95,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         placeholder="Search"
                         width={"100%"}
                     />
-                    <Button onClick={open}>Login</Button>
-                    <Modal opened={modalOpened} onClose={close} centered>
-                        <LoginComponent />
-                    </Modal>
+                    <LoginModal />
+                    <RegisterModal />
+
+                    <Button onClick={toggleColorScheme} variant="outline">
+                        {colorScheme === "dark" ? <IconMoon /> : <IconSun />}
+                    </Button>
                 </Flex>
             </AppShell.Aside>
         </AppShell>

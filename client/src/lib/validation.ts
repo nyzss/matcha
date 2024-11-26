@@ -11,10 +11,15 @@ export const loginSchema = z.object({
     password: z.string().min(8).max(64),
 });
 
-export const registerSchema = z.object({
-    username: z.string().min(3).max(24),
-    email: z.string().email(),
-    firstName: z.string().min(3).max(24),
-    lastName: z.string().min(3).max(24),
-    password: z.string().min(8).max(64),
-});
+export const registerSchema = z
+    .object({
+        username: z.string().min(3).max(24),
+        email: z.string().email(),
+        firstName: z.string().min(3).max(24),
+        lastName: z.string().min(3).max(24),
+        password: z.string().min(8).max(64),
+        confirmPassword: z.string().min(8).max(64),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        path: ["confirmPassword"],
+    });
