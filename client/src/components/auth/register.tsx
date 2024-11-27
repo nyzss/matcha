@@ -1,9 +1,10 @@
 "use client";
 
 import { registerSchema } from "@/lib/validation";
-import { Box, Button, Modal, TextInput } from "@mantine/core";
+import { Box, Button, Flex, Modal, TextInput } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
+import { IconAt, IconLock } from "@tabler/icons-react";
 import { z } from "zod";
 
 export function RegisterModal() {
@@ -12,7 +13,7 @@ export function RegisterModal() {
     return (
         <Box>
             <Button onClick={open}>Register</Button>
-            <Modal opened={opened} onClose={close} centered>
+            <Modal opened={opened} onClose={close} title="Register" centered>
                 <RegisterComponent />
             </Modal>
         </Box>
@@ -40,52 +41,61 @@ export default function RegisterComponent() {
     return (
         <Box>
             <form onSubmit={form.onSubmit(handleSubmit)}>
-                <TextInput
-                    label="Username"
-                    placeholder="Username"
-                    key={form.key("username")}
-                    {...form.getInputProps("username")}
-                />
-                <TextInput
-                    label="Email"
-                    placeholder="Email"
-                    key={form.key("email")}
-                    mt={"sm"}
-                    {...form.getInputProps("email")}
-                />
-
-                <TextInput
-                    label="First Name"
-                    placeholder="First Name"
-                    key={form.key("firstName")}
-                    mt={"sm"}
-                    {...form.getInputProps("firstName")}
-                />
-                <TextInput
-                    label="Last Name"
-                    placeholder="Last Name"
-                    key={form.key("lastName")}
-                    mt={"sm"}
-                    {...form.getInputProps("lastName")}
-                />
-                <TextInput
-                    label="Password"
-                    placeholder="Password"
-                    type="password"
-                    key={form.key("password")}
-                    mt={"sm"}
-                    {...form.getInputProps("password")}
-                />
-                <TextInput
-                    label="Confirm Password"
-                    placeholder="Confirm Password"
-                    type="password"
-                    key={form.key("confirmPassword")}
-                    mt={"sm"}
-                    {...form.getInputProps("confirmPassword")}
-                />
-                <Button type="submit" mt={"md"}>
-                    Submit
+                <Flex gap={"md"}>
+                    <TextInput
+                        label="First Name"
+                        placeholder="First Name"
+                        key={form.key("firstName")}
+                        withAsterisk
+                        {...form.getInputProps("firstName")}
+                    />
+                    <TextInput
+                        label="Last Name"
+                        placeholder="Last Name"
+                        key={form.key("lastName")}
+                        withAsterisk
+                        {...form.getInputProps("lastName")}
+                    />
+                </Flex>
+                <Flex gap={"md"} direction={"column"} mt={"sm"}>
+                    <TextInput
+                        label="Username"
+                        placeholder="Username"
+                        key={form.key("username")}
+                        withAsterisk
+                        {...form.getInputProps("username")}
+                    />
+                    <TextInput
+                        label="Email"
+                        placeholder="Email"
+                        key={form.key("email")}
+                        leftSection={<IconAt size={18} />}
+                        leftSectionPointerEvents="none"
+                        {...form.getInputProps("email")}
+                    />
+                    <TextInput
+                        label="Password"
+                        placeholder="Password"
+                        type="password"
+                        key={form.key("password")}
+                        leftSection={<IconLock size={18} />}
+                        leftSectionPointerEvents="none"
+                        withAsterisk
+                        {...form.getInputProps("password")}
+                    />
+                    <TextInput
+                        label="Confirm Password"
+                        placeholder="Confirm Password"
+                        type="password"
+                        key={form.key("confirmPassword")}
+                        leftSection={<IconLock size={18} />}
+                        leftSectionPointerEvents="none"
+                        withAsterisk
+                        {...form.getInputProps("confirmPassword")}
+                    />
+                </Flex>
+                <Button type="submit" my={"lg"}>
+                    Register
                 </Button>
             </form>
         </Box>
