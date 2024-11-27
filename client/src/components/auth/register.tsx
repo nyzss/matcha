@@ -4,8 +4,8 @@ import { registerSchema } from "@/lib/validation";
 import { Box, Button, Flex, Modal, TextInput } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import { IconAt, IconLock } from "@tabler/icons-react";
-import { z } from "zod";
+import { IconAt, IconLock, IconUser } from "@tabler/icons-react";
+import { TRegister } from "../types";
 
 export function RegisterModal() {
     const [opened, { open, close }] = useDisclosure(false);
@@ -34,7 +34,7 @@ export default function RegisterComponent() {
         validate: zodResolver(registerSchema),
     });
 
-    const handleSubmit = (values: z.infer<typeof registerSchema>) => {
+    const handleSubmit = (values: TRegister) => {
         console.log(values);
     };
 
@@ -63,6 +63,8 @@ export default function RegisterComponent() {
                         placeholder="Username"
                         key={form.key("username")}
                         withAsterisk
+                        leftSection={<IconUser size={18} />}
+                        leftSectionPointerEvents="none"
                         {...form.getInputProps("username")}
                     />
                     <TextInput
@@ -71,6 +73,7 @@ export default function RegisterComponent() {
                         key={form.key("email")}
                         leftSection={<IconAt size={18} />}
                         leftSectionPointerEvents="none"
+                        withAsterisk
                         {...form.getInputProps("email")}
                     />
                     <TextInput

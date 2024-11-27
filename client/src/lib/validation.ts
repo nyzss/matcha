@@ -28,9 +28,11 @@ const messages = {
 export const loginSchema = z.object({
     username: z
         .string()
+        .min(1, { message: "Username is required" })
         .max(1000, { message: "You cannot have a username that long!" }),
     password: z
         .string()
+        .min(1, { message: "Password is required" })
         .max(1000, { message: "You cannot have a password that long!" }),
 });
 
