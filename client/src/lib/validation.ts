@@ -17,7 +17,7 @@ const messages = {
         max: { message: "Last name mustn't exceed 32 characters" },
     },
     password: {
-        min: { message: "Password must be at least 8 characters long" },
+        min: { message: "Password must be at least 6 characters long" },
         max: { message: "Password mustn't exceed 64 characters" },
     },
     confirmPassword: {
@@ -53,7 +53,7 @@ export const registerSchema = z
         email: z.string().email(messages.email.email),
         password: z
             .string()
-            .min(8, messages.password.min)
+            .min(6, messages.password.min)
             .max(64, messages.password.max),
         confirmPassword: z
             .string()

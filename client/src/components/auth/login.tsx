@@ -5,8 +5,9 @@ import { Box, Button, Flex, Modal, TextInput } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import React from "react";
-import { TLogin } from "../types";
+import { TLogin } from "@/types/validation";
 import { IconLock, IconUser } from "@tabler/icons-react";
+import { authLogin } from "@/lib/api";
 
 export function LoginModal() {
     const [opened, { open, close }] = useDisclosure(false);
@@ -31,8 +32,11 @@ export default function LoginComponent() {
         validate: zodResolver(loginSchema),
     });
 
-    const handleSubmit = (values: TLogin) => {
-        console.log(values);
+    const handleSubmit = async (values: TLogin) => {
+        const fields = await authLogin(values);
+        if (fields !== null) {
+            form.setErrors(fields);
+        }
     };
 
     return (

@@ -5,7 +5,8 @@ import { Box, Button, Flex, Modal, TextInput } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { IconAt, IconLock, IconUser } from "@tabler/icons-react";
-import { TRegister } from "../types";
+import { TRegister } from "@/types/validation";
+import { authRegister } from "@/lib/api";
 
 export function RegisterModal() {
     const [opened, { open, close }] = useDisclosure(false);
@@ -34,8 +35,11 @@ export default function RegisterComponent() {
         validate: zodResolver(registerSchema),
     });
 
-    const handleSubmit = (values: TRegister) => {
-        console.log(values);
+    const handleSubmit = async (values: TRegister) => {
+        const fields = await authRegister(values);
+        if (fields !== null) {
+            form.setErrors(fields);
+        }
     };
 
     return (

@@ -14,8 +14,8 @@ import { useDisclosure } from "@mantine/hooks";
 import { IconMoon, IconSearch, IconSun } from "@tabler/icons-react";
 import { routes } from "./navigations";
 import Link from "next/link";
-import { RegisterModal } from "../auth/register";
-import { LoginModal } from "../auth/login";
+import { RegisterModal } from "@/components/auth/register";
+import { LoginModal } from "@/components/auth/login";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
     const [opened, { toggle }] = useDisclosure();

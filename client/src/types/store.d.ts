@@ -1,9 +1,9 @@
+// add notifications
 export interface UserState {
     username: string;
     firstName: string;
     lastName: string;
     email: string;
-    // notifications:
 }
 
 export interface AuthState {
