@@ -16,13 +16,13 @@ export function LoginModal() {
         <Box>
             <Button onClick={open}>Login</Button>
             <Modal opened={opened} onClose={close} title="Login" centered>
-                <LoginComponent />
+                <LoginComponent close={close} />
             </Modal>
         </Box>
     );
 }
 
-export default function LoginComponent() {
+export default function LoginComponent({ close }: { close?: () => void }) {
     const form = useForm({
         initialValues: {
             username: "",
@@ -34,8 +34,10 @@ export default function LoginComponent() {
 
     const handleSubmit = async (values: TLogin) => {
         const fields = await authLogin(values);
-        if (fields !== null) {
+        if (fields) {
             form.setErrors(fields);
+        } else {
+            if (close) close();
         }
     };
 

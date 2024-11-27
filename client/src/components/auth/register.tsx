@@ -15,13 +15,13 @@ export function RegisterModal() {
         <Box>
             <Button onClick={open}>Register</Button>
             <Modal opened={opened} onClose={close} title="Register" centered>
-                <RegisterComponent />
+                <RegisterComponent close={close} />
             </Modal>
         </Box>
     );
 }
 
-export default function RegisterComponent() {
+export default function RegisterComponent({ close }: { close?: () => void }) {
     const form = useForm({
         mode: "uncontrolled",
         initialValues: {
@@ -37,8 +37,10 @@ export default function RegisterComponent() {
 
     const handleSubmit = async (values: TRegister) => {
         const fields = await authRegister(values);
-        if (fields !== null) {
+        if (fields) {
             form.setErrors(fields);
+        } else {
+            if (close) close();
         }
     };
 
