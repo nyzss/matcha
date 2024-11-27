@@ -49,7 +49,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         hiddenFrom="sm"
                         size="sm"
                     />
-                    {/* <h1>Matcha</h1> */}
                 </Group>
             </AppShell.Header>
             <AppShell.Navbar p="md">
