@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
-import { NavigationProgress } from "@mantine/nprogress";
 import "@mantine/core/styles.css";
+import RouterTransition from "@/components/layout/navigation-progress";
 
 const geistSans = localFont({
     src: "./fonts/GeistVF.woff",
@@ -32,7 +32,7 @@ export default function RootLayout({
             </head>
             <body className={`${geistSans.variable} ${geistMono.variable}`}>
                 <MantineProvider>
-                    <NavigationProgress />
+                    <RouterTransition />
                     {children}
                 </MantineProvider>
             </body>
