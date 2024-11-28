@@ -1,12 +1,15 @@
 "use client";
 
 import {
+    ActionIcon,
     AppShell,
+    Box,
     Burger,
     Button,
     Flex,
     Group,
     rem,
+    Text,
     TextInput,
     useMantineColorScheme,
 } from "@mantine/core";
@@ -52,52 +55,94 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </Group>
             </AppShell.Header>
             <AppShell.Navbar p="md">
-                <Flex
-                    direction={"column"}
-                    align={{
-                        base: "center",
-                        md: "flex-end",
-                    }}
-                    justify={"flex-start"}
-                    gap={"md"}
-                >
-                    {routes.map((route) => (
-                        <Link href={route.link} key={route.name}>
-                            <Button
-                                variant="subtle"
-                                size="lg"
-                                leftSection={route.icon}
-                            >
-                                {route.name}
-                            </Button>
-                        </Link>
-                    ))}
+                <Flex h={"100%"}>
+                    <Flex
+                        ml={{
+                            base: "0",
+                            sm: "auto",
+                        }}
+                        direction={"column"}
+                        w={{
+                            base: "100%",
+                            sm: "auto",
+                        }}
+                    >
+                        <Flex direction={"column"} gap={"xs"}>
+                            {routes.map((route) => (
+                                <Button
+                                    variant="subtle"
+                                    size="xl"
+                                    leftSection={route.icon}
+                                    component={Link}
+                                    href={route.link}
+                                    key={route.name}
+                                    justify="flex-start"
+                                >
+                                    {route.name}
+                                </Button>
+                            ))}
+                        </Flex>
+                        <Box style={{ marginTop: "auto" }}>
+                            <Flex align="center" mt="xl">
+                                <Box mr="xs">
+                                    <Text size="sm" fw={700}>
+                                        Matcha User
+                                    </Text>
+                                    <Text size="xs" c="dimmed">
+                                        @matcha
+                                    </Text>
+                                </Box>
+                                <ActionIcon
+                                    variant="subtle"
+                                    size="lg"
+                                    ml="auto"
+                                >
+                                    •••
+                                </ActionIcon>
+                            </Flex>
+                        </Box>
+                    </Flex>
                 </Flex>
             </AppShell.Navbar>
             <AppShell.Main>{children}</AppShell.Main>
             <AppShell.Aside p="md">
-                <Flex
-                    direction={"column"}
-                    align={"flex-start"}
-                    justify={"center"}
-                    gap={"md"}
-                >
-                    <TextInput
-                        leftSection={
-                            <IconSearch
-                                style={{ width: rem(16), height: rem(16) }}
-                            />
-                        }
-                        leftSectionPointerEvents="none"
-                        placeholder="Search"
-                        width={"100%"}
-                    />
-                    <LoginModal />
-                    <RegisterModal />
+                <Flex h={"100%"} w="100%">
+                    <Flex
+                        mr={{
+                            base: "0",
+                            sm: "auto",
+                        }}
+                        direction={"column"}
+                        gap={"md"}
+                    >
+                        <TextInput
+                            leftSection={
+                                <IconSearch
+                                    style={{ width: rem(16), height: rem(16) }}
+                                />
+                            }
+                            leftSectionPointerEvents="none"
+                            placeholder="Search"
+                            width={"100%"}
+                        />
 
-                    <Button onClick={toggleColorScheme} variant="outline">
-                        {colorScheme === "dark" ? <IconMoon /> : <IconSun />}
-                    </Button>
+                        <Button onClick={toggleColorScheme} variant="outline">
+                            {colorScheme === "dark" ? (
+                                <IconMoon />
+                            ) : (
+                                <IconSun />
+                            )}
+                        </Button>
+
+                        <Group
+                            mt={{
+                                base: "auto",
+                            }}
+                        >
+                            <LoginModal />
+                            <RegisterModal />
+                        </Group>
+                    </Flex>
                 </Flex>
             </AppShell.Aside>
         </AppShell>

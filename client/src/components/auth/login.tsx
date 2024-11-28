@@ -14,7 +14,9 @@ export function LoginModal() {
 
     return (
         <Box>
-            <Button onClick={open}>Login</Button>
+            <Button onClick={open} variant="outline">
+                Login
+            </Button>
             <Modal opened={opened} onClose={close} title="Login" centered>
                 <LoginComponent close={close} />
             </Modal>
