@@ -1,19 +1,34 @@
 "use client";
 
-import { AppShell, Burger, Button, Flex, Group } from "@mantine/core";
+import {
+    AppShell,
+    Burger,
+    Button,
+    Flex,
+    Group,
+    rem,
+    TextInput,
+    useMantineColorScheme,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { IconMoon, IconSearch, IconSun } from "@tabler/icons-react";
+import { routes } from "./navigations";
+import Link from "next/link";
+import { RegisterModal } from "../auth/register";
+import { LoginModal } from "../auth/login";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
     const [opened, { toggle }] = useDisclosure();
 
-    const navbarAsideWidth = { base: 200, md: 200, lg: 400, xl: 550 };
+    const navbarAsideWidth = { base: 200, md: 200, lg: 400, xl: 650 };
+
+    const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 
     return (
         <AppShell
             header={{
                 height: { base: 60, md: 60, lg: 60 },
             }}
-            footer={{ height: { base: 60, md: 70, lg: 80 } }}
             navbar={{
                 width: navbarAsideWidth,
                 breakpoint: "sm",
@@ -44,26 +59,50 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         base: "center",
                         md: "flex-end",
                     }}
-                    justify={"flex"}
+                    justify={"flex-start"}
                     gap={"md"}
                 >
-                    <Button variant="subtle" size="lg">
-                        Home
-                    </Button>
-                    <Button variant="subtle" size="lg">
-                        Matches
-                    </Button>
-                    <Button variant="subtle" size="lg">
-                        Messages
-                    </Button>
-                    <Button variant="subtle" size="lg">
-                        Profile
-                    </Button>
+                    {routes.map((route) => (
+                        <Link href={route.link} key={route.name}>
+                            <Button
+                                variant="subtle"
+                                size="lg"
+                                leftSection={route.icon}
+                            >
+                                {route.name}
+                            </Button>
+                        </Link>
+                    ))}
                 </Flex>
+                {/* <Stack align="flex-end" justify="flex-start"> */}
+                {/* </Stack> */}
             </AppShell.Navbar>
             <AppShell.Main>{children}</AppShell.Main>
-            <AppShell.Aside p="md">Aside</AppShell.Aside>
-            <AppShell.Footer p="md">Footer</AppShell.Footer>
+            <AppShell.Aside p="md">
+                <Flex
+                    direction={"column"}
+                    align={"flex-start"}
+                    justify={"center"}
+                    gap={"md"}
+                >
+                    <TextInput
+                        leftSection={
+                            <IconSearch
+                                style={{ width: rem(16), height: rem(16) }}
+                            />
+                        }
+                        leftSectionPointerEvents="none"
+                        placeholder="Search"
+                        width={"100%"}
+                    />
+                    <LoginModal />
+                    <RegisterModal />
+
+                    <Button onClick={toggleColorScheme} variant="outline">
+                        {colorScheme === "dark" ? <IconMoon /> : <IconSun />}
+                    </Button>
+                </Flex>
+            </AppShell.Aside>
         </AppShell>
     );
 }
