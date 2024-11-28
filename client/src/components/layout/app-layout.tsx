@@ -27,7 +27,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     return (
         <AppShell
             header={{
-                height: { base: 60, md: 60, lg: 60 },
+                height: { base: 50 },
             }}
             navbar={{
                 width: navbarAsideWidth,
@@ -73,8 +73,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         </Link>
                     ))}
                 </Flex>
-                {/* <Stack align="flex-end" justify="flex-start"> */}
-                {/* </Stack> */}
             </AppShell.Navbar>
             <AppShell.Main>{children}</AppShell.Main>
             <AppShell.Aside p="md">
