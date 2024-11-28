@@ -15,7 +15,9 @@ export function RegisterModal() {
         <Box>
             <Button onClick={open}>Register</Button>
             <Modal opened={opened} onClose={close} title="Register" centered>
-                <RegisterComponent close={close} />
+                <Box p={"xs"}>
+                    <RegisterComponent close={close} />
+                </Box>
             </Modal>
         </Box>
     );

@@ -3,12 +3,12 @@
 import {
     ActionIcon,
     AppShell,
+    AppShellResponsiveSize,
     Box,
     Burger,
     Button,
     Flex,
     Group,
-    rem,
     Text,
     TextInput,
     useMantineColorScheme,
@@ -23,7 +23,12 @@ import { LoginModal } from "@/components/auth/login";
 export default function AppLayout({ children }: { children: React.ReactNode }) {
     const [opened, { toggle }] = useDisclosure();
 
-    const navbarAsideWidth = { base: 200, md: 200, lg: 400, xl: 650 };
+    const navbarAsideWidth: AppShellResponsiveSize = {
+        base: 300,
+        md: 300,
+        lg: 300,
+        xl: 650,
+    };
 
     const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 
@@ -116,11 +121,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         gap={"md"}
                     >
                         <TextInput
-                            leftSection={
-                                <IconSearch
-                                    style={{ width: rem(16), height: rem(16) }}
-                                />
-                            }
+                            leftSection={<IconSearch size={16} />}
                             leftSectionPointerEvents="none"
                             placeholder="Search"
                             width={"100%"}

@@ -18,7 +18,9 @@ export function LoginModal() {
                 Login
             </Button>
             <Modal opened={opened} onClose={close} title="Login" centered>
-                <LoginComponent close={close} />
+                <Box p={"xs"}>
+                    <LoginComponent close={close} />
+                </Box>
             </Modal>
         </Box>
     );
