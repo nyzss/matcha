@@ -24,7 +24,7 @@ export function RegisterModal() {
 }
 
 export default function RegisterComponent({ close }: { close?: () => void }) {
-    const form = useForm({
+    const form = useForm<TRegister>({
         mode: "uncontrolled",
         initialValues: {
             username: "",

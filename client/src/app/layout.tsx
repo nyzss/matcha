@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
 import RouterTransition from "@/components/layout/navigation-progress";
+import InitialSetup from "@/components/onboard/initial-setup";
 
 const geistSans = localFont({
     src: "./fonts/GeistVF.woff",
@@ -34,6 +35,7 @@ export default function RootLayout({
                 <MantineProvider>
                     <RouterTransition />
                     {children}
+                    <InitialSetup />
                 </MantineProvider>
             </body>
         </html>

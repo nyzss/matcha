@@ -63,3 +63,45 @@ export const registerSchema = z
         message: messages.confirmPassword.invalid.message,
         path: ["confirmPassword"],
     });
+
+// const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 2 ** 23; // 8MB
+const ACCEPTED_IMAGE_TYPES = [
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "image/webp",
+];
+
+export const GENDERS = ["Man", "Woman", "Beyond Binary"] as const;
+export const SEXUAL_PREFERENCES = [
+    "Man",
+    "Woman",
+    "Both",
+    "Neither",
+    "Other",
+] as const;
+
+export const preferencesSchema = z.object({
+    gender: z.union([z.enum(GENDERS), z.literal("")]),
+    sexualPreference: z.union([z.enum(SEXUAL_PREFERENCES), z.literal("")]),
+    biography: z.string().max(500),
+    tags: z.array(z.string().max(32)).max(10),
+    pictures: z
+        .array(z.custom<File>())
+        .max(5)
+        .min(1)
+        .refine(
+            (files) => files.every((file) => file instanceof File),
+            "Expected file"
+        )
+        .refine(
+            (files) => files.every((file) => file.size <= MAX_FILE_SIZE),
+            "File size should be less than 8MB"
+        )
+        .refine(
+            (files) =>
+                files.every((file) => ACCEPTED_IMAGE_TYPES.includes(file.type)),
+            "Invalid file type, only .jpeg, .jpg, .png, .webp files are allowed"
+        ),
+});

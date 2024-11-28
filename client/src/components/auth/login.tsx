@@ -27,7 +27,7 @@ export function LoginModal() {
 }
 
 export default function LoginComponent({ close }: { close?: () => void }) {
-    const form = useForm({
+    const form = useForm<TLogin>({
         initialValues: {
             username: "",
             password: "",
