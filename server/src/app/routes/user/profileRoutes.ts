@@ -1,5 +1,5 @@
 import { FastifyPluginAsync } from 'fastify';
-import { ProfileController } from '../controllers/user/profileController';
+import { ProfileController } from '../../controllers/user/profileController';
 
 // Code de teste pour voir les decorators jwt
 const authRoutes: FastifyPluginAsync = async (app) => {

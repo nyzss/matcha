@@ -1,6 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
-import { AuthController } from '../controllers/auth/authController';
-import { loginSchema, registerSchema } from '../schemas/authSchemas';
+import { AuthController } from '../../controllers/auth/authController';
+import { loginSchema, registerSchema } from '../../schemas/authSchemas';
 import { ZodTypeProvider } from 'fastify-type-provider-zod';
 const authRoutes: FastifyPluginAsync = async (app) => {
     const authController = new AuthController();

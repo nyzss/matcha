@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
-import authRoutes from './authRoutes';
-import profileRoutes from './profileRoutes';
+import authRoutes from './auth/authRoutes';
+import profileRoutes from './user/profileRoutes';
 
 export default async (app: FastifyInstance) => {
 
