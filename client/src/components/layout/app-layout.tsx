@@ -1,12 +1,15 @@
 "use client";
 
 import {
+    ActionIcon,
     AppShell,
+    AppShellResponsiveSize,
+    Box,
     Burger,
     Button,
     Flex,
     Group,
-    rem,
+    Text,
     TextInput,
     useMantineColorScheme,
 } from "@mantine/core";
@@ -14,20 +17,25 @@ import { useDisclosure } from "@mantine/hooks";
 import { IconMoon, IconSearch, IconSun } from "@tabler/icons-react";
 import { routes } from "./navigations";
 import Link from "next/link";
-import { RegisterModal } from "../auth/register";
-import { LoginModal } from "../auth/login";
+import { RegisterModal } from "@/components/auth/register";
+import { LoginModal } from "@/components/auth/login";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
     const [opened, { toggle }] = useDisclosure();
 
-    const navbarAsideWidth = { base: 200, md: 200, lg: 400, xl: 650 };
+    const navbarAsideWidth: AppShellResponsiveSize = {
+        base: 300,
+        md: 300,
+        lg: 300,
+        xl: 650,
+    };
 
     const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 
     return (
         <AppShell
             header={{
-                height: { base: 60, md: 60, lg: 60 },
+                height: { base: 50 },
             }}
             navbar={{
                 width: navbarAsideWidth,
@@ -49,58 +57,93 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         hiddenFrom="sm"
                         size="sm"
                     />
-                    {/* <h1>Matcha</h1> */}
                 </Group>
             </AppShell.Header>
             <AppShell.Navbar p="md">
-                <Flex
-                    direction={"column"}
-                    align={{
-                        base: "center",
-                        md: "flex-end",
-                    }}
-                    justify={"flex-start"}
-                    gap={"md"}
-                >
-                    {routes.map((route) => (
-                        <Link href={route.link} key={route.name}>
-                            <Button
-                                variant="subtle"
-                                size="lg"
-                                leftSection={route.icon}
-                            >
-                                {route.name}
-                            </Button>
-                        </Link>
-                    ))}
+                <Flex h={"100%"}>
+                    <Flex
+                        ml={{
+                            base: "0",
+                            sm: "auto",
+                        }}
+                        direction={"column"}
+                        w={{
+                            base: "100%",
+                            sm: "auto",
+                        }}
+                    >
+                        <Flex direction={"column"} gap={"xs"}>
+                            {routes.map((route) => (
+                                <Button
+                                    variant="subtle"
+                                    size="xl"
+                                    leftSection={route.icon}
+                                    component={Link}
+                                    href={route.link}
+                                    key={route.name}
+                                    justify="flex-start"
+                                >
+                                    {route.name}
+                                </Button>
+                            ))}
+                        </Flex>
+                        <Box style={{ marginTop: "auto" }}>
+                            <Flex align="center" mt="xl">
+                                <Box mr="xs">
+                                    <Text size="sm" fw={700}>
+                                        Matcha User
+                                    </Text>
+                                    <Text size="xs" c="dimmed">
+                                        @matcha
+                                    </Text>
+                                </Box>
+                                <ActionIcon
+                                    variant="subtle"
+                                    size="lg"
+                                    ml="auto"
+                                >
+                                    •••
+                                </ActionIcon>
+                            </Flex>
+                        </Box>
+                    </Flex>
                 </Flex>
-                {/* <Stack align="flex-end" justify="flex-start"> */}
-                {/* </Stack> */}
             </AppShell.Navbar>
             <AppShell.Main>{children}</AppShell.Main>
             <AppShell.Aside p="md">
-                <Flex
-                    direction={"column"}
-                    align={"flex-start"}
-                    justify={"center"}
-                    gap={"md"}
-                >
-                    <TextInput
-                        leftSection={
-                            <IconSearch
-                                style={{ width: rem(16), height: rem(16) }}
-                            />
-                        }
-                        leftSectionPointerEvents="none"
-                        placeholder="Search"
-                        width={"100%"}
-                    />
-                    <LoginModal />
-                    <RegisterModal />
+                <Flex h={"100%"} w="100%">
+                    <Flex
+                        mr={{
+                            base: "0",
+                            sm: "auto",
+                        }}
+                        direction={"column"}
+                        gap={"md"}
+                    >
+                        <TextInput
+                            leftSection={<IconSearch size={16} />}
+                            leftSectionPointerEvents="none"
+                            placeholder="Search"
+                            width={"100%"}
+                        />
 
-                    <Button onClick={toggleColorScheme} variant="outline">
-                        {colorScheme === "dark" ? <IconMoon /> : <IconSun />}
-                    </Button>
+                        <Button onClick={toggleColorScheme} variant="outline">
+                            {colorScheme === "dark" ? (
+                                <IconMoon />
+                            ) : (
+                                <IconSun />
+                            )}
+                        </Button>
+
+                        <Group
+                            mt={{
+                                base: "auto",
+                            }}
+                        >
+                            <LoginModal />
+                            <RegisterModal />
+                        </Group>
+                    </Flex>
                 </Flex>
             </AppShell.Aside>
         </AppShell>

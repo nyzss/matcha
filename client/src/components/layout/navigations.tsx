@@ -1,9 +1,11 @@
-import { IRoute } from "../types";
+import { IRoute } from "@/types/validation";
 import {
     IconBell,
     IconClover,
     IconHome,
+    IconLogin,
     IconMessage,
+    IconSettingsUp,
     IconUserCircle,
 } from "@tabler/icons-react";
 
@@ -35,5 +37,17 @@ export const routes: IRoute[] = [
         link: "/profile",
         icon: <IconUserCircle />,
         auth: true,
+    },
+    {
+        name: "Login",
+        link: "/login",
+        icon: <IconLogin />,
+        auth: false,
+    },
+    {
+        name: "Register",
+        link: "/register",
+        icon: <IconSettingsUp />,
+        auth: false,
     },
 ];
