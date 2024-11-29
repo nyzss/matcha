@@ -8,15 +8,34 @@ export type ColumnType =
     | 'text'
     | 'json'
 
-interface TableSchema {
-    [key: string]: {
-        type: ColumnType
-        primary?: boolean
-        unique?: boolean
-        nullable?: boolean
-        defaultValue?: any
+export type RelationType =
+    | 'one-to-one'
+    | 'one-to-many'
+    | 'many-to-one'
+
+
+export interface ColumnDefinition {
+    type: ColumnType
+    primary?: boolean
+    unique?: boolean
+    nullable?: boolean
+    defaultValue?: any
+    autoIncrement?: boolean
+
+    relation?: {
+        type: RelationType
+        table: string
+        field: string
+        onDelete?: 'CASCADE' | 'SET NULL' | 'RESTRICT'
+        onUpdate?: 'CASCADE' | 'SET NULL' | 'RESTRICT'
     }
 }
+
+
+export interface TableSchema {
+    [key: string]: ColumnDefinition
+}
+
 
 
 
@@ -46,7 +65,23 @@ export interface ORM {
 
     createTable(tableName: string, schema: TableSchema): Promise<void>
 
+    createTableWithRelations(tableName: string, schema: TableSchema): Promise<void>
+
+    buildBaseColumnDefinition(columnName: string, columnDef: ColumnDefinition): string;
+
+    findWithRelations(
+        table: string,
+        relations?: {
+            [relationName: string]: {
+                table: string
+                type?: RelationType
+            }
+        }
+    ): Promise<any[]>
+
     formatDefaultValue(value: any): string
+
+
 }
 
 declare module 'fastify' {

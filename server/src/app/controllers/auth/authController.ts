@@ -1,6 +1,6 @@
 import {FastifyInstance, FastifyReply, FastifyRequest} from 'fastify';
 import { AuthService } from '../../services/authService';
-import { RegisterForm } from "../../types/auth";
+import {RegisterForm, AuthResult, LoginForm} from "../../types/auth";
 
 export class AuthController {
     private app: FastifyInstance;
@@ -12,23 +12,65 @@ export class AuthController {
     }
 
     async login(request: FastifyRequest, reply: FastifyReply) {
-        const { email, password } = request.body as RegisterForm;
+        const form = request.body as LoginForm;
         try {
-            const token = await this.authService.login(email, password);
-            reply.send({ token });
+            const result: AuthResult = await this.authService.login(form);
+
+            return await reply.setCookie('refreshToken', result.refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 60 * 60 * 24 * 7,
+                path: '/',
+                sameSite: 'strict'
+            }).setCookie('accessToken', result.accessToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 60 * 60,
+                path: '/',
+                sameSite: 'strict'
+            }).send({
+                user: {
+                    id: result.user.id,
+                    username: result.user.username,
+                    firstName: result.user.firstName,
+                    lastName: result.user.lastName
+                }
+            });
         } catch (error: Error | any) {
+
+            console.log(error);
             reply.status(401).send({ error: error.message });
         }
     }
-
-    // Méthode pour s'enregistrer (register)
     async register(request: FastifyRequest, reply: FastifyReply) {
         const form = request.body as RegisterForm;
         try {
-            const user = await this.authService.register(form);
-            reply.send(user);
+            const result: AuthResult = await this.authService.register(form);
+
+            return await reply.setCookie('refreshToken', result.refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 60 * 60 * 24 * 7,
+                path: '/',
+                sameSite: 'strict'
+            }).setCookie('accessToken', result.accessToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 60 * 60,
+                path: '/',
+                sameSite: 'strict'
+            }).send({
+                user: {
+                    id: result.user.id,
+                    username: result.user.username,
+                    firstName: result.user.firstName,
+                    lastName: result.user.lastName
+                }
+            });
+
+
         } catch (error: Error | any) {
-            reply.status(400).send({ error: error.message });
+            return reply.status(400).send({error: error.message});
         }
     }
 }
