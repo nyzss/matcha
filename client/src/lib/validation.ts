@@ -65,12 +65,16 @@ export const registerSchema = z
     });
 
 // const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const MAX_FILE_SIZE = 2 ** 23; // 8MB
-const ACCEPTED_IMAGE_TYPES = [
+export const MAX_FILE_SIZE = 2 ** 23; // 8MB
+export const ACCEPTED_IMAGE_TYPES = [
     "image/jpeg",
-    "image/jpg",
     "image/png",
     "image/webp",
+    "image/gif",
+    "image/svg+xml",
+    "image/avif",
+    "image/heic",
+    "image/heif",
 ];
 
 export const GENDERS = ["Man", "Woman", "Beyond Binary"] as const;

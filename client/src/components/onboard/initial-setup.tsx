@@ -12,19 +12,24 @@ import {
     Stepper,
     Text,
     Title,
+    rem,
+    Textarea,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useForm, zodResolver } from "@mantine/form";
 import { TPreferences } from "@/types/validation";
 import {
+    ACCEPTED_IMAGE_TYPES,
     GENDERS,
+    MAX_FILE_SIZE,
     preferencesSchema,
     SEXUAL_PREFERENCES,
 } from "@/lib/validation";
-import { IconMail } from "@tabler/icons-react";
+import { IconMail, IconPhoto, IconUpload, IconX } from "@tabler/icons-react";
 import { usePreferencesStore } from "@/lib/store";
 import { useShallow } from "zustand/react/shallow";
+import { Dropzone } from "@mantine/dropzone";
 
 export default function InitialSetup() {
     const [opened, { open, close }] = useDisclosure(false);
@@ -61,7 +66,7 @@ export default function InitialSetup() {
         open();
     }, [open]);
 
-    const canClose = useMemo(() => step !== 0, [step]);
+    // const canClose = useMemo(() => step !== 0, [step]);
 
     return (
         <Modal
@@ -78,7 +83,7 @@ export default function InitialSetup() {
             withCloseButton={false}
             closeOnEscape={false}
         >
-            <Flex gap={"xl"} direction={"column"}>
+            <Flex gap={"xl"} direction={"column"} h="500px">
                 <Stepper active={step}>
                     <Stepper.Step label="First Step" description="Verify Email">
                         <Center py={"xl"}>
@@ -105,9 +110,12 @@ export default function InitialSetup() {
                         </Center>
                     </Stepper.Step>
 
-                    <Stepper.Step label="First Step" description="Verify Email">
-                        <Stack gap={"lg"} w={"100%"}>
-                            <form onSubmit={form.onSubmit(handleSubmit)}>
+                    <Stepper.Step
+                        label="Second Step"
+                        description="Gender & Preferences"
+                    >
+                        <form onSubmit={form.onSubmit(handleSubmit)}>
+                            <Stack gap={"lg"} w={"100%"}>
                                 <Select
                                     label="Gender"
                                     placeholder="Woman"
@@ -122,25 +130,81 @@ export default function InitialSetup() {
                                     key={form.key("sexualPreference")}
                                     {...form.getInputProps("sexualPreference")}
                                 />
-                            </form>
-                        </Stack>
+                            </Stack>
+                        </form>
                     </Stepper.Step>
 
-                    <Stepper.Step
-                        label="First Step"
-                        description="Verify Email"
-                    ></Stepper.Step>
+                    <Stepper.Step label="Third Step" description="About you">
+                        <Textarea
+                            label="Biography"
+                            placeholder="Tell us about yourself in 2 sentences."
+                            autosize
+                            minRows={4}
+                            maxRows={6}
+                            size="xl"
+                        />
+                    </Stepper.Step>
 
-                    <Stepper.Step
-                        label="First Step"
-                        description="Verify Email"
-                    ></Stepper.Step>
+                    <Stepper.Step label="Fourth Step" description="Pictures">
+                        <Dropzone
+                            onDrop={(files) => console.log(files)}
+                            onReject={(files) => console.log(files)}
+                            maxSize={MAX_FILE_SIZE}
+                            accept={ACCEPTED_IMAGE_TYPES}
+                        >
+                            <Group
+                                justify="center"
+                                gap="xl"
+                                mih={220}
+                                style={{ pointerEvents: "none" }}
+                            >
+                                <Dropzone.Accept>
+                                    <IconUpload
+                                        style={{
+                                            width: rem(52),
+                                            height: rem(52),
+                                        }}
+                                        stroke={1.5}
+                                    />
+                                </Dropzone.Accept>
+                                <Dropzone.Reject>
+                                    <IconX
+                                        stroke={1.5}
+                                        style={{
+                                            width: rem(52),
+                                            height: rem(52),
+                                        }}
+                                    ></IconX>
+                                </Dropzone.Reject>
+                                <Dropzone.Idle>
+                                    <IconPhoto
+                                        stroke={1.5}
+                                        style={{
+                                            width: rem(52),
+                                            height: rem(52),
+                                        }}
+                                    />
+                                </Dropzone.Idle>
+
+                                <div>
+                                    <Text size="xl" inline>
+                                        Drag images here or click to select
+                                        files
+                                    </Text>
+                                    <Text size="sm" c="dimmed" inline mt={7}>
+                                        Attach a maximum of 5 images, the images
+                                        should not exceed 8MB in size.
+                                    </Text>
+                                </div>
+                            </Group>
+                        </Dropzone>
+                    </Stepper.Step>
                 </Stepper>
 
-                {canClose && (
-                    <Group>
-                        <Button onClick={prev}>previous</Button>
-                        <Button onClick={next}>next</Button>
+                {true && (
+                    <Group mt={"auto"}>
+                        <Button onClick={prev}>Back</Button>
+                        <Button onClick={next}>Next</Button>
                     </Group>
                 )}
             </Flex>
