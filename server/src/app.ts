@@ -8,6 +8,8 @@ import { userSchema, publicUserSchema } from "./app/schemas/orm/userSchemas";
 // a décalé dans un fichier
 import fastifyJwt from '@fastify/jwt';
 import fastifyCookie from '@fastify/cookie';
+import {loggerMiddleware} from "./app/middlewares/loggerMiddleware";
+import {customMiddleware} from "./app/plugins/middlewarePlugin";
 
 const buildApp = async () => {
     const app = fastify({ logger: false });
@@ -16,12 +18,14 @@ const buildApp = async () => {
     app.setSerializerCompiler(serializerCompiler);
     app.setErrorHandler(errorHandler);
 
+    app.addHook('onRequest', loggerMiddleware);
     // a déplacé dans un fichier
+
     await app.register(fastifyJwt, {
-        secret: 'dededede',
+        secret: process.env.JWT_SECRET as string,
     });
 
-    app.register(require('@fastify/cookie'), {
+    await app.register(require('@fastify/cookie'), {
         secret: process.env.COOKIE_SECRET,
         hook: 'onRequest',
         parseOptions: {}
@@ -39,11 +43,11 @@ const buildApp = async () => {
     });
 
 
+    await app.register(customMiddleware);
     await app.register(routes);
 
-
-    await app.orm.createTableWithRelations('profiles', publicUserSchema)
     await app.orm.createTableWithRelations('users', userSchema)
+    await app.orm.createTableWithRelations('profiles', publicUserSchema)
 
 
 
