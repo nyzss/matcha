@@ -204,7 +204,17 @@ export default function InitialSetup() {
                 {true && (
                     <Group mt={"auto"}>
                         <Button onClick={prev}>Back</Button>
-                        <Button onClick={next}>Next</Button>
+                        <Button
+                            onClick={() => {
+                                if (step === 3) {
+                                    close();
+                                } else {
+                                    next();
+                                }
+                            }}
+                        >
+                            Next
+                        </Button>
                     </Group>
                 )}
             </Flex>
