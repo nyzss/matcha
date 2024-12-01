@@ -1,3 +1,5 @@
+import {userProfile} from "./user";
+
 export interface RegisterForm {
     username: string;
     email: string;
@@ -12,19 +14,18 @@ export interface LoginForm {
 }
 
 export interface AuthResult {
-    user: {
-        id: number;
-        username: string;
-        firstName: string;
-        lastName: string;
-    };
+    user: userProfile;
     accessToken: string;
     refreshToken: string;
 }
 
+export interface JwtPayload {
+    id: number;
+}
+
 declare module 'fastify' {
     interface FastifyRequest {
-        user?: { id: string };
+        user?: userProfile;
     }
     interface FastifyInstance {
         verifyAuth: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;

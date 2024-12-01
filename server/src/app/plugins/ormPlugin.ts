@@ -53,6 +53,7 @@ const customPostgresORM: FastifyPluginAsync<OrmOptions> = async (
                 const result: QueryResult = await client.query(text, params);
                 return result.rows;
             } catch (error: unknown) {
+                console.log('Query failed:', text, error);
                 fastify.log.error(`Query failed: ${text} - ${error instanceof Error ? error.message : 'Unknown error'}`);
                 throw new Error(`Database query failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
             } finally {
@@ -188,6 +189,7 @@ const customPostgresORM: FastifyPluginAsync<OrmOptions> = async (
         },
 
         async createTableWithRelations(tableName: string, schema: TableSchema): Promise<void> {
+            console.log('Creating table with relations:', tableName);
             const createQueries: string[] = [];
 
             const columns = Object.entries(schema).map(([columnName, columnDef]) => {

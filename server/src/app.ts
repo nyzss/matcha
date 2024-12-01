@@ -12,7 +12,7 @@ import {loggerMiddleware} from "./app/middlewares/loggerMiddleware";
 import {customMiddleware} from "./app/plugins/middlewarePlugin";
 
 const buildApp = async () => {
-    const app = fastify({ logger: false });
+    const app = fastify({ logger: true });
 
     app.setValidatorCompiler(validatorCompiler);
     app.setSerializerCompiler(serializerCompiler);

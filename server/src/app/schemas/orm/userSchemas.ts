@@ -65,10 +65,14 @@ export const publicUserSchema: TableSchema = {
         nullable: true,
     },
     sexual_orientation: {
-        type: 'string',
+        type: 'number',
         nullable: true,
     },
     pictures: {
+        type: 'json',
+        nullable: true
+    },
+    tags: {
         type: 'json',
         nullable: true
     },
