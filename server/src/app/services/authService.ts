@@ -2,7 +2,7 @@ import fastify, { FastifyInstance } from 'fastify';
 import bcrypt from 'bcrypt';
 import { ORM } from '../types/orm';
 import {RegisterForm, AuthResult, LoginForm} from "../types/auth";
-import fastifyJwt from "@fastify/jwt";
+import fastifyJwt, {VerifyPayloadType} from "@fastify/jwt";
 
 export class AuthService {
     private orm: ORM;
@@ -53,15 +53,14 @@ export class AuthService {
 
             await this.orm.query('COMMIT');
 
-            // Generate access and refresh tokens
             const accessToken = this.jwt.sign(
                 { id: newUser.id, email: newUser.email },
-                { expiresIn: '1h' } // Access token expires in 1 hour
+                { expiresIn: '1h' }
             );
 
             const refreshToken = this.jwt.sign(
                 { id: newUser.id, email: newUser.email },
-                { expiresIn: '7d' } // Refresh token expires in 7 days
+                { expiresIn: '7d' }
             );
 
             return {
@@ -69,7 +68,7 @@ export class AuthService {
                     id: newUser.id,
                     username: newProfile.username,
                     firstName: newProfile.first_name,
-                    lastName: newProfile.last_name
+                    lastName: newProfile.last_name,
                 },
                 accessToken,
                 refreshToken
@@ -87,7 +86,6 @@ export class AuthService {
      * @returns An access token and refresh token if authentication is successful.
      */
     async login(form: LoginForm): Promise<AuthResult> {
-        // Jointure entre la table profiles et users pour récupérer les informations des deux
         const [user] = await this.orm.query(
             `
         SELECT 
@@ -143,5 +141,16 @@ export class AuthService {
             accessToken,
             refreshToken
         };
+    }
+
+    async verifyToken(token: string) {
+        try {
+            const user: VerifyPayloadType = await this.jwt.verify(token);
+           console.log(user);
+            return user;
+        } catch (error) {
+            console.log(error);
+            throw new Error('Invalid or expired access token');
+        }
     }
 }

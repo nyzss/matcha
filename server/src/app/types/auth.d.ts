@@ -21,3 +21,14 @@ export interface AuthResult {
     accessToken: string;
     refreshToken: string;
 }
+
+declare module 'fastify' {
+    interface FastifyRequest {
+        user?: { id: string };
+    }
+    interface FastifyInstance {
+        verifyAuth: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
+    }
+}
+
+
