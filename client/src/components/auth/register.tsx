@@ -7,6 +7,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { IconAt, IconLock, IconUser } from "@tabler/icons-react";
 import { TRegister } from "@/types/validation";
 import { authRegister } from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 export function RegisterModal() {
     const [opened, { open, close }] = useDisclosure(false);
@@ -24,6 +25,8 @@ export function RegisterModal() {
 }
 
 export default function RegisterComponent({ close }: { close?: () => void }) {
+    const router = useRouter();
+
     const form = useForm<TRegister>({
         mode: "uncontrolled",
         initialValues: {
@@ -42,7 +45,11 @@ export default function RegisterComponent({ close }: { close?: () => void }) {
         if (fields) {
             form.setErrors(fields);
         } else {
-            if (close) close();
+            if (close) {
+                close();
+            } else {
+                router.push("/");
+            }
         }
     };
 
