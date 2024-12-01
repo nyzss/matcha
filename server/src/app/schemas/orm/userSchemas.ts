@@ -44,12 +44,32 @@ export const publicUserSchema: TableSchema = {
         unique: true,
         nullable: false
     },
+    avatar: {
+        type: 'string',
+        nullable: true
+    },
     first_name: {
         type: 'string',
         nullable: true
     },
     last_name: {
         type: 'string',
+        nullable: true
+    },
+    gender: {
+        type: 'number',
+        nullable: true
+    },
+    biography: {
+        type: 'string',
+        nullable: true,
+    },
+    sexual_orientation: {
+        type: 'string',
+        nullable: true,
+    },
+    pictures: {
+        type: 'json',
         nullable: true
     },
     user_id: {

@@ -5,8 +5,10 @@ import { ProfileController } from '../../controllers/user/profileController';
 const authRoutes: FastifyPluginAsync = async (app) => {
     const profileController = new ProfileController();
 
-    app.post('/profile', {
-        // preHandler: [app.verifyJWT],
+    console.log(app.verifyAuth);
+
+    app.post('/test', {
+        preHandler: [app.verifyAuth],
     }, profileController.getProfile);
 
 };

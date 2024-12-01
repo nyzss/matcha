@@ -31,9 +31,6 @@ export class AuthController {
             }).send({
                 user: {
                     id: result.user.id,
-                    username: result.user.username,
-                    firstName: result.user.firstName,
-                    lastName: result.user.lastName
                 }
             });
         } catch (error: Error | any) {
@@ -62,9 +59,6 @@ export class AuthController {
             }).send({
                 user: {
                     id: result.user.id,
-                    username: result.user.username,
-                    firstName: result.user.firstName,
-                    lastName: result.user.lastName
                 }
             });
 
