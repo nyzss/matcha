@@ -27,17 +27,32 @@ export const fetcher = async (path: string, options: RequestInit) => {
  */
 export const authLogin = async (
     user: TLogin
-): Promise<Partial<TLogin> | void> => {
+): Promise<(Partial<TLogin> & { error?: string }) | void> => {
     try {
-        console.log(user);
-        // return {
-        //     username: "User not found!",
-        // };
-        return {
-            username: "User not found!",
-        };
+        const res = await fetcher("/auth/login", {
+            method: "POST",
+            body: JSON.stringify(user),
+        });
+
+        const json = await res?.json();
+
+        if (!res?.ok) {
+            if (json && json.error) {
+                const error = json.error.toLowerCase();
+                if (error.includes("username")) {
+                    return {
+                        username: "Invalid username or password.",
+                    };
+                }
+            }
+            console.log(json);
+            throw new Error("An error occurred");
+        }
     } catch (error) {
         console.error(error);
+        return {
+            error: "An error occurred",
+        };
     }
 };
 
@@ -67,12 +82,12 @@ export const authRegister = async (
                     };
                 }
             }
-
-            return {
-                error: "An error occurred",
-            };
+            throw new Error("An error occurred");
         }
     } catch (error) {
         console.error(error);
+        return {
+            error: "An error occurred",
+        };
     }
 };
