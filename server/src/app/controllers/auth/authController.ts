@@ -61,8 +61,6 @@ export class AuthController {
                     id: result.user.id,
                 }
             });
-
-
         } catch (error: Error | any) {
             return reply.status(400).send({error: error.message});
         }

@@ -3,6 +3,8 @@ import {AuthService} from "../services/authService";
 import {VerifyPayloadType} from "@fastify/jwt";
 import fp from "fastify-plugin";
 import {UserService} from "../services/userService";
+import {userProfile} from "../types/user";
+import {JwtPayload} from "../types/auth";
 
 export class AuthMiddleware {
     private app: FastifyInstance;
@@ -27,8 +29,7 @@ export class AuthMiddleware {
 
         try {
 
-            // a typé
-            const verify = await this.authService.verifyToken(cookies.accessToken) as any;
+            const verify: JwtPayload = await this.authService.verifyToken(cookies.accessToken);
 
             const user = await this.userService.getUserById(verify.id);
 
