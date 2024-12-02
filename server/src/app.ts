@@ -11,7 +11,7 @@ import fastifyCookie from '@fastify/cookie';
 import {loggerMiddleware} from "./app/middlewares/loggerMiddleware";
 import {customMiddleware} from "./app/plugins/middlewarePlugin";
 
-import cors from "@fastify/cors";
+// import cors from "@fastify/cors";
 
 const buildApp = async () => {
     const app = fastify({ logger: true });
@@ -24,7 +24,7 @@ const buildApp = async () => {
     // a déplacé dans un fichier
 
     // allowing cors for frontend
-    await app.register(cors, {});
+    // await app.register(cors, {});
 
     await app.register(fastifyJwt, {
         secret: process.env.JWT_SECRET as string,
