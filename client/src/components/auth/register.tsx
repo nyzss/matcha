@@ -8,6 +8,7 @@ import { IconAt, IconLock, IconUser } from "@tabler/icons-react";
 import { TRegister } from "@/types/validation";
 import { authRegister } from "@/lib/api";
 import { useRouter } from "next/navigation";
+import { notifications } from "@mantine/notifications";
 
 export function RegisterModal() {
     const [opened, { open, close }] = useDisclosure(false);
@@ -43,7 +44,14 @@ export default function RegisterComponent({ close }: { close?: () => void }) {
     const handleSubmit = async (values: TRegister) => {
         const fields = await authRegister(values);
         if (fields) {
-            form.setErrors(fields);
+            if (fields.error) {
+                notifications.show({
+                    title: "Couldn't create account",
+                    message: "An error has occurred, please try again later.",
+                });
+            } else {
+                form.setErrors(fields);
+            }
         } else {
             if (close) {
                 close();

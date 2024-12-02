@@ -38,21 +38,21 @@ services:
       db:
         condition: service_healthy
 
-  webserver:
-    build:
-      context: services/webserver
-    networks:
-      - matcha-network
-    volumes:
-      - static-data:/next
-    env_file:
-      - .env
-    ports:
-      - 8080:80
-      - 8443:443
-    depends_on:
-      - client
-      - backend
+  # webserver:
+  #   build:
+  #     context: services/webserver
+  #   networks:
+  #     - matcha-network
+  #   volumes:
+  #     - static-data:/next
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - 8080:80
+  #     - 8443:443
+  #   depends_on:
+  #     - client
+  #     - backend
 
 networks:
   matcha-network:

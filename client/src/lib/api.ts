@@ -1,10 +1,15 @@
 import { TLogin, TRegister } from "@/types/validation";
 
-export const BASE_URL = "http://localhost:8000/";
+export const BASE_URL = `/api/`;
+// export const BASE_URL = "http://localhost:8000/";
 
 export const fetcher = async (path: string, options: RequestInit) => {
+    if (path.startsWith("/")) {
+        path = path.slice(1);
+    }
+    const url = `${BASE_URL}${path}`;
     try {
-        const res = await fetch(new URL(path, BASE_URL), {
+        const res = await fetch(url, {
             headers: {
                 "Content-Type": "application/json",
             },
@@ -41,9 +46,9 @@ export const authLogin = async (
  */
 export const authRegister = async (
     user: TRegister
-): Promise<Partial<TRegister> | void> => {
+): Promise<(Partial<TRegister> & { error?: string }) | void> => {
     try {
-        const res = await fetcher("auth/register", {
+        const res = await fetcher("/auth/register", {
             method: "POST",
             body: JSON.stringify(user),
         });
@@ -62,6 +67,10 @@ export const authRegister = async (
                     };
                 }
             }
+
+            return {
+                error: "An error occurred",
+            };
         }
     } catch (error) {
         console.error(error);

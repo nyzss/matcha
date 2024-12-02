@@ -3,8 +3,10 @@ import localFont from "next/font/local";
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 import RouterTransition from "@/components/layout/navigation-progress";
 import InitialSetup from "@/components/onboard/initial-setup";
+import { Notifications } from "@mantine/notifications";
 import "@mantine/core/styles.css";
 import "@mantine/dropzone/styles.css";
+import "@mantine/notifications/styles.css";
 
 const geistSans = localFont({
     src: "./fonts/GeistVF.woff",
@@ -35,6 +37,7 @@ export default function RootLayout({
             <body className={`${geistSans.variable} ${geistMono.variable}`}>
                 <MantineProvider>
                     <RouterTransition />
+                    <Notifications />
                     {children}
                     <InitialSetup />
                 </MantineProvider>
