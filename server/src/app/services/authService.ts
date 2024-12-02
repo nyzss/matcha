@@ -1,7 +1,7 @@
 import fastify, { FastifyInstance } from 'fastify';
 import bcrypt from 'bcrypt';
 import { ORM } from '../types/orm';
-import {RegisterForm, AuthResult, LoginForm} from "../types/auth";
+import {RegisterForm, AuthResult, LoginForm, JwtPayload} from "../types/auth";
 import fastifyJwt, {VerifyPayloadType} from "@fastify/jwt";
 
 export class AuthService {
@@ -54,12 +54,16 @@ export class AuthService {
             await this.orm.query('COMMIT');
 
             const accessToken = this.jwt.sign(
-                { id: newUser.id, email: newUser.email },
+                {
+                    id: newUser.id,
+                },
                 { expiresIn: '1h' }
             );
 
             const refreshToken = this.jwt.sign(
-                { id: newUser.id, email: newUser.email },
+                {
+                    id: newUser.id,
+                },
                 { expiresIn: '7d' }
             );
 
@@ -67,8 +71,14 @@ export class AuthService {
                 user: {
                     id: newUser.id,
                     username: newProfile.username,
-                    firstName: newProfile.first_name,
-                    lastName: newProfile.last_name,
+                    avatar: newProfile.avatar,
+                    firstName: newProfile.firstName,
+                    lastName: newProfile.lastName,
+                    gender: newProfile.gender,
+                    biography: newProfile.biography,
+                    sexualOrientation: newProfile.sexualOrientation,
+                    pictures: newProfile.pictures,
+                    tags: newProfile.tags,
                 },
                 accessToken,
                 refreshToken
@@ -89,12 +99,17 @@ export class AuthService {
         const [user] = await this.orm.query(
             `
         SELECT 
-            u.id, 
-            u.email, 
-            u.password, 
-            p.username, 
-            p.first_name, 
-            p.last_name
+            u.id,
+            u.password,
+            p.username,
+            p.avatar,
+            p.first_name as "firstName",
+            p.last_name as "lastName",
+            p.gender,
+            p.biography,
+            p.sexual_orientation as "sexualOrientation",
+            p.pictures,
+            p.tags
         FROM profiles p
         JOIN users u ON p.user_id = u.id
         WHERE p.username = $1
@@ -114,9 +129,6 @@ export class AuthService {
         const accessToken = this.jwt.sign(
             {
                 id: user.id,
-                username: user.username,
-                firstName: user.first_name,
-                lastName: user.last_name
             },
             { expiresIn: '24h' }
         );
@@ -124,9 +136,6 @@ export class AuthService {
         const refreshToken = this.jwt.sign(
             {
                 id: user.id,
-                username: user.username,
-                firstName: user.first_name,
-                lastName: user.last_name
             },
             { expiresIn: '7d' }
         );
@@ -135,18 +144,24 @@ export class AuthService {
             user: {
                 id: user.id,
                 username: user.username,
-                firstName: user.first_name,
-                lastName: user.last_name
+                avatar: user.avatar,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                gender: user.gender,
+                biography: user.biography,
+                sexualOrientation: user.sexualOrientation,
+                pictures: user.pictures,
+                tags: user.tags,
             },
             accessToken,
             refreshToken
         };
     }
 
-    async verifyToken(token: string) {
+    async verifyToken(token: string): Promise<JwtPayload> {
         try {
-            const user: VerifyPayloadType = await this.jwt.verify(token);
-           console.log(user);
+            const user: JwtPayload = await this.jwt.verify(token);
+
             return user;
         } catch (error) {
             console.log(error);

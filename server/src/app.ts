@@ -14,7 +14,7 @@ import {customMiddleware} from "./app/plugins/middlewarePlugin";
 import cors from "@fastify/cors";
 
 const buildApp = async () => {
-    const app = fastify({ logger: false });
+    const app = fastify({ logger: true });
 
     app.setValidatorCompiler(validatorCompiler);
     app.setSerializerCompiler(serializerCompiler);
