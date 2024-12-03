@@ -1,10 +1,10 @@
-import buildApp from './app';
+import buildApp from "./app";
 
 const startServer = async () => {
     const app = await buildApp();
 
     try {
-        const PORT = 3000;
+        const PORT = 8000;
         await app.listen({ port: PORT });
         console.log(`🚀 Server running at http://localhost:${PORT}`);
     } catch (err) {

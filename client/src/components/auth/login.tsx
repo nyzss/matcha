@@ -8,6 +8,7 @@ import React from "react";
 import { TLogin } from "@/types/validation";
 import { IconLock, IconUser } from "@tabler/icons-react";
 import { authLogin } from "@/lib/api";
+import { notifications } from "@mantine/notifications";
 
 export function LoginModal() {
     const [opened, { open, close }] = useDisclosure(false);
@@ -27,7 +28,7 @@ export function LoginModal() {
 }
 
 export default function LoginComponent({ close }: { close?: () => void }) {
-    const form = useForm({
+    const form = useForm<TLogin>({
         initialValues: {
             username: "",
             password: "",
@@ -39,7 +40,14 @@ export default function LoginComponent({ close }: { close?: () => void }) {
     const handleSubmit = async (values: TLogin) => {
         const fields = await authLogin(values);
         if (fields) {
-            form.setErrors(fields);
+            if (fields.error) {
+                notifications.show({
+                    title: "Couldn't create account",
+                    message: "An error has occurred, please try again later.",
+                });
+            } else {
+                form.setErrors(fields);
+            }
         } else {
             if (close) close();
         }

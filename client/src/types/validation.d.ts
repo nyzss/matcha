@@ -1,4 +1,8 @@
-import { loginSchema, registerSchema } from "@/lib/validation";
+import {
+    loginSchema,
+    preferencesSchema,
+    registerSchema,
+} from "@/lib/validation";
 import { z } from "zod";
 
 export interface IRoute {
@@ -10,3 +14,5 @@ export interface IRoute {
 
 export type TLogin = z.infer<typeof loginSchema>;
 export type TRegister = z.infer<typeof registerSchema>;
+
+export type TPreferences = z.infer<typeof preferencesSchema>;
