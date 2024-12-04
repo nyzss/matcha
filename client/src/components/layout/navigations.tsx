@@ -51,3 +51,10 @@ export const routes: IRoute[] = [
         auth: false,
     },
 ];
+
+export const protectedRoutes = routes
+    .filter((route) => route.auth === true)
+    .map((route) => route.link);
+export const publicRoutes = routes
+    .filter((route) => route.auth === false)
+    .map((route) => route.link);
