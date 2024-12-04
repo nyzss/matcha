@@ -16,7 +16,10 @@ fi
 server="$dir ./server"
 client="$dir ./client"
 
-docker compose up --build &
+$pkg install $client &
+$pkg install $server &
+
+docker compose up db --build &
 $pkg run $client dev &
 $pkg run $server dev &
 

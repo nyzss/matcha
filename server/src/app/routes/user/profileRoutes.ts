@@ -1,5 +1,5 @@
-import { FastifyPluginAsync } from 'fastify';
-import { ProfileController } from '../../controllers/user/profileController';
+import { FastifyPluginAsync } from "fastify";
+import { ProfileController } from "../../controllers/user/profileController";
 
 // Code de teste pour voir les decorators jwt
 const authRoutes: FastifyPluginAsync = async (app) => {
@@ -7,10 +7,21 @@ const authRoutes: FastifyPluginAsync = async (app) => {
 
     console.log(app.verifyAuth);
 
-    app.post('/test', {
-        preHandler: [app.verifyAuth],
-    }, profileController.getProfile);
+    app.get(
+        "/@me",
+        {
+            preHandler: [app.verifyAuth],
+        },
+        profileController.getProfile
+    );
 
+    app.put(
+        "/@me",
+        {
+            preHandler: [app.verifyAuth],
+        },
+        profileController.updateProfile
+    );
 };
 
 export default authRoutes;

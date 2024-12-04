@@ -11,6 +11,8 @@ import fastifyCookie from '@fastify/cookie';
 import {loggerMiddleware} from "./app/middlewares/loggerMiddleware";
 import {customMiddleware} from "./app/plugins/middlewarePlugin";
 
+// import cors from "@fastify/cors";
+
 const buildApp = async () => {
     const app = fastify({ logger: true });
 
@@ -20,6 +22,9 @@ const buildApp = async () => {
 
     app.addHook('onRequest', loggerMiddleware);
     // a déplacé dans un fichier
+
+    // allowing cors for frontend
+    // await app.register(cors, {});
 
     await app.register(fastifyJwt, {
         secret: process.env.JWT_SECRET as string,
@@ -35,16 +40,15 @@ const buildApp = async () => {
     await app.register(customPostgresORM, {
         postgresConfig: {
             user: process.env.POSTGRES_USER,
-            host: "localhost",
+            host: process.env.POSTGRES_HOST,
             database: process.env.POSTGRES_DB,
             password: process.env.POSTGRES_PASSWORD,
             port: 5432,
-        }
+        },
     });
 
-
     await app.register(customMiddleware);
-    await app.register(routes);
+    await app.register(routes, { prefix: "/api" });
 
     await app.orm.createTableWithRelations('users', userSchema)
     await app.orm.createTableWithRelations('profiles', publicUserSchema)

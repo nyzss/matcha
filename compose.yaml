@@ -17,34 +17,42 @@ services:
       timeout: 5s
       retries: 5
 
-#   client:
-#     build:
-#       context: client
-#     environment:
-#       NODE_ENV: ${NODE_ENV}
-#     networks:
-#       - matcha-network
-#     ports:
-#       - 3000:3000
+  client:
+    build:
+      context: client
+    env_file:
+      - .env
+    networks:
+      - matcha-network
+    volumes:
+      - static-data:/usr/src/app
 
-#   server:
-#     build:
-#       context: server
-#     environment:
-#       NODE_ENV: ${NODE_ENV}
-#     networks:
-#       - matcha-network
+  backend:
+    build:
+      context: server
+    env_file:
+      - .env
+    networks:
+      - matcha-network
+    depends_on:
+      db:
+        condition: service_healthy
 
-#   webserver:
-#     build:
-#       context: services/webserver
-#     networks:
-#       - matcha-network
-#     ports:
-#       - 8000:8000
-#     depends_on:
-#       db:
-#         condition: service_healthy
+  # webserver:
+  #   build:
+  #     context: services/webserver
+  #   networks:
+  #     - matcha-network
+  #   volumes:
+  #     - static-data:/next
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - 8080:80
+  #     - 8443:443
+  #   depends_on:
+  #     - client
+  #     - backend
 
 networks:
   matcha-network:
@@ -52,3 +60,4 @@ networks:
 
 volumes:
   db-data:
+  static-data:
