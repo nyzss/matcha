@@ -1,18 +1,10 @@
 import { TPreferences } from "./validation";
 
 // add notifications
-export interface UserState {
-    username: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-}
-
 export interface AuthState {
-    user: UserState | null;
-    // setUser: (user: UserState) => void;
+    user: Profile | null;
     clear: () => void;
-    update: (updates: Partial<UserState>) => void;
+    update: (updates: Partial<Profile>) => void;
 }
 
 export interface PreferencesState {

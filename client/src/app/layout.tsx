@@ -4,6 +4,7 @@ import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 import RouterTransition from "@/components/layout/navigation-progress";
 import InitialSetup from "@/components/onboard/initial-setup";
 import { Notifications } from "@mantine/notifications";
+import Middleware from "@/components/auth/middleware";
 import "@mantine/core/styles.css";
 import "@mantine/dropzone/styles.css";
 import "@mantine/notifications/styles.css";
@@ -36,6 +37,7 @@ export default function RootLayout({
             </head>
             <body className={`${geistSans.variable} ${geistMono.variable}`}>
                 <MantineProvider>
+                    <Middleware />
                     <RouterTransition />
                     <Notifications />
                     {children}

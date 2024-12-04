@@ -9,6 +9,7 @@ import { TLogin } from "@/types/validation";
 import { IconLock, IconUser } from "@tabler/icons-react";
 import { authLogin } from "@/lib/api";
 import { notifications } from "@mantine/notifications";
+import { useRouter } from "next/navigation";
 
 export function LoginModal() {
     const [opened, { open, close }] = useDisclosure(false);
@@ -28,6 +29,8 @@ export function LoginModal() {
 }
 
 export default function LoginComponent({ close }: { close?: () => void }) {
+    const router = useRouter();
+
     const form = useForm<TLogin>({
         initialValues: {
             username: "",
@@ -49,7 +52,15 @@ export default function LoginComponent({ close }: { close?: () => void }) {
                 form.setErrors(fields);
             }
         } else {
-            if (close) close();
+            if (close) {
+                close();
+            } else {
+                notifications.show({
+                    title: "Logged in.",
+                    message: "You have successfully logged in!",
+                });
+                router.push("/");
+            }
         }
     };
 
