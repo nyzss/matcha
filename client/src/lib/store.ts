@@ -5,9 +5,11 @@ import { Profile } from "@/types/auth";
 
 export const useAuthStore = create<AuthState>((set) => ({
     user: null,
-    clear: () => set({ user: null }),
+    logged: false,
+    clear: () => set({ user: null, logged: false }),
     update: (updates) =>
         set((state) => ({ user: { ...state.user, ...updates } as Profile })),
+    connect: () => set({ logged: true }),
 }));
 
 export const usePreferencesStore = create<PreferencesState>((set) => ({

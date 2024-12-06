@@ -1,7 +1,7 @@
 import { TLogin, TRegister } from "@/types/validation";
+import { refreshAuth } from "./auth";
 
 export const BASE_URL = `/api/`;
-// export const BASE_URL = "http://localhost:8000/";
 
 export const fetcher = async (path: string, options?: RequestInit) => {
     if (path.startsWith("/")) {
@@ -53,6 +53,8 @@ export const authLogin = async (
         return {
             error: "An error occurred",
         };
+    } finally {
+        await refreshAuth();
     }
 };
 
@@ -89,26 +91,48 @@ export const authRegister = async (
         return {
             error: "An error occurred",
         };
+    } finally {
+        await refreshAuth();
     }
 };
 
-export const checkLoggedIn = async (
-    accessToken: string | undefined,
-    refreshToken: string | undefined,
-    origin?: string
-): Promise<boolean> => {
+export const authLogout = async () => {
     try {
-        const res = await fetch(`${origin}${BASE_URL}profile/@me`, {
-            headers: {
-                Cookie: `accessToken=${accessToken}; refreshToken=${refreshToken};`,
-            },
+        const res = await fetcher("auth/logout", {
+            method: "POST",
+            headers: {},
         });
+
+        const data = await res?.json();
         if (!res?.ok) {
-            throw new Error();
+            throw new Error(data.error);
         }
         return true;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-        console.error(error);
         return false;
+    } finally {
+        await refreshAuth();
     }
 };
+
+// export const checkLoggedIn = async (
+//     accessToken: string | undefined,
+//     refreshToken: string | undefined,
+//     origin?: string
+// ): Promise<boolean> => {
+//     try {
+//         const res = await fetch(`${origin}${BASE_URL}profile/@me`, {
+//             headers: {
+//                 Cookie: `accessToken=${accessToken}; refreshToken=${refreshToken};`,
+//             },
+//         });
+//         if (!res?.ok) {
+//             throw new Error();
+//         }
+//         return true;
+//     } catch (error) {
+//         console.error(error);
+//         return false;
+//     }
+// };

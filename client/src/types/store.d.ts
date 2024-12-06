@@ -3,8 +3,10 @@ import { TPreferences } from "./validation";
 // add notifications
 export interface AuthState {
     user: Profile | null;
+    logged: boolean;
     clear: () => void;
     update: (updates: Partial<Profile>) => void;
+    connect: () => void;
 }
 
 export interface PreferencesState {
