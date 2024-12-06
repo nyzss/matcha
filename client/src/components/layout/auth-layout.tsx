@@ -33,7 +33,7 @@ export default function AuthLayout({
                     </Button>
                     <Title order={2} ta={"center"} my={30}>
                         Welcome to Matcha!
-                        <Text fw={600} mt={5} c={"blue"}>
+                        <Text fw={600} mt={5}>
                             Cupid called; he outsourced his job to us.
                         </Text>
                     </Title>

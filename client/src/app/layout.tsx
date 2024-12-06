@@ -8,6 +8,7 @@ import Middleware from "@/components/auth/middleware";
 import "@mantine/core/styles.css";
 import "@mantine/dropzone/styles.css";
 import "@mantine/notifications/styles.css";
+import { theme } from "@/lib/theme";
 
 const geistSans = localFont({
     src: "./fonts/GeistVF.woff",
@@ -36,7 +37,7 @@ export default function RootLayout({
                 <ColorSchemeScript />
             </head>
             <body className={`${geistSans.variable} ${geistMono.variable}`}>
-                <MantineProvider>
+                <MantineProvider theme={theme}>
                     <Middleware />
                     <RouterTransition />
                     <Notifications />
