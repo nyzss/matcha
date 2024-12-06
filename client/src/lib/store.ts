@@ -1,13 +1,15 @@
 import { create } from "zustand";
-import { AuthState, PreferencesState, UserState } from "@/types/store";
+import { AuthState, PreferencesState } from "@/types/store";
 import { TPreferences } from "@/types/validation";
+import { Profile } from "@/types/auth";
 
 export const useAuthStore = create<AuthState>((set) => ({
     user: null,
-    // setUser: (user) => set(() => ({ user })),
-    clear: () => set((state) => ({ ...state, user: null })),
+    logged: false,
+    clear: () => set({ user: null, logged: false }),
     update: (updates) =>
-        set((state) => ({ user: { ...state.user, ...updates } as UserState })),
+        set((state) => ({ user: { ...state.user, ...updates } as Profile })),
+    connect: () => set({ logged: true }),
 }));
 
 export const usePreferencesStore = create<PreferencesState>((set) => ({

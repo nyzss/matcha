@@ -1,15 +1,12 @@
 "use client";
 
 import {
-    ActionIcon,
     AppShell,
     AppShellResponsiveSize,
-    Box,
     Burger,
     Button,
     Flex,
     Group,
-    Text,
     TextInput,
     useMantineColorScheme,
 } from "@mantine/core";
@@ -19,15 +16,18 @@ import { routes } from "./navigations";
 import Link from "next/link";
 import { RegisterModal } from "@/components/auth/register";
 import { LoginModal } from "@/components/auth/login";
+import { useAuthStore } from "@/lib/store";
+import UserBox from "./user-box";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
     const [opened, { toggle }] = useDisclosure();
+    const logged: boolean = useAuthStore((state) => state.logged);
 
     const navbarAsideWidth: AppShellResponsiveSize = {
         base: 300,
         md: 300,
         lg: 300,
-        xl: 650,
+        xl: 550,
     };
 
     const { colorScheme, toggleColorScheme } = useMantineColorScheme();
@@ -87,25 +87,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                                 </Button>
                             ))}
                         </Flex>
-                        <Box style={{ marginTop: "auto" }}>
-                            <Flex align="center" mt="xl">
-                                <Box mr="xs">
-                                    <Text size="sm" fw={700}>
-                                        Matcha User
-                                    </Text>
-                                    <Text size="xs" c="dimmed">
-                                        @matcha
-                                    </Text>
-                                </Box>
-                                <ActionIcon
-                                    variant="subtle"
-                                    size="lg"
-                                    ml="auto"
-                                >
-                                    •••
-                                </ActionIcon>
-                            </Flex>
-                        </Box>
+                        {logged && <UserBox />}
                     </Flex>
                 </Flex>
             </AppShell.Navbar>
@@ -135,14 +117,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                             )}
                         </Button>
 
-                        <Group
-                            mt={{
-                                base: "auto",
-                            }}
-                        >
-                            <LoginModal />
-                            <RegisterModal />
-                        </Group>
+                        {!logged && (
+                            <Group
+                                mt={{
+                                    base: "auto",
+                                }}
+                            >
+                                <LoginModal />
+                                <RegisterModal />
+                            </Group>
+                        )}
                     </Flex>
                 </Flex>
             </AppShell.Aside>

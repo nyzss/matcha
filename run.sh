@@ -24,4 +24,3 @@ $pkg run $client dev &
 $pkg run $server dev &
 
 wait
-wait

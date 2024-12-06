@@ -64,7 +64,8 @@ export default function InitialSetup() {
 
     useEffect(() => {
         open();
-    }, [open]);
+        close();
+    }, [close, open]);
 
     // const canClose = useMemo(() => step !== 0, [step]);
 
