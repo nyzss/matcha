@@ -8,6 +8,8 @@ import { userSchema, publicUserSchema } from "./app/schemas/orm/userSchemas";
 // a décalé dans un fichier
 import fastifyJwt from '@fastify/jwt';
 import fastifyCookie from '@fastify/cookie';
+import fastifyMultipart from "@fastify/multipart";
+
 import {loggerMiddleware} from "./app/middlewares/loggerMiddleware";
 import {customMiddleware} from "./app/plugins/middlewarePlugin";
 
@@ -30,12 +32,13 @@ const buildApp = async () => {
         secret: process.env.JWT_SECRET as string,
     });
 
-    await app.register(require('@fastify/cookie'), {
+    await app.register(fastifyCookie, {
         secret: process.env.COOKIE_SECRET,
         hook: 'onRequest',
         parseOptions: {}
     })
 
+    await app.register(fastifyMultipart);
 
     await app.register(customPostgresORM, {
         postgresConfig: {

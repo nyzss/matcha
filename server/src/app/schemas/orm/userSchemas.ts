@@ -56,6 +56,10 @@ export const publicUserSchema: TableSchema = {
         type: 'string',
         nullable: true
     },
+    birth_date: {
+        type: 'date',
+        nullable: true
+    },
     gender: {
         type: 'number',
         nullable: true
