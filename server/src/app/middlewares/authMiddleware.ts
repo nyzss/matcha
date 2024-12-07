@@ -3,7 +3,7 @@ import {AuthService} from "../services/authService";
 import {VerifyPayloadType} from "@fastify/jwt";
 import fp from "fastify-plugin";
 import {UserService} from "../services/userService";
-import {userProfile} from "../types/user";
+import {userProfile} from "../types/member";
 import {JwtPayload} from "../types/auth";
 
 export class AuthMiddleware {

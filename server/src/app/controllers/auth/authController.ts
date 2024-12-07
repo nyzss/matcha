@@ -16,28 +16,22 @@ export class AuthController {
         try {
             const result: AuthResult = await this.authService.login(form);
 
-            return await reply
-                .setCookie("refreshToken", result.refreshToken, {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === "production",
-                    maxAge: 60 * 60 * 24 * 7,
-                    path: "/",
-                    sameSite: "strict",
-                })
-                .setCookie("accessToken", result.accessToken, {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === "production",
-                    maxAge: 60 * 60,
-                    path: "/",
-                    sameSite: "strict",
-                })
-                .send({
-                    user: {
-                        id: result.user.id,
-                    },
-                });
+            return await reply.setCookie('refreshToken', result.refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 60 * 60 * 24 * 7,
+                path: '/',
+                sameSite: 'strict'
+            }).setCookie('accessToken', result.accessToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 60 * 60,
+                path: '/',
+                sameSite: 'strict'
+            }).send({
+                user: result.user,
+            });
         } catch (error: Error | any) {
-            console.log(error);
             reply.status(401).send({ error: error.message });
         }
     }
@@ -46,28 +40,24 @@ export class AuthController {
         try {
             const result: AuthResult = await this.authService.register(form);
 
-            return await reply
-                .setCookie("refreshToken", result.refreshToken, {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === "production",
-                    maxAge: 60 * 60 * 24 * 7,
-                    path: "/",
-                    sameSite: "strict",
-                })
-                .setCookie("accessToken", result.accessToken, {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === "production",
-                    maxAge: 60 * 60,
-                    path: "/",
-                    sameSite: "strict",
-                })
-                .send({
-                    user: {
-                        id: result.user.id,
-                    },
-                });
+            console.log(result);
+            return await reply.setCookie('refreshToken', result.refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 60 * 60 * 24 * 7,
+                path: '/',
+                sameSite: 'strict'
+            }).setCookie('accessToken', result.accessToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 60 * 60,
+                path: '/',
+                sameSite: 'strict'
+            }).send({
+                user: result.user,
+            });
         } catch (error: Error | any) {
-            return reply.status(400).send({ error: error.message });
+            return reply.status(400).send({error: error.message});
         }
     }
 

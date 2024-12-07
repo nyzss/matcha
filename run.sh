@@ -20,6 +20,7 @@ $pkg install $client &
 $pkg install $server &
 
 docker compose up db --build &
+sleep 3
 $pkg run $client dev &
 $pkg run $server dev &
 
