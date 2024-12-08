@@ -20,32 +20,30 @@ export class AuthService {
      */
     async register(form: RegisterForm): Promise<AuthResult> {
         const hashedPassword = await bcrypt.hash(form.password, 10);
-
         try {
-
             const [existingUser] = await this.orm.query('SELECT * FROM users WHERE email = $1', [form.email]);
-
             if (existingUser) {
                 throw new Error('Email already exists');
             }
-
             await this.orm.query('BEGIN');
 
+            // Corrected INSERT query for users table
             const [newUser] = await this.orm.query(
-                `
-                INSERT INTO users (email, password, verified)
-                VALUES ($1, $2, $3)
-                RETURNING id, email
-                `,
-                [form.email, hashedPassword, false]
+                `INSERT INTO users (email, password, verified)
+             VALUES ($1, $2, $3) 
+             RETURNING id, email`,
+                [form.email, hashedPassword, false] // Only 3 parameters now
             );
 
+            // Corrected INSERT query for profiles table
             const [newProfile] = await this.orm.query(
-                `INSERT INTO profiles (username, first_name, last_name, user_id) VALUES ($1, $2, $3, $4) RETURNING id, username, first_name, last_name`,
-                [form.username, form.firstName, form.lastName, newUser.id]
+                `INSERT INTO profiles (username, first_name, last_name, birth_date, user_id) 
+             VALUES ($1, $2, $3, $4, $5) 
+             RETURNING id, username, first_name, last_name, birth_date, user_id`,
+                [form.username, form.firstName, form.lastName, form.birthDate, newUser.id] // 5 parameters here
             );
 
-            // EDIT USER TO PROFILE
+            // Update the user with the new profile id
             await this.orm.query(
                 `UPDATE users SET profile_id = $1 WHERE id = $2`,
                 [newProfile.id, newUser.id]
@@ -54,40 +52,37 @@ export class AuthService {
             await this.orm.query('COMMIT');
 
             const accessToken = this.jwt.sign(
-                {
-                    id: newUser.id,
-                },
+                { id: newUser.id },
                 { expiresIn: '1h' }
             );
-
             const refreshToken = this.jwt.sign(
-                {
-                    id: newUser.id,
-                },
+                { id: newUser.id },
                 { expiresIn: '7d' }
             );
 
             return {
                 user: {
                     id: newUser.id,
-                    username: newProfile.username,
-                    avatar: newProfile.avatar,
-                    firstName: newProfile.firstName,
-                    lastName: newProfile.lastName,
-                    gender: newProfile.gender,
-                    biography: newProfile.biography,
-                    sexualOrientation: newProfile.sexualOrientation,
-                    pictures: newProfile.pictures,
-                    tags: newProfile.tags,
+                    username: form.username,
+                    avatar: process.env.DEFAULT_AVATAR_URL as string,
+                    firstName: form.firstName,
+                    lastName: form.lastName,
+                    age: new Date().getFullYear() - new Date(form.birthDate).getFullYear(),
+                    gender: null,
+                    biography: null,
+                    sexualOrientation: null,
+                    pictures: [],
+                    tags: [],
                 },
                 accessToken,
-                refreshToken
+                refreshToken,
             };
         } catch (error) {
             await this.orm.query('ROLLBACK');
             throw error;
         }
     }
+
 
     /**
      * Log in a user.
@@ -103,6 +98,7 @@ export class AuthService {
             u.password,
             p.username,
             p.avatar,
+            p.birth_date as "birthDate",
             p.first_name as "firstName",
             p.last_name as "lastName",
             p.gender,
@@ -144,14 +140,15 @@ export class AuthService {
             user: {
                 id: user.id,
                 username: user.username,
-                avatar: user.avatar,
+                avatar: user.avatar || process.env.DEFAULT_AVATAR_URL as string,
                 firstName: user.firstName,
                 lastName: user.lastName,
+                age: new Date().getFullYear() - new Date(user.birthDate).getFullYear(),
                 gender: user.gender,
                 biography: user.biography,
                 sexualOrientation: user.sexualOrientation,
-                pictures: user.pictures,
-                tags: user.tags,
+                pictures: user.pictures || [],
+                tags: user.tags || [],
             },
             accessToken,
             refreshToken

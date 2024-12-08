@@ -1,5 +1,3 @@
-
-
 export enum userGender {
     MALE = 0,
     FEMALE = 1,
@@ -13,12 +11,31 @@ export enum userSexualOrientation {
     PANSEXUAL = 3,
 }
 
+export interface userSettings {
+    email: string;
+    firstName: string;
+    lastName: string;
+    birthDate: string;
+    newPassword: string;
+    oldPassword?: string;
+}
+
+export interface userProfileSettings {
+    username?: string,
+    gender?: userGender,
+    biography?: string,
+    sexualOrientation?: userSexualOrientation,
+    tags?: string[],
+    pictures?: string[],
+}
+
 export interface userProfile {
     id: number;
     username: string;
     avatar: string | null;
     firstName: string;
-    lastName: string
+    lastName: string;
+    age: number;
     gender: userGender | null;
     biography: string | null;
     sexualOrientation: userSexualOrientation | null;
