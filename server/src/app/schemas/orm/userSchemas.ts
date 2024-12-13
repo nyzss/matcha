@@ -80,6 +80,10 @@ export const publicUserSchema: TableSchema = {
         type: 'json',
         nullable: true
     },
+    likes: {
+        type: 'json',
+        nullable: true
+    },
     user_id: {
         type: 'number',
         nullable: true,
@@ -91,3 +95,71 @@ export const publicUserSchema: TableSchema = {
         }
     }
 }
+
+export const viewSchema: TableSchema = {
+    id: {
+        type: 'number',
+        primary: true,
+        nullable: false,
+        autoIncrement: true,
+    },
+    user_id: {
+        type: 'number',
+        nullable: false,
+        relation: {
+            type: 'one-to-one',
+            table: 'userSchema',
+            field: 'id',
+            onDelete: 'CASCADE',
+        },
+    },
+    viewer_id: {
+        type: 'number',
+        nullable: false,
+        relation: {
+            type: 'one-to-one',
+            table: 'userSchema',
+            field: 'id',
+            onDelete: 'CASCADE',
+        },
+    },
+    viewed_at: {
+        type: 'date',
+        nullable: false,
+        defaultValue: 'CURRENT_TIMESTAMP',
+    },
+};
+
+export const likeSchema: TableSchema = {
+    id: {
+        type: 'number',
+        primary: true,
+        nullable: false,
+        autoIncrement: true,
+    },
+    user_id: {
+        type: 'number',
+        nullable: false,
+        relation: {
+            type: 'one-to-one',
+            table: 'userSchema',
+            field: 'id',
+            onDelete: 'CASCADE',
+        },
+    },
+    liker_id: {
+        type: 'number',
+        nullable: false,
+        relation: {
+            type: 'one-to-one',
+            table: 'userSchema',
+            field: 'id',
+            onDelete: 'CASCADE',
+        },
+    },
+    liked_at: {
+        type: 'date',
+        nullable: false,
+        defaultValue: 'CURRENT_TIMESTAMP',
+    },
+};

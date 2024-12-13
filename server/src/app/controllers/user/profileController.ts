@@ -20,6 +20,9 @@ export class ProfileController {
             const { username } = request.params as { username: string };
             const user = await this.userService.getUserByUsername(username);
 
+            if (request?.user?.id !== user.id)
+                await this.userService.addView(request?.user?.id, user.id);
+
             return {
                 user: user,
             };
@@ -37,8 +40,6 @@ export class ProfileController {
         try {
             const form = request.body as userProfileSettings;
 
-
-            //TODO: Make upload for pictures and avatar
             const user = await this.userService.updateProfile(userID, {
                 username: form?.username,
                 gender: form?.gender,
@@ -47,8 +48,6 @@ export class ProfileController {
                 tags: form?.tags,
             });
 
-            console.log(user)
-
             return {
                 user: user
             };
@@ -56,10 +55,59 @@ export class ProfileController {
         } catch (error: Error | any) {
             return reply.status(500).send({ error: error?.message });
         }
+    }
+
+    async getProfilView(request: FastifyRequest, reply: FastifyReply) {
+        try {
+            if (request.url.endsWith("/@me/view")) {
+
+                const user = request.user;
+                const view = await this.userService.getViews(user.id);
+
+                return {
+                    users: view.users,
+                    view: view.view,
+                };
+
+            } else {
+                throw new Error("Unauthorized");
+            }
+        } catch (error) {
+            return reply.status(404).send({ error: "User not found" });
+        }
+    }
 
 
+    async addProfileLike(request: FastifyRequest, reply: FastifyReply) {
+        try {
+            const { username } = request.params as { username: string };
+            const user = await this.userService.getUserByUsername(username);
 
+            return await this.userService.setLike(request?.user?.id, user.id);
+        } catch (error: Error | any) {
+            return reply.status(404).send({ error: error.message });
+        }
+    }
 
-        return request.user;
+    async removeProfileLike(request: FastifyRequest, reply: FastifyReply) {
+        try {
+            const { username } = request.params as { username: string };
+            const user = await this.userService.getUserByUsername(username);
+
+            return await this.userService.deleteLike(request?.user?.id, user.id);
+        } catch (error: Error | any) {
+            return reply.status(404).send({ error: error.message });
+        }
+    }
+
+    async getProfileLike(request: FastifyRequest, reply: FastifyReply) {
+        try {
+            const { username } = request.params as { username: string };
+            const user = await this.userService.getUserByUsername(username);
+
+            return await this.userService.getLike(request?.user?.id, user.id);
+        } catch (error: Error | any) {
+            return reply.status(404).send({error: error.message});
+        }
     }
 }

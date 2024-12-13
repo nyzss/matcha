@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import { ORM } from '../types/orm';
 import {RegisterForm, AuthResult, LoginForm} from "../types/auth";
 import fastifyJwt, {VerifyPayloadType} from "@fastify/jwt";
-import {userProfile, userProfileSettings} from "../types/member";
+import {userProfile, userProfileSettings, userProfileLike, userProfileView} from "../types/member";
 
 export class UserService {
     private orm: ORM;
@@ -156,7 +156,6 @@ export class UserService {
             throw new Error("Failed to update profile or user not found");
         }
 
-        console.log(updatedProfile)
         return {
             id,
             username: updatedProfile.username,
@@ -171,6 +170,135 @@ export class UserService {
             tags: updatedProfile.tags || [],
         };
     }
+
+    // async setLike(id: number, likedId: number): Promise<void> {
+    //     await this.orm.query(
+    //         `
+    //             INSERT INTO likes (user_id, liked_id)
+    //             VALUES ($1, $2)
+    //         `,
+    //         [id, likedId]
+    //     );
+    //
+    //     return;
+    // }
+
+    async setLike(id: number, likedId: number): Promise<userProfileLike> {
+        const [existingLike] = await this.orm.query(
+            `SELECT id FROM likes WHERE user_id = $1 AND liker_id = $2`,
+            [id, likedId]
+        );
+
+        if (existingLike)
+            throw new Error("Like already exists");
+
+        await this.orm.query(
+            `INSERT INTO likes (user_id, liker_id) VALUES ($1, $2)`,
+            [id, likedId]
+        );
+
+        const likesCount = await this.orm.query(
+            `SELECT COUNT(id) FROM likes WHERE user_id = $1`,
+            [id]
+        );
+        
+        return {
+            like: {
+                me: true,
+                count: likesCount.length,
+            },
+        };
+    }
+
+    async deleteLike(id: number, likedId: number): Promise<userProfileLike> {
+        const result = await this.orm.query(
+            `DELETE FROM likes WHERE user_id = $1 AND liker_id = $2 RETURNING id`,
+            [id, likedId]
+        );
+
+        if (result.length === 0)
+            throw new Error("Like not found");
+
+        await this.orm.query(
+            `DELETE FROM likes WHERE user_id = $1 AND liker_id = $2`,
+            [id, likedId]
+        );
+
+        const likesCount = await this.orm.query(
+            `SELECT COUNT(id) FROM likes WHERE user_id = $1`,
+            [id]
+        );
+
+        return {
+            like: {
+                me: false,
+                count: likesCount.length - 1,
+            },
+        }
+    }
+
+
+    async getLike(id: number, meId: number): Promise<userProfileLike> {
+        const likes = await this.orm.query(
+            `SELECT liker_id FROM likes WHERE user_id = $1`,
+            [id]
+        );
+
+        const hasLiked = likes.some((like: { liker_id: number }) => like.liker_id === meId);
+
+        return {
+            like: {
+                me: hasLiked,
+                count: likes.length,
+            },
+        };
+    }
+
+    async addView(viewerId: number, userId: number): Promise<void> {
+        const existingView = await this.orm.query(
+            `SELECT id FROM views WHERE viewer_id = $1 AND user_id = $2`,
+            [viewerId, userId]
+        );
+
+        if (existingView.length > 0) await this.orm.query(
+            `UPDATE views SET viewed_at = CURRENT_TIMESTAMP WHERE viewer_id = $1 AND user_id = $2`,
+            [viewerId, userId]
+        );
+        else await this.orm.query(
+            `INSERT INTO views (user_id, viewer_id, viewed_at) VALUES ($1, $2, CURRENT_TIMESTAMP)`,
+            [userId, viewerId]
+        );
+    }
+
+    async getViews(userId: number): Promise<userProfileView> {
+        const views = await this.orm.query(
+            `SELECT v.viewer_id, p.username, p.avatar, p.first_name AS "firstName", p.last_name AS "lastName", p.birth_date AS "birthDate", p.gender, p.biography, p.sexual_orientation AS "sexualOrientation", p.pictures, p.tags
+            FROM views v
+            JOIN profiles p ON v.viewer_id = p.user_id
+            WHERE v.user_id = $1 AND v.viewed_at > CURRENT_TIMESTAMP - INTERVAL '30 days'`,
+            [userId]
+        );
+
+        return {
+            users: views.map((view: any) => ({
+                id: view.viewer_id,
+                username: view.username,
+                avatar: view.avatar,
+                firstName: view.firstName,
+                lastName: view.lastName,
+                age: new Date().getFullYear() - new Date(view.birthDate).getFullYear(),
+                gender: view.gender,
+                biography: view.biography,
+                sexualOrientation: view.sexualOrientation,
+                pictures: view.pictures || [],
+                tags: view.tags || [],
+            })),
+            view: {
+                count: views.length,
+            },
+        };
+    }
+
 
 
 
