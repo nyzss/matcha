@@ -40,7 +40,6 @@ export class AuthController {
         try {
             const result: AuthResult = await this.authService.register(form);
 
-            console.log(result);
             return await reply.setCookie('refreshToken', result.refreshToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',

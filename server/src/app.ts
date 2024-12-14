@@ -3,7 +3,8 @@ import routes from './app/routes';
 import errorHandler from "./app/utils/errorHandler";
 import { serializerCompiler, validatorCompiler, hasZodFastifySchemaValidationErrors } from "fastify-type-provider-zod";
 import customPostgresORM from "./app/plugins/ormPlugin";
-import { userSchema, publicUserSchema } from "./app/schemas/orm/userSchemas";
+import customSocketManager from "./app/plugins/socketPlugin";
+import {userSchema, publicUserSchema, viewSchema, likeSchema} from "./app/schemas/orm/userSchemas";
 
 // a décalé dans un fichier
 import fastifyJwt from '@fastify/jwt';
@@ -12,8 +13,6 @@ import fastifyMultipart from "@fastify/multipart";
 
 import {loggerMiddleware} from "./app/middlewares/loggerMiddleware";
 import {customMiddleware} from "./app/plugins/middlewarePlugin";
-
-// import cors from "@fastify/cors";
 
 const buildApp = async () => {
     const app = fastify({ logger: true });
@@ -50,12 +49,17 @@ const buildApp = async () => {
         },
     });
 
+    await app.register(customSocketManager, {
+        secret: process.env.JWT_SECRET as string,
+    });
+
     await app.register(customMiddleware);
     await app.register(routes, { prefix: "/api" });
 
     await app.orm.createTableWithRelations('users', userSchema)
     await app.orm.createTableWithRelations('profiles', publicUserSchema)
-
+    await app.orm.createTableWithRelations('views', viewSchema)
+    await app.orm.createTableWithRelations('likes', likeSchema)
 
 
     return app;

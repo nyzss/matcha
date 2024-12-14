@@ -8,8 +8,6 @@ import {userProfileSettings} from "../../schemas/zod/profileSchemas";
 const authRoutes: FastifyPluginAsync = async (app) => {
     const profileController = new ProfileController(app);
 
-    console.log(app.verifyAuth);
-
     app.get(
         "/@me",
         {
@@ -26,6 +24,31 @@ const authRoutes: FastifyPluginAsync = async (app) => {
         profileController.getProfile.bind(profileController)
     );
 
+    app.put(
+        "/:username/like",
+        {
+            preHandler: [app.verifyAuth],
+        },
+        profileController.addProfileLike.bind(profileController)
+    );
+
+    app.delete(
+        "/:username/like",
+        {
+            preHandler: [app.verifyAuth],
+        },
+        profileController.removeProfileLike.bind(profileController)
+    );
+
+    app.get(
+        "/:username/like",
+        {
+            preHandler: [app.verifyAuth],
+        },
+        profileController.getProfileLike.bind(profileController)
+    );
+
+
     app.withTypeProvider<ZodTypeProvider>().put(
         "/@me",
         {
@@ -35,6 +58,14 @@ const authRoutes: FastifyPluginAsync = async (app) => {
             },
         },
         profileController.updateProfile.bind(profileController)
+    );
+
+    app.get(
+        "/@me/view",
+        {
+            preHandler: [app.verifyAuth],
+        },
+        profileController.getProfilView.bind(profileController)
     );
 };
 
