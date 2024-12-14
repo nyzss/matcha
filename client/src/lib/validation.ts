@@ -58,6 +58,12 @@ export const registerSchema = z
         confirmPassword: z
             .string()
             .min(1, { message: "Confirm password is required" }),
+        birthDate: z
+            .date({ message: "Please enter a valid birth date" })
+            .max(
+                new Date(new Date().setFullYear(new Date().getFullYear() - 18)),
+                { message: "You must be at least 18 years old" }
+            ),
     })
     .refine((data) => data.password === data.confirmPassword, {
         message: messages.confirmPassword.invalid.message,
@@ -109,3 +115,4 @@ export const preferencesSchema = z.object({
             "Invalid file type, only .jpeg, .jpg, .png, .webp files are allowed"
         ),
 });
+

@@ -63,11 +63,16 @@ export const authLogin = async (
  */
 export const authRegister = async (
     user: TRegister
-): Promise<(Partial<TRegister> & { error?: string }) | void> => {
+): Promise<
+    (Partial<TRegister> & { birthDate?: string; error?: string }) | void
+> => {
     try {
         const res = await fetcher("/auth/register", {
             method: "POST",
-            body: JSON.stringify(user),
+            body: JSON.stringify({
+                ...user,
+                birthDate: user.birthDate.toISOString().split("T")[0],
+            }),
         });
 
         const json = await res?.json();
@@ -136,3 +141,4 @@ export const authLogout = async () => {
 //         return false;
 //     }
 // };
+

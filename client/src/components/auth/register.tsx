@@ -2,9 +2,10 @@
 
 import { registerSchema } from "@/lib/validation";
 import { Box, Button, Flex, Modal, TextInput } from "@mantine/core";
+import {DatePickerInput} from "@mantine/dates"
 import { useForm, zodResolver } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import { IconAt, IconLock, IconUser } from "@tabler/icons-react";
+import { IconAt, IconCalendar, IconLock, IconUser } from "@tabler/icons-react";
 import { TRegister } from "@/types/validation";
 import { authRegister } from "@/lib/api";
 import { useRouter } from "next/navigation";
@@ -37,6 +38,7 @@ export default function RegisterComponent({ close }: { close?: () => void }) {
             lastName: "",
             password: "",
             confirmPassword: "",
+            birthDate: new Date(),
         },
         validate: zodResolver(registerSchema),
     });
@@ -98,6 +100,15 @@ export default function RegisterComponent({ close }: { close?: () => void }) {
                         leftSectionPointerEvents="none"
                         withAsterisk
                         {...form.getInputProps("email")}
+                    />
+                    <DatePickerInput
+                        label="Birth Date"
+                        placeholder="Birth Date"
+                        key={form.key("birthDate")}
+                        leftSection={<IconCalendar size={18}/>}
+                        leftSectionPointerEvents="none"
+                        withAsterisk
+                        {...form.getInputProps("birthDate")}
                     />
                     <TextInput
                         label="Password"
