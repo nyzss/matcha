@@ -12,25 +12,27 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconMoon, IconSearch, IconSun } from "@tabler/icons-react";
-import { routes } from "./navigations";
+import { routes } from "./routes";
 import Link from "next/link";
-import { RegisterModal } from "@/components/auth/register";
-import { LoginModal } from "@/components/auth/login";
 import { useAuthStore } from "@/lib/store";
 import UserBox from "./user-box";
+import { useMemo } from "react";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
     const [opened, { toggle }] = useDisclosure();
     const logged: boolean = useAuthStore((state) => state.logged);
-
     const navbarAsideWidth: AppShellResponsiveSize = {
         base: 300,
         md: 300,
         lg: 300,
         xl: 550,
     };
-
     const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+    const shown = useMemo(() => {
+        return routes.filter(
+            (route) => route.auth === undefined || route.auth === logged
+        );
+    }, [logged]);
 
     return (
         <AppShell
@@ -73,7 +75,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         }}
                     >
                         <Flex direction={"column"} gap={"xs"}>
-                            {routes.map((route) => (
+                            {shown.map((route) => (
                                 <Button
                                     variant="subtle"
                                     size="xl"
@@ -123,8 +125,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                                     base: "auto",
                                 }}
                             >
-                                <LoginModal />
-                                <RegisterModal />
+                                <Link href={"/login"}>
+                                    <Button variant="light">Login</Button>
+                                </Link>
+                                <Link href={"/register"}>
+                                    <Button>Register</Button>
+                                </Link>
                             </Group>
                         )}
                     </Flex>

@@ -42,3 +42,18 @@ export interface userProfile {
     pictures: string[];
     tags: string[];
 }
+
+export interface userProfileLike {
+    user?: userProfile;
+    like: {
+        me: boolean;
+        count: number;
+    },
+}
+
+export interface userProfileView {
+    users: userProfile[];
+    view: {
+        count: number;
+    },
+}

@@ -10,6 +10,11 @@ export default function AuthLayout({
     children: React.ReactNode;
 }) {
     const router = useRouter();
+
+    const redirection = () => {
+        router.push("/")
+    }
+
     return (
         <AppShell
             header={{
@@ -25,11 +30,11 @@ export default function AuthLayout({
                 <Paper p={"xl"}>
                     <Button
                         variant="subtle"
-                        onClick={() => router.back()}
+                        onClick={redirection}
                         mt={30}
                     >
                         <IconArrowLeft size={16} style={{ marginRight: 4 }} />{" "}
-                        Go Back
+                        Go Home
                     </Button>
                     <Title order={2} ta={"center"} my={30}>
                         Welcome to Matcha!

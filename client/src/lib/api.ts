@@ -63,11 +63,16 @@ export const authLogin = async (
  */
 export const authRegister = async (
     user: TRegister
-): Promise<(Partial<TRegister> & { error?: string }) | void> => {
+): Promise<
+    (Partial<TRegister> & { birthDate?: string; error?: string }) | void
+> => {
     try {
         const res = await fetcher("/auth/register", {
             method: "POST",
-            body: JSON.stringify(user),
+            body: JSON.stringify({
+                ...user,
+                birthDate: user.birthDate.toISOString().split("T")[0],
+            }),
         });
 
         const json = await res?.json();
@@ -108,31 +113,10 @@ export const authLogout = async () => {
             throw new Error(data.error);
         }
         return true;
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
+    } catch {
         return false;
     } finally {
         await refreshAuth();
     }
 };
 
-// export const checkLoggedIn = async (
-//     accessToken: string | undefined,
-//     refreshToken: string | undefined,
-//     origin?: string
-// ): Promise<boolean> => {
-//     try {
-//         const res = await fetch(`${origin}${BASE_URL}profile/@me`, {
-//             headers: {
-//                 Cookie: `accessToken=${accessToken}; refreshToken=${refreshToken};`,
-//             },
-//         });
-//         if (!res?.ok) {
-//             throw new Error();
-//         }
-//         return true;
-//     } catch (error) {
-//         console.error(error);
-//         return false;
-//     }
-// };

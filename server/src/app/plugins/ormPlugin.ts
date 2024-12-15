@@ -39,6 +39,7 @@ const customPostgresORM: FastifyPluginAsync<OrmOptions> = async (
     const orm: ORM = {
         formatDefaultValue: (value: any): string => {
             if (value === null) return 'NULL';
+            if (value === 'CURRENT_TIMESTAMP') return 'CURRENT_TIMESTAMP';
             if (typeof value === 'string') return `'${value}'`;
             if (typeof value === 'boolean') return value ? 'true' : 'false';
             if (typeof value === 'number') return value.toString();
@@ -53,9 +54,8 @@ const customPostgresORM: FastifyPluginAsync<OrmOptions> = async (
                 const result: QueryResult = await client.query(text, params);
                 return result.rows;
             } catch (error: unknown) {
-                console.log('Query failed:', text, error);
                 fastify.log.error(`Query failed: ${text} - ${error instanceof Error ? error.message : 'Unknown error'}`);
-                throw new Error(`Database query failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+                return [];
             } finally {
                 client.release();
             }
@@ -193,47 +193,46 @@ const customPostgresORM: FastifyPluginAsync<OrmOptions> = async (
             const createQueries: string[] = [];
 
             const columns = Object.entries(schema).map(([columnName, columnDef]) => {
-                const baseColumnDef = this.buildBaseColumnDefinition(columnName, columnDef);
-
-                if (columnDef.relation) {
-                    const relationQuery = `
-                    DO $$
-                    BEGIN
-                        IF NOT EXISTS (
-                            SELECT 1
-                            FROM information_schema.table_constraints
-                            WHERE constraint_name = '${tableName}_${columnName}_fk'
-                        ) THEN
-                            ALTER TABLE "${tableName}"
-                            ADD CONSTRAINT "${tableName}_${columnName}_fk"
-                            FOREIGN KEY ("${columnName}")
-                            REFERENCES "${columnDef.relation.table}" ("${columnDef.relation.field}")
-                            ON DELETE ${columnDef.relation.onDelete || 'SET NULL'}
-                            ON UPDATE ${columnDef.relation.onUpdate || 'CASCADE'};
-                        END IF;
-                    END $$;
-                    `;
-                    createQueries.push(relationQuery);
-
-                    return baseColumnDef;
-                }
-
-                return baseColumnDef;
+                return this.buildBaseColumnDefinition(columnName, columnDef);
             });
 
+            // First, create the base table
             const createTableQuery = `
-                CREATE TABLE IF NOT EXISTS "${tableName}" (
-                    ${columns.join(',\n')}
-                )
-            `;
-            createQueries.unshift(createTableQuery);
+        CREATE TABLE IF NOT EXISTS "${tableName}" (
+            ${columns.join(',\n')}
+        )
+    `;
+            await this.query(createTableQuery);
 
-            for (const query of createQueries) {
-                await this.query(query).catch((error: Error) => {
-                    console.log('Error:', error);
-                    fastify.log.info(`Failed to create table "${tableName}":`, error);
-                });
+            // Then add foreign key constraints
+            for (const [columnName, columnDef] of Object.entries(schema)) {
+                if (columnDef.relation) {
+                    const relationQuery = `
+            DO $$
+            BEGIN
+                IF NOT EXISTS (
+                    SELECT 1
+                    FROM information_schema.table_constraints
+                    WHERE constraint_name = '${tableName}_${columnName}_fk'
+                ) THEN
+                    ALTER TABLE "${tableName}"
+                    ADD CONSTRAINT "${tableName}_${columnName}_fk"
+                    FOREIGN KEY ("${columnName}")
+                    REFERENCES "${columnDef.relation.table}" ("${columnDef.relation.field}")
+                    ON DELETE ${columnDef.relation.onDelete || 'SET NULL'}
+                    ON UPDATE ${columnDef.relation.onUpdate || 'CASCADE'};
+                END IF;
+            END $$;
+            `;
+
+                    await this.query(relationQuery).catch((error: Error) => {
+                        console.error(`Failed to add foreign key constraint for ${columnName}:`, error);
+                        fastify.log.error(`Failed to add foreign key constraint for ${columnName}:`, error);
+                    });
+                }
             }
+
+            fastify.log.info(`Table "${tableName}" created successfully with relations`);
         },
 
         buildBaseColumnDefinition(columnName: string, columnDef: ColumnDefinition): string {

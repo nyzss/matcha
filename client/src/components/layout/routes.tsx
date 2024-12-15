@@ -3,10 +3,10 @@ import {
     IconBell,
     IconClover,
     IconHome,
-    IconLogin,
     IconMessage,
-    IconSettingsUp,
     IconUserCircle,
+    // IconLogin,
+    // IconSettingsUp,
 } from "@tabler/icons-react";
 
 export const routes: IRoute[] = [
@@ -19,6 +19,7 @@ export const routes: IRoute[] = [
         name: "Messages",
         link: "/messages",
         icon: <IconMessage />,
+        auth: true,
     },
     {
         name: "Matches",
@@ -38,18 +39,18 @@ export const routes: IRoute[] = [
         icon: <IconUserCircle />,
         auth: true,
     },
-    {
-        name: "Login",
-        link: "/login",
-        icon: <IconLogin />,
-        auth: false,
-    },
-    {
-        name: "Register",
-        link: "/register",
-        icon: <IconSettingsUp />,
-        auth: false,
-    },
+    // {
+    //     name: "Login",
+    //     link: "/login",
+    //     icon: <IconLogin />,
+    //     auth: false,
+    // },
+    // {
+    //     name: "Register",
+    //     link: "/register",
+    //     icon: <IconSettingsUp />,
+    //     auth: false,
+    // },
 ];
 
 export const protectedRoutes = routes

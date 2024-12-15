@@ -5,10 +5,11 @@ import RouterTransition from "@/components/layout/navigation-progress";
 import InitialSetup from "@/components/onboard/initial-setup";
 import { Notifications } from "@mantine/notifications";
 import Middleware from "@/components/auth/middleware";
+import { theme } from "@/lib/theme";
 import "@mantine/core/styles.css";
 import "@mantine/dropzone/styles.css";
 import "@mantine/notifications/styles.css";
-import { theme } from "@/lib/theme";
+import '@mantine/dates/styles.css';
 
 const geistSans = localFont({
     src: "./fonts/GeistVF.woff",
