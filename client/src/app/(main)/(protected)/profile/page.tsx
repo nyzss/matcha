@@ -26,11 +26,8 @@ export default function ProfilePage() {
                     name={`${user?.firstName} ${user?.lastName}`}
                     size={100}
                 ></Avatar>
-                <Text size="lg" fw={"bold"}>
-                    @{user?.username}
-                </Text>
                 <Text size="xl" fw={"bold"}>
-                    {user?.firstName} {user?.lastName}
+                    {user?.firstName} {user?.lastName} (@{user?.username})
                 </Text>
             </Card>
         </Box>

@@ -9,7 +9,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     clear: () => set({ user: null, logged: false }),
     update: (updates) =>
         set((state) => ({ user: { ...state.user, ...updates } as Profile })),
-    connect: () => set({ logged: true }),
+    connect: (updates) =>
+        set((state) => ({ logged: true, user: { ...state.user, ...updates } })),
 }));
 
 export const usePreferencesStore = create<PreferencesState>((set) => ({
@@ -31,3 +32,4 @@ export const usePreferencesStore = create<PreferencesState>((set) => ({
             return { step: s };
         }),
 }));
+

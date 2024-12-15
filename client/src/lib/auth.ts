@@ -18,8 +18,7 @@ export const checkAuth = async (): Promise<Profile | false> => {
 export const refreshAuth = async () => {
     const data = await checkAuth();
     if (data) {
-        useAuthStore.getState().connect();
-        useAuthStore.getState().update(data);
+        useAuthStore.getState().connect(data);
     } else {
         useAuthStore.getState().clear();
     }

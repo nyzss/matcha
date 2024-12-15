@@ -6,7 +6,7 @@ export interface AuthState {
     logged: boolean;
     clear: () => void;
     update: (updates: Partial<Profile>) => void;
-    connect: () => void;
+    connect: (updates: Partial<Profile>) => void;
 }
 
 export interface PreferencesState {
@@ -17,3 +17,4 @@ export interface PreferencesState {
     next: () => void;
     prev: () => void;
 }
+
