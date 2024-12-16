@@ -1,71 +1,79 @@
 import fp from 'fastify-plugin';
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
-import {SocketManagerOptions, SocketStore} from "../types/socket";
+import {SocketData, SocketEvent, SocketManagerOptions, SocketStore} from "../types/socket";
 import {Server, Socket} from "socket.io";
+import {AuthService} from "../services/authService";
+import {UserService} from "../services/userService";
 
 const customSocketManager: FastifyPluginAsync<SocketManagerOptions> = async (
     fastify: FastifyInstance,
     options: SocketManagerOptions
 ) => {
-    const io = new Server(fastify.server, {
-        cors: {
-            origin: '*', // TODO: Change this to the client URL
-            methods: ['GET', 'POST'],
-        },
-    });
 
-    fastify.log.info(`WebSocket disponible sur le chemin : ${fastify.server.address()}`);
+    const authService = new AuthService(fastify);
+    const userService = new UserService(fastify);
 
-    const socketStore: SocketStore = new Map()
+    const sendSocket = async (userId: string, data: SocketData): Promise<void> => {
+        fastify.io.to(userId).emit(data.event, data.data)
+    };
 
-    //TODO: Je n'arrive pas a recevoir les event de connexion sur postma
+    const sendsSocket = (userIds: string[], data: SocketData) => {
+        userIds.forEach((userId) => {
+            fastify.io.to(userId).emit(data.event, data.data);
+        });
+    }
 
-    io.on('connection', (socket) => {
-        const cookies = socket.handshake.headers.cookie;
 
-        if (!cookies) {
-            fastify.log.warn('Connexion refusée : Aucun cookie fourni');
+    fastify.decorate('sendSocket', sendSocket);
+    fastify.decorate('sendsSocket', sendsSocket);
 
-            socket.emit("hello", "world");
-            fastify.log.info('Événement CookieNotFound émis');
-            setTimeout(() => {
-                fastify.log.info('Déconnexion du socket');
+    fastify.ready().then(async () => {
+        fastify.io.on('connection', async (socket: Socket) => {
+
+            const cookies = socket.handshake.headers.cookie;
+
+            if (!cookies) {
+                socket.emit(SocketEvent.cookieNotFound, {
+                    error: 'No cookies found',
+                });
+
                 socket.disconnect();
-            }, 100);
-        }
-        socket.on('error', (err) => {
-            console.error('Erreur côté serveur:', err);
-        });
+            }
 
-        socket.on('disconnect', (reason) => {
-            console.log('Déconnexion du socket:', reason);
+            const accessToken = cookies?.split(';').find((cookie: string) => cookie.includes('accessToken'))?.split('=')[1];
+            const refreshToken = cookies?.split(';').find((cookie: string) => cookie.includes('refreshToken'))?.split('=')[1];
+
+            if (!accessToken || !refreshToken) {
+                socket.emit(SocketEvent.tokenNotFound, {
+                    error: 'No access token or refresh token found',
+                });
+
+                socket.disconnect();
+            }
+
+            const token = await authService.verifyToken(accessToken as string);
+
+            const user = await userService.getUserById(token?.id);
+
+            if (!user) {
+                socket.emit(SocketEvent.userNotFound, {
+                    error: 'User not found',
+                });
+            }
+            socket.emit(SocketEvent.userConnected, {
+                user: {
+                    user,
+                }
+            })
+
+            socket.join(user.id.toString());
+
+            socket.on("disconnect", () => {
+                console.log('user disconnected');
+            });
         });
     });
 
-    //
-    // io.on('connection', async (socket: Socket) => {
-    //
-    //     const cookies = socket.handshake.headers.cookie;
-    //
-    //     if (!cookies) {
-    //         fastify.log.warn('Connexion refusée : Aucun cookie fourni');
-    //
-    //         // Émettre un événement personnalisé avant la déconnexion
-    //         socket.emit('CookieNotFound', {
-    //             error: 'No cookies found',
-    //         });
-    //         fastify.log.info('Événement CookieNotFound émis');
-    //         setTimeout(() => {
-    //             fastify.log.info('Déconnexion du socket');
-    //             socket.disconnect();
-    //         }, 100);
-    //
-    //         return;
-    //     }
-    // });
-
-
-    fastify.decorate('io', io);
 
 };
 
