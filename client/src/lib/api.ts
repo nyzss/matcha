@@ -1,5 +1,7 @@
 import { TLogin, TRegister } from "@/types/validation";
 import { refreshAuth } from "./auth";
+import { IProfile } from "@/types/auth";
+import { notifications } from "@mantine/notifications";
 
 export const BASE_URL = `/api/`;
 
@@ -117,6 +119,25 @@ export const authLogout = async () => {
         return false;
     } finally {
         await refreshAuth();
+    }
+};
+
+export const getUser = async (id: string): Promise<IProfile | null> => {
+    try {
+        const res = await fetcher("/profile/" + id);
+
+        if (!res?.ok) {
+            throw new Error("Couldn't find user");
+        }
+        const json = await res?.json();
+        return json.user;
+    } catch {
+        notifications.show({
+            title: "An error occurred",
+            message: "Couldn't find user",
+            color: "red",
+        });
+        return null;
     }
 };
 
