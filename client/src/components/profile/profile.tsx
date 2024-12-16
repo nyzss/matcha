@@ -1,43 +1,40 @@
 "use client";
 
-import {
-    Avatar,
-    Box,
-    Button,
-    Card,
-    Flex,
-    Image,
-    Modal,
-    Text,
-} from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { Avatar, Box, Card, Flex, Image, Text } from "@mantine/core";
 import { IProfile } from "@/types/auth";
 import { useEffect, useState } from "react";
 import { getUser } from "@/lib/api";
+import EditProfile from "./edit-profile";
+import { Carousel } from "@mantine/carousel";
 
 export default function Profile({ id }: { id: string }) {
-    const [opened, { open, close }] = useDisclosure();
     const [user, setUser] = useState<IProfile | null>(null);
 
     useEffect(() => {
         getUser(id).then((data) => setUser(data));
     }, [id]);
 
+    const images = [
+        "https://api.dicebear.com/9.x/glass/svg?seed=qwertyui",
+        "https://api.dicebear.com/9.x/glass/svg?seed=1234567",
+        "https://api.dicebear.com/9.x/glass/svg?seed=zxcvb1234",
+    ];
+
     return (
         <Box h={"100vh"}>
-            <Card>
-                <Card.Section>
+            <Card h={"100%"}>
+                {/* <Card.Section>
                     <Image
                         src={
                             "https://api.dicebear.com/9.x/glass/svg?seed=matcha"
                         }
                         alt="profile background"
                         w={"100%"}
-                        h={"200"}
+                        h={"160"}
                         fit="cover"
                     />
-                </Card.Section>
-                <Flex justify={"center"} align={"center"}>
+                </Card.Section> */}
+                <Flex justify={"center"} align={"center"} py={16}>
                     <Flex direction={"column"}>
                         <Avatar
                             color="initials"
@@ -51,19 +48,21 @@ export default function Profile({ id }: { id: string }) {
                         </Text>
                         <Text>{user?.biography || "No biography set"}</Text>
                     </Flex>
-                    <Modal
-                        opened={opened}
-                        onClose={close}
-                        title="Edit Profile"
-                        size={"xl"}
-                        centered
-                    >
-                        <h1>edit your profile content here</h1>
-                    </Modal>
-                    <Button ml={"auto"} variant="light" onClick={open}>
-                        Edit Profile
-                    </Button>
+                    <EditProfile />
                 </Flex>
+                <Carousel withIndicators>
+                    {images.map((image, index) => (
+                        <Carousel.Slide key={index}>
+                            <Image
+                                src={image}
+                                alt="profile background"
+                                w={"100%"}
+                                h={"100%"}
+                                fit="cover"
+                            />
+                        </Carousel.Slide>
+                    ))}
+                </Carousel>
             </Card>
         </Box>
     );
