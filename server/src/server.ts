@@ -6,6 +6,8 @@ const startServer = async () => {
     try {
         const PORT = 8000;
         await app.listen({ port: PORT });
+
+        await app.ready();
         console.log(`🚀 Server running at http://localhost:${PORT}`);
     } catch (err) {
         app.log.error(err);

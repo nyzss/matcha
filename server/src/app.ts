@@ -5,6 +5,7 @@ import { serializerCompiler, validatorCompiler, hasZodFastifySchemaValidationErr
 import customPostgresORM from "./app/plugins/ormPlugin";
 import customSocketManager from "./app/plugins/socketPlugin";
 import {userSchema, publicUserSchema, viewSchema, likeSchema} from "./app/schemas/orm/userSchemas";
+import fastifyIO from "fastify-socket.io";
 
 // a décalé dans un fichier
 import fastifyJwt from '@fastify/jwt';
@@ -47,6 +48,14 @@ const buildApp = async () => {
             password: process.env.POSTGRES_PASSWORD,
             port: 5432,
         },
+    });
+
+    await app.register(fastifyIO, {
+        cors: {
+            origin: '*', // Match your client URL
+            methods: ["GET", "POST"],
+            allowedHeaders: ["*"],
+        }
     });
 
     await app.register(customSocketManager, {
