@@ -2,13 +2,13 @@
 
 import { authLogout } from "@/lib/api";
 import { useAuthStore } from "@/lib/store";
-import { Profile } from "@/types/auth";
+import { IProfile } from "@/types/auth";
 import { ActionIcon, Box, Flex, Menu, Text } from "@mantine/core";
 import { IconLogout, IconSettings } from "@tabler/icons-react";
 import React from "react";
 
 export default function UserBox() {
-    const user: Profile = useAuthStore((state) => state.user);
+    const user: IProfile | null = useAuthStore((state) => state.user);
 
     return (
         <Box style={{ marginTop: "auto" }}>
@@ -44,3 +44,4 @@ export default function UserBox() {
         </Box>
     );
 }
+

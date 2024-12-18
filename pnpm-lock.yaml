@@ -1,0 +1,555 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      '@fastify/multipart':
+        specifier: ^9.0.1
+        version: 9.0.1
+      '@mantine/carousel':
+        specifier: ^7.15.1
+        version: 7.15.1(@mantine/core@7.15.1(@mantine/hooks@7.15.1(react@18.3.1))(react-dom@19.0.0(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.15.1(react@18.3.1))(embla-carousel-react@7.1.0(react@18.3.1))(react-dom@19.0.0(react@18.3.1))(react@18.3.1)
+      embla-carousel-react:
+        specifier: ^7.1.0
+        version: 7.1.0(react@18.3.1)
+      fastify-multer:
+        specifier: ^2.0.3
+        version: 2.0.3
+
+packages:
+
+  '@babel/runtime@7.26.0':
+    resolution: {integrity: sha512-FDSOghenHTiToteC/QRlv2q3DhPZ/oOXTBoirfWNx1Cx3TMVcGWQtMMmQcSvb/JjpNeGzx8Pq/b4fKEJuWm1sw==}
+    engines: {node: '>=6.9.0'}
+
+  '@fastify/busboy@1.2.1':
+    resolution: {integrity: sha512-7PQA7EH43S0CxcOa9OeAnaeA0oQ+e/DHNPZwSQM9CQHW76jle5+OvLdibRp/Aafs9KXbLhxyjOTkRjWUbQEd3Q==}
+    engines: {node: '>=14'}
+
+  '@fastify/busboy@3.1.0':
+    resolution: {integrity: sha512-yHmUtGwEbW6HsKpPqT140/L6GpHtquHogRLgtanJFep3UAfDkE0fQfC49U+F9irCAoJVlv3M7VSp4rrtO4LnfA==}
+
+  '@fastify/deepmerge@2.0.0':
+    resolution: {integrity: sha512-fsaybTGDyQ5KpPsplQqb9yKdCf2x/pbNpMNk8Tvp3rRz7lVcupKysH4b2ELMN2P4Hak1+UqTYdTj/u4FNV2p0g==}
+
+  '@fastify/error@4.0.0':
+    resolution: {integrity: sha512-OO/SA8As24JtT1usTUTKgGH7uLvhfwZPwlptRi2Dp5P4KKmJI3gvsZ8MIHnNwDs4sLf/aai5LzTyl66xr7qMxA==}
+
+  '@fastify/multipart@9.0.1':
+    resolution: {integrity: sha512-vt2gOCw/O4EwpN4KlLVJxth4iQlDf7T5ggw2Db2C+UbO2WJBG7y0jEBvu/HT6JIW/lBYaqrrUy9MmTpCKgXEpw==}
+
+  '@floating-ui/core@1.6.8':
+    resolution: {integrity: sha512-7XJ9cPU+yI2QeLS+FCSlqNFZJq8arvswefkZrYI1yQBbftw6FyrZOxYSh+9S7z7TpeWlRt9zJ5IhM1WIL334jA==}
+
+  '@floating-ui/dom@1.6.12':
+    resolution: {integrity: sha512-NP83c0HjokcGVEMeoStg317VD9W7eDlGK7457dMBANbKA6GJZdc7rjujdgqzTaz93jkGgc5P/jeWbaCHnMNc+w==}
+
+  '@floating-ui/react-dom@2.1.2':
+    resolution: {integrity: sha512-06okr5cgPzMNBy+Ycse2A6udMi4bqwW/zgBF/rwjcNqWkyr82Mcg8b0vjX8OJpZFy/FKjJmw6wV7t44kK6kW7A==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+
+  '@floating-ui/react@0.26.28':
+    resolution: {integrity: sha512-yORQuuAtVpiRjpMhdc0wJj06b9JFjrYF4qp96j++v2NBpbi6SEGF7donUJ3TMieerQ6qVkAv1tgr7L4r5roTqw==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+
+  '@floating-ui/utils@0.2.8':
+    resolution: {integrity: sha512-kym7SodPp8/wloecOpcmSnWJsK7M0E5Wg8UcFA+uO4B9s5d0ywXOEro/8HM9x0rW+TljRzul/14UYz3TleT3ig==}
+
+  '@mantine/carousel@7.15.1':
+    resolution: {integrity: sha512-FQaxESq+uydaat4r3NC7x1/XKKGlr8PIawGEqkZXmzPLagOI6D+K3vSDzYK0n1fC6eIVPmd5bSiexBRVxXMm4Q==}
+    peerDependencies:
+      '@mantine/core': 7.15.1
+      '@mantine/hooks': 7.15.1
+      embla-carousel-react: '>=7.0.0'
+      react: ^18.x || ^19.x
+      react-dom: ^18.x || ^19.x
+
+  '@mantine/core@7.15.1':
+    resolution: {integrity: sha512-MKHrByqgpu+vzhauX0X9EH+BOgJqyjHwk4E0sfIIX9CXC9pziLMc4aL8pua0KaXiRuQiskTl/DuGX31saHBH5g==}
+    peerDependencies:
+      '@mantine/hooks': 7.15.1
+      react: ^18.x || ^19.x
+      react-dom: ^18.x || ^19.x
+
+  '@mantine/hooks@7.15.1':
+    resolution: {integrity: sha512-jrpjA5JhVSgUi0expfZpvNplMgvwdvrCIcKiDjQ16p/KiWngvTVfmJMtBOVxQ6hWrn500nLmZIDEcTmV9Dvb7g==}
+    peerDependencies:
+      react: ^18.x || ^19.x
+
+  append-field@1.0.0:
+    resolution: {integrity: sha512-klpgFSWLW1ZEs8svjfb7g4qWY0YS5imI82dTg+QahUvJ8YqAY0P10Uk8tTyh9ZGuYEZEMaeJYCF5BFuX552hsw==}
+
+  buffer-from@1.1.2:
+    resolution: {integrity: sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==}
+
+  clsx@2.1.1:
+    resolution: {integrity: sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==}
+    engines: {node: '>=6'}
+
+  concat-stream@2.0.0:
+    resolution: {integrity: sha512-MWufYdFw53ccGjCA+Ol7XJYpAlW6/prSMzuPOTRnJGcGzuhLn4Scrz7qf6o8bROZ514ltazcIFJZevcfbo0x7A==}
+    engines: {'0': node >= 6.0}
+
+  detect-node-es@1.1.0:
+    resolution: {integrity: sha512-ypdmJU/TbBby2Dxibuv7ZLW3Bs1QEmM7nHjEANfohJLvE0XVujisn1qPJcZxg+qDucsr+bP6fLD1rPS3AhJ7EQ==}
+
+  ee-first@1.1.1:
+    resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
+
+  embla-carousel-react@7.1.0:
+    resolution: {integrity: sha512-tbYRPRZSDNd2QLNqYDcArAakGIxtUbhS7tkP0dGXktXHGgcX+3ji3VrOUTOftBiujZrMV8kRxtrRUe/1soloIQ==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.1 || ^18.0.0
+
+  embla-carousel@7.1.0:
+    resolution: {integrity: sha512-Bh8Pa8NWzgugLkf8sAGexQlBCNDFaej5BXiKgQdRJ1mUC9NWBrw9Z23YVPVGkguWoz5LMjZXXFVGCobl3UPt/Q==}
+
+  fastify-multer@2.0.3:
+    resolution: {integrity: sha512-QnFqrRgxmUwWHTgX9uyQSu0C/hmVCfcxopqjApZ4uaZD5W9MJ+nHUlW4+9q7Yd3BRxDIuHvgiM5mjrh6XG8cAA==}
+    engines: {node: '>=10.17.0'}
+
+  fastify-plugin@2.3.4:
+    resolution: {integrity: sha512-I+Oaj6p9oiRozbam30sh39BiuiqBda7yK2nmSPVwDCfIBlKnT8YB3MY+pRQc2Fcd07bf6KPGklHJaQ2Qu81TYQ==}
+
+  fastify-plugin@5.0.1:
+    resolution: {integrity: sha512-HCxs+YnRaWzCl+cWRYFnHmeRFyR5GVnJTAaCJQiYzQSDwK9MgJdyAsuL3nh0EWRCYMgQ5MeziymvmAhUHYHDUQ==}
+
+  get-nonce@1.0.1:
+    resolution: {integrity: sha512-FJhYRoDaiatfEkUK8HKlicmu/3SGFD51q3itKDGoSTysQJBnfOcxU5GxnhE1E6soB76MbT0MBtnKJuXyAx+96Q==}
+    engines: {node: '>=6'}
+
+  inherits@2.0.4:
+    resolution: {integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==}
+
+  js-tokens@4.0.0:
+    resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
+
+  loose-envify@1.4.0:
+    resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
+    hasBin: true
+
+  media-typer@0.3.0:
+    resolution: {integrity: sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==}
+    engines: {node: '>= 0.6'}
+
+  mime-db@1.52.0:
+    resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
+    engines: {node: '>= 0.6'}
+
+  mime-types@2.1.35:
+    resolution: {integrity: sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==}
+    engines: {node: '>= 0.6'}
+
+  mkdirp@1.0.4:
+    resolution: {integrity: sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==}
+    engines: {node: '>=10'}
+    hasBin: true
+
+  on-finished@2.4.1:
+    resolution: {integrity: sha512-oVlzkg3ENAhCk2zdv7IJwd/QUD4z2RxRwpkcGY8psCVcCYZNq4wYnVWALHM+brtuJjePWiYF/ClmuDr8Ch5+kg==}
+    engines: {node: '>= 0.8'}
+
+  react-dom@19.0.0:
+    resolution: {integrity: sha512-4GV5sHFG0e/0AD4X+ySy6UJd3jVl1iNsNHdpad0qhABJ11twS3TTBnseqsKurKcsNqCEFeGL3uLpVChpIO3QfQ==}
+    peerDependencies:
+      react: ^19.0.0
+
+  react-number-format@5.4.2:
+    resolution: {integrity: sha512-cg//jVdS49PYDgmcYoBnMMHl4XNTMuV723ZnHD2aXYtWWWqbVF3hjQ8iB+UZEuXapLbeA8P8H+1o6ZB1lcw3vg==}
+    peerDependencies:
+      react: ^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+
+  react-remove-scroll-bar@2.3.8:
+    resolution: {integrity: sha512-9r+yi9+mgU33AKcj6IbT9oRCO78WriSj6t/cF8DWBZJ9aOGPOTEDvdUDz1FwKim7QXWwmHqtdHnRJfhAxEG46Q==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      '@types/react': '*'
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
+  react-remove-scroll@2.6.1:
+    resolution: {integrity: sha512-jWEvWQidZ/C/FnFlUIB1mDLpY3r7uEb22WZ3uVeKj520caKDiaBsNDEB9J1gHJgpiLo+eTdPl2MVi0JitFTiFg==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      '@types/react': '*'
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
+  react-style-singleton@2.2.3:
+    resolution: {integrity: sha512-b6jSvxvVnyptAiLjbkWLE/lOnR4lfTtDAl+eUC7RZy+QQWc6wRzIV2CE6xBuMmDxc2qIihtDCZD5NPOFl7fRBQ==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      '@types/react': '*'
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
+  react-textarea-autosize@8.5.5:
+    resolution: {integrity: sha512-CVA94zmfp8m4bSHtWwmANaBR8EPsKy2aZ7KwqhoS4Ftib87F9Kvi7XQhOixypPLMc6kVYgOXvKFuuzZDpHGRPg==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+
+  react@18.3.1:
+    resolution: {integrity: sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==}
+    engines: {node: '>=0.10.0'}
+
+  readable-stream@3.6.2:
+    resolution: {integrity: sha512-9u/sniCrY3D5WdsERHzHE4G2YCXqoG5FTHUiCC4SIbr6XcLZBY05ya9EKjYek9O5xOAwjGq+1JdGBAS7Q9ScoA==}
+    engines: {node: '>= 6'}
+
+  regenerator-runtime@0.14.1:
+    resolution: {integrity: sha512-dYnhHh0nJoMfnkZs6GmmhFknAGRrLznOu5nc9ML+EJxGvrx6H7teuevqVqCuPcPK//3eDrrjQhehXVx9cnkGdw==}
+
+  safe-buffer@5.2.1:
+    resolution: {integrity: sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==}
+
+  scheduler@0.25.0:
+    resolution: {integrity: sha512-xFVuu11jh+xcO7JOAGJNOXld8/TcEHK/4CituBUeUb5hqxJLj9YuemAEuvm9gQ/+pgXYfbQuqAkiYu+u7YEsNA==}
+
+  secure-json-parse@3.0.1:
+    resolution: {integrity: sha512-9QR7G96th4QJ2+dJwvZB+JoXyt8PN+DbEjOr6kL2/JU4KH8Eb2sFdU+gt8EDdzWDWoWH0uocDdfCoFzdVSixUA==}
+
+  semver@7.6.3:
+    resolution: {integrity: sha512-oVekP1cKtI+CTDvHWYFUcMtsK/00wmAEfyqKfNdARm8u1wNVhSgaX7A8d4UuIlUI5e84iEwOhs7ZPYRmzU9U6A==}
+    engines: {node: '>=10'}
+    hasBin: true
+
+  string_decoder@1.3.0:
+    resolution: {integrity: sha512-hkRX8U1WjJFd8LsDJ2yQ/wWWxaopEsABU1XfkM8A+j0+85JAGppt16cr1Whg6KIbb4okU6Mql6BOj+uup/wKeA==}
+
+  tabbable@6.2.0:
+    resolution: {integrity: sha512-Cat63mxsVJlzYvN51JmVXIgNoUokrIaT2zLclCXjRd8boZ0004U4KCs/sToJ75C6sdlByWxpYnb5Boif1VSFew==}
+
+  text-decoding@1.0.0:
+    resolution: {integrity: sha512-/0TJD42KDnVwKmDK6jj3xP7E2MG7SHAOG4tyTgyUCRPdHwvkquYNLEQltmdMa3owq3TkddCVcTsoctJI8VQNKA==}
+
+  tslib@2.8.1:
+    resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
+
+  type-fest@4.30.1:
+    resolution: {integrity: sha512-ojFL7eDMX2NF0xMbDwPZJ8sb7ckqtlAi1GsmgsFXvErT9kFTk1r0DuQKvrCh73M6D4nngeHJmvogF9OluXs7Hw==}
+    engines: {node: '>=16'}
+
+  type-is@1.6.18:
+    resolution: {integrity: sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==}
+    engines: {node: '>= 0.6'}
+
+  typedarray@0.0.6:
+    resolution: {integrity: sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==}
+
+  use-callback-ref@1.3.2:
+    resolution: {integrity: sha512-elOQwe6Q8gqZgDA8mrh44qRTQqpIHDcZ3hXTLjBe1i4ph8XpNJnO+aQf3NaG+lriLopI4HMx9VjQLfPQ6vhnoA==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      '@types/react': ^16.8.0 || ^17.0.0 || ^18.0.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
+  use-composed-ref@1.4.0:
+    resolution: {integrity: sha512-djviaxuOOh7wkj0paeO1Q/4wMZ8Zrnag5H6yBvzN7AKKe8beOaED9SF5/ByLqsku8NP4zQqsvM2u3ew/tJK8/w==}
+    peerDependencies:
+      '@types/react': '*'
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
+  use-isomorphic-layout-effect@1.2.0:
+    resolution: {integrity: sha512-q6ayo8DWoPZT0VdG4u3D3uxcgONP3Mevx2i2b0434cwWBoL+aelL1DzkXI6w3PhTZzUeR2kaVlZn70iCiseP6w==}
+    peerDependencies:
+      '@types/react': '*'
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
+  use-latest@1.3.0:
+    resolution: {integrity: sha512-mhg3xdm9NaM8q+gLT8KryJPnRFOz1/5XPBhmDEVZK1webPzDjrPk7f/mbpeLqTgB9msytYWANxgALOCJKnLvcQ==}
+    peerDependencies:
+      '@types/react': '*'
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
+  use-sidecar@1.1.3:
+    resolution: {integrity: sha512-Fedw0aZvkhynoPYlA5WXrMCAMm+nSWdZt6lzJQ7Ok8S6Q+VsHmHpRWndVRJ8Be0ZbkfPc5LRYH+5XrzXcEeLRQ==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      '@types/react': '*'
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
+  util-deprecate@1.0.2:
+    resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
+
+  xtend@4.0.2:
+    resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
+    engines: {node: '>=0.4'}
+
+snapshots:
+
+  '@babel/runtime@7.26.0':
+    dependencies:
+      regenerator-runtime: 0.14.1
+
+  '@fastify/busboy@1.2.1':
+    dependencies:
+      text-decoding: 1.0.0
+
+  '@fastify/busboy@3.1.0': {}
+
+  '@fastify/deepmerge@2.0.0': {}
+
+  '@fastify/error@4.0.0': {}
+
+  '@fastify/multipart@9.0.1':
+    dependencies:
+      '@fastify/busboy': 3.1.0
+      '@fastify/deepmerge': 2.0.0
+      '@fastify/error': 4.0.0
+      fastify-plugin: 5.0.1
+      secure-json-parse: 3.0.1
+
+  '@floating-ui/core@1.6.8':
+    dependencies:
+      '@floating-ui/utils': 0.2.8
+
+  '@floating-ui/dom@1.6.12':
+    dependencies:
+      '@floating-ui/core': 1.6.8
+      '@floating-ui/utils': 0.2.8
+
+  '@floating-ui/react-dom@2.1.2(react-dom@19.0.0(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@floating-ui/dom': 1.6.12
+      react: 18.3.1
+      react-dom: 19.0.0(react@18.3.1)
+
+  '@floating-ui/react@0.26.28(react-dom@19.0.0(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@floating-ui/react-dom': 2.1.2(react-dom@19.0.0(react@18.3.1))(react@18.3.1)
+      '@floating-ui/utils': 0.2.8
+      react: 18.3.1
+      react-dom: 19.0.0(react@18.3.1)
+      tabbable: 6.2.0
+
+  '@floating-ui/utils@0.2.8': {}
+
+  '@mantine/carousel@7.15.1(@mantine/core@7.15.1(@mantine/hooks@7.15.1(react@18.3.1))(react-dom@19.0.0(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.15.1(react@18.3.1))(embla-carousel-react@7.1.0(react@18.3.1))(react-dom@19.0.0(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@mantine/core': 7.15.1(@mantine/hooks@7.15.1(react@18.3.1))(react-dom@19.0.0(react@18.3.1))(react@18.3.1)
+      '@mantine/hooks': 7.15.1(react@18.3.1)
+      embla-carousel-react: 7.1.0(react@18.3.1)
+      react: 18.3.1
+      react-dom: 19.0.0(react@18.3.1)
+
+  '@mantine/core@7.15.1(@mantine/hooks@7.15.1(react@18.3.1))(react-dom@19.0.0(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@floating-ui/react': 0.26.28(react-dom@19.0.0(react@18.3.1))(react@18.3.1)
+      '@mantine/hooks': 7.15.1(react@18.3.1)
+      clsx: 2.1.1
+      react: 18.3.1
+      react-dom: 19.0.0(react@18.3.1)
+      react-number-format: 5.4.2(react-dom@19.0.0(react@18.3.1))(react@18.3.1)
+      react-remove-scroll: 2.6.1(react@18.3.1)
+      react-textarea-autosize: 8.5.5(react@18.3.1)
+      type-fest: 4.30.1
+    transitivePeerDependencies:
+      - '@types/react'
+
+  '@mantine/hooks@7.15.1(react@18.3.1)':
+    dependencies:
+      react: 18.3.1
+
+  append-field@1.0.0: {}
+
+  buffer-from@1.1.2: {}
+
+  clsx@2.1.1: {}
+
+  concat-stream@2.0.0:
+    dependencies:
+      buffer-from: 1.1.2
+      inherits: 2.0.4
+      readable-stream: 3.6.2
+      typedarray: 0.0.6
+
+  detect-node-es@1.1.0: {}
+
+  ee-first@1.1.1: {}
+
+  embla-carousel-react@7.1.0(react@18.3.1):
+    dependencies:
+      embla-carousel: 7.1.0
+      react: 18.3.1
+
+  embla-carousel@7.1.0: {}
+
+  fastify-multer@2.0.3:
+    dependencies:
+      '@fastify/busboy': 1.2.1
+      append-field: 1.0.0
+      concat-stream: 2.0.0
+      fastify-plugin: 2.3.4
+      mkdirp: 1.0.4
+      on-finished: 2.4.1
+      type-is: 1.6.18
+      xtend: 4.0.2
+
+  fastify-plugin@2.3.4:
+    dependencies:
+      semver: 7.6.3
+
+  fastify-plugin@5.0.1: {}
+
+  get-nonce@1.0.1: {}
+
+  inherits@2.0.4: {}
+
+  js-tokens@4.0.0: {}
+
+  loose-envify@1.4.0:
+    dependencies:
+      js-tokens: 4.0.0
+
+  media-typer@0.3.0: {}
+
+  mime-db@1.52.0: {}
+
+  mime-types@2.1.35:
+    dependencies:
+      mime-db: 1.52.0
+
+  mkdirp@1.0.4: {}
+
+  on-finished@2.4.1:
+    dependencies:
+      ee-first: 1.1.1
+
+  react-dom@19.0.0(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+      scheduler: 0.25.0
+
+  react-number-format@5.4.2(react-dom@19.0.0(react@18.3.1))(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+      react-dom: 19.0.0(react@18.3.1)
+
+  react-remove-scroll-bar@2.3.8(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+      react-style-singleton: 2.2.3(react@18.3.1)
+      tslib: 2.8.1
+
+  react-remove-scroll@2.6.1(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+      react-remove-scroll-bar: 2.3.8(react@18.3.1)
+      react-style-singleton: 2.2.3(react@18.3.1)
+      tslib: 2.8.1
+      use-callback-ref: 1.3.2(react@18.3.1)
+      use-sidecar: 1.1.3(react@18.3.1)
+
+  react-style-singleton@2.2.3(react@18.3.1):
+    dependencies:
+      get-nonce: 1.0.1
+      react: 18.3.1
+      tslib: 2.8.1
+
+  react-textarea-autosize@8.5.5(react@18.3.1):
+    dependencies:
+      '@babel/runtime': 7.26.0
+      react: 18.3.1
+      use-composed-ref: 1.4.0(react@18.3.1)
+      use-latest: 1.3.0(react@18.3.1)
+    transitivePeerDependencies:
+      - '@types/react'
+
+  react@18.3.1:
+    dependencies:
+      loose-envify: 1.4.0
+
+  readable-stream@3.6.2:
+    dependencies:
+      inherits: 2.0.4
+      string_decoder: 1.3.0
+      util-deprecate: 1.0.2
+
+  regenerator-runtime@0.14.1: {}
+
+  safe-buffer@5.2.1: {}
+
+  scheduler@0.25.0: {}
+
+  secure-json-parse@3.0.1: {}
+
+  semver@7.6.3: {}
+
+  string_decoder@1.3.0:
+    dependencies:
+      safe-buffer: 5.2.1
+
+  tabbable@6.2.0: {}
+
+  text-decoding@1.0.0: {}
+
+  tslib@2.8.1: {}
+
+  type-fest@4.30.1: {}
+
+  type-is@1.6.18:
+    dependencies:
+      media-typer: 0.3.0
+      mime-types: 2.1.35
+
+  typedarray@0.0.6: {}
+
+  use-callback-ref@1.3.2(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+      tslib: 2.8.1
+
+  use-composed-ref@1.4.0(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+
+  use-isomorphic-layout-effect@1.2.0(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+
+  use-latest@1.3.0(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+      use-isomorphic-layout-effect: 1.2.0(react@18.3.1)
+
+  use-sidecar@1.1.3(react@18.3.1):
+    dependencies:
+      detect-node-es: 1.1.0
+      react: 18.3.1
+      tslib: 2.8.1
+
+  util-deprecate@1.0.2: {}
+
+  xtend@4.0.2: {}

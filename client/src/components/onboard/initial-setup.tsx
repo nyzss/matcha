@@ -27,12 +27,13 @@ import {
     SEXUAL_PREFERENCES,
 } from "@/lib/validation";
 import { IconMail, IconPhoto, IconUpload, IconX } from "@tabler/icons-react";
-import { usePreferencesStore } from "@/lib/store";
+import { useAuthStore, usePreferencesStore } from "@/lib/store";
 import { useShallow } from "zustand/react/shallow";
 import { Dropzone } from "@mantine/dropzone";
 
 export default function InitialSetup() {
     const [opened, { open, close }] = useDisclosure(false);
+    const logged = useAuthStore((state) => state.logged);
 
     const { step, next, prev } = usePreferencesStore(
         useShallow((state) => ({
@@ -63,11 +64,10 @@ export default function InitialSetup() {
     };
 
     useEffect(() => {
-        open();
-        close();
-    }, [close, open]);
-
-    // const canClose = useMemo(() => step !== 0, [step]);
+        if (logged) {
+            open();
+        }
+    }, [open, logged]);
 
     return (
         <Modal
@@ -222,3 +222,4 @@ export default function InitialSetup() {
         </Modal>
     );
 }
+

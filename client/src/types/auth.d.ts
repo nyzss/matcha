@@ -1,7 +1,7 @@
 export type Gender = "Man" | "Woman" | "Beyond Binary";
 export type SexualPreferences = "Man" | "Woman" | "Both" | "Neither" | "Other";
 
-export interface Profile {
+export interface IProfile {
     id: number;
     username: string;
     avatar: string | null;
@@ -13,3 +13,4 @@ export interface Profile {
     pictures: string[] | null;
     tags: string[] | null;
 }
+

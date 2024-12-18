@@ -1,11 +1,11 @@
-import { Profile } from "@/types/auth";
+import { IProfile } from "@/types/auth";
 import { fetcher } from "./api";
 import { useAuthStore } from "./store";
 
-export const checkAuth = async (): Promise<Profile | false> => {
+export const checkAuth = async (): Promise<IProfile | false> => {
     try {
         const res = await fetcher("/profile/@me");
-        const data: Profile = (await res?.json()).user;
+        const data: IProfile = (await res?.json()).user;
         if (!res?.ok) {
             throw new Error();
         }
@@ -18,8 +18,7 @@ export const checkAuth = async (): Promise<Profile | false> => {
 export const refreshAuth = async () => {
     const data = await checkAuth();
     if (data) {
-        useAuthStore.getState().connect();
-        useAuthStore.getState().update(data);
+        useAuthStore.getState().connect(data);
     } else {
         useAuthStore.getState().clear();
     }

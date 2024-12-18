@@ -4,9 +4,16 @@ import { refreshAuth } from "@/lib/auth";
 import { useAuthStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import InitialSetup from "../onboard/initial-setup";
 
-export default function Middleware({ isProtected, children } : {isProtected?: boolean, children?: React.ReactNode}) {
-    const logged = useAuthStore(state => state.logged);
+export default function Middleware({
+    isProtected,
+    children,
+}: {
+    isProtected?: boolean;
+    children?: React.ReactNode;
+}) {
+    const logged = useAuthStore((state) => state.logged);
     const router = useRouter();
 
     useEffect(() => {
@@ -17,8 +24,18 @@ export default function Middleware({ isProtected, children } : {isProtected?: bo
     }, [isProtected, logged, router]);
 
     if (isProtected && logged) {
-        return <>{children}</>;
+        return (
+            <>
+                {children}
+                <InitialSetup />
+            </>
+        );
     }
 
-    return <></>;
+    return (
+        <>
+            <InitialSetup />
+        </>
+    );
 }
+
