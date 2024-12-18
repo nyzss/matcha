@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 import RouterTransition from "@/components/layout/navigation-progress";
-import InitialSetup from "@/components/onboard/initial-setup";
 import { Notifications } from "@mantine/notifications";
 import Middleware from "@/components/auth/middleware";
 import { theme } from "@/lib/theme";
@@ -44,7 +43,6 @@ export default function RootLayout({
                     <RouterTransition />
                     <Notifications />
                     {children}
-                    <InitialSetup />
                 </MantineProvider>
             </body>
         </html>
