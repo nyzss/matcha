@@ -32,12 +32,21 @@ const authRoutes: FastifyPluginAsync = async (app) => {
         profileController.addProfileLike.bind(profileController)
     );
 
-    app.delete(
-        "/:username/like",
+
+    app.put(
+        "/:username/block",
         {
             preHandler: [app.verifyAuth],
         },
-        profileController.removeProfileLike.bind(profileController)
+        profileController.addBlockProfile.bind(profileController)
+    );
+
+    app.delete(
+        "/:username/block",
+        {
+            preHandler: [app.verifyAuth],
+        },
+        profileController.removeBlockProfile.bind(profileController)
     );
 
     app.get(
@@ -48,6 +57,13 @@ const authRoutes: FastifyPluginAsync = async (app) => {
         profileController.getProfileLike.bind(profileController)
     );
 
+    app.get(
+        "/@me/block",
+        {
+            preHandler: [app.verifyAuth],
+        },
+        profileController.getBlockedProfile.bind(profileController)
+    );
 
     app.withTypeProvider<ZodTypeProvider>().put(
         "/@me",

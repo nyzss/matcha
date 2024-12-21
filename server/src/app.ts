@@ -4,7 +4,7 @@ import errorHandler from "./app/utils/errorHandler";
 import { serializerCompiler, validatorCompiler, hasZodFastifySchemaValidationErrors } from "fastify-type-provider-zod";
 import customPostgresORM from "./app/plugins/ormPlugin";
 import customSocketManager from "./app/plugins/socketPlugin";
-import {userSchema, publicUserSchema, viewSchema, likeSchema} from "./app/schemas/orm/userSchemas";
+import {userSchema, publicUserSchema, viewSchema, likeSchema, blockSchema} from "./app/schemas/orm/userSchemas";
 import fastifyIO from "fastify-socket.io";
 
 // a décalé dans un fichier
@@ -70,6 +70,7 @@ const buildApp = async () => {
     await app.orm.createTableWithRelations('profiles', publicUserSchema)
     await app.orm.createTableWithRelations('views', viewSchema)
     await app.orm.createTableWithRelations('likes', likeSchema)
+    await app.orm.createTableWithRelations('blocks', blockSchema)
 
     await app.orm.createTableWithRelations('conversations', conversationSchema);
     await app.orm.createTableWithRelations('conversation_participants', conversationParticipantSchema);
