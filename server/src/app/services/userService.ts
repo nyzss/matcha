@@ -11,6 +11,66 @@ export class UserService {
         this.orm = fastify.orm;
     }
 
+    async blockUser(id: number, blockerId: number): Promise<void> {
+        if (id === blockerId)
+            throw new Error("Cannot block yourself");
+
+
+        const existingBlock = await this.orm.query(
+            `SELECT id FROM blocks WHERE user_id = $1 AND blocker_id = $2`,
+            [id, blockerId]
+        );
+
+        if (existingBlock.length > 0)
+            throw new Error("User is already blocked");
+
+        await this.orm.query(
+            `INSERT INTO blocks (user_id, blocker_id) VALUES ($1, $2)`,
+            [id, blockerId]
+        );
+    }
+
+    async unblockUser(id: number, blockerId: number): Promise<void> {
+        if (id === blockerId)
+            throw new Error("Cannot unblock yourself");
+
+        const result = await this.orm.query(
+            `DELETE FROM blocks WHERE user_id = $1 AND blocker_id = $2 RETURNING id`,
+            [id, blockerId]
+        );
+
+        if (result.length === 0)
+            throw new Error("User is not blocked");
+
+        await this.orm.query(
+            `DELETE FROM blocks WHERE user_id = $1 AND blocker_id = $2`,
+            [id, blockerId]
+        );
+    }
+
+    async isBlocked(id: number, blockerId: number): Promise<boolean> {
+        const block = await this.orm.query(
+            `SELECT id FROM blocks WHERE user_id = $1 AND blocker_id = $2`,
+            [id, blockerId]
+        );
+
+        return block.length > 0;
+    }
+
+    async getBlockedUsers(id: number): Promise<any> {
+        const blocks = await this.orm.query(
+            `SELECT blocker_id FROM blocks WHERE user_id = $1`,
+            [id]
+        );
+
+        return {
+            total: blocks.length,
+            users: await Promise.all(
+                blocks.map(async (block: { blocker_id: number }) => await this.getUserById(block.blocker_id))
+            ),
+        };
+    }
+
     async getUserById(id: number): Promise<userProfile> {
         const [user] = await this.orm.query(
             `
@@ -171,18 +231,6 @@ export class UserService {
             tags: updatedProfile.tags || [],
         };
     }
-
-    // async setLike(id: number, likedId: number): Promise<void> {
-    //     await this.orm.query(
-    //         `
-    //             INSERT INTO likes (user_id, liked_id)
-    //             VALUES ($1, $2)
-    //         `,
-    //         [id, likedId]
-    //     );
-    //
-    //     return;
-    // }
 
     async setLike(id: number, likedId: number): Promise<userProfileLike> {
         const [existingLike] = await this.orm.query(

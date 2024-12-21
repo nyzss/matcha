@@ -20,6 +20,9 @@ export class ProfileController {
             const { username } = request.params as { username: string };
             const user = await this.userService.getUserByUsername(username, request.user.id);
 
+            if (await this.userService.isBlocked(user.id, request?.user?.id,))
+                return reply.status(401).send({ error: "User not found" });
+
             if (request?.user?.id !== user.id)
                 await this.userService.addView(request?.user?.id, user.id);
 
@@ -106,6 +109,42 @@ export class ProfileController {
             const user = await this.userService.getUserByUsername(username);
 
             return await this.userService.getLike(request?.user?.id, user.id);
+        } catch (error: Error | any) {
+            return reply.status(404).send({error: error.message});
+        }
+    }
+
+    async addBlockProfile(request: FastifyRequest, reply: FastifyReply) {
+        try {
+            const { username } = request.params as { username: string };
+            const user = await this.userService.getUserByUsername(username);
+
+            await this.userService.blockUser(request?.user?.id, user.id);
+
+            return {message: "User blocked"};
+        } catch (error: Error | any) {
+            return reply.status(404).send({error: error.message});
+        }
+    }
+
+    async removeBlockProfile(request: FastifyRequest, reply: FastifyReply) {
+        try {
+            const { username } = request.params as { username: string };
+            const user = await this.userService.getUserByUsername(username);
+
+            await this.userService.unblockUser(request?.user?.id, user.id);
+
+            return {message: "User unblocked"};
+        } catch (error: Error | any) {
+            return reply.status(404).send({error: error.message});
+        }
+    }
+
+    async getBlockedProfile(request: FastifyRequest, reply: FastifyReply) {
+        try {
+            const blocked = await this.userService.getBlockedUsers(request?.user?.id);
+
+            return blocked;
         } catch (error: Error | any) {
             return reply.status(404).send({error: error.message});
         }
