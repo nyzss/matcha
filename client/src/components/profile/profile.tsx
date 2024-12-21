@@ -1,6 +1,14 @@
 "use client";
 
-import { Avatar, Box, Card, Flex, Image, Text } from "@mantine/core";
+import {
+    Avatar,
+    Box,
+    Card,
+    Flex,
+    Image,
+    LoadingOverlay,
+    Text,
+} from "@mantine/core";
 import { IProfile } from "@/types/auth";
 import { useEffect, useState } from "react";
 import { getUser } from "@/lib/api";
@@ -22,6 +30,7 @@ export default function Profile({ id }: { id: string }) {
 
     return (
         <Box h={"100vh"}>
+            <LoadingOverlay visible={!user} />
             <Card h={"100%"}>
                 {/* <Card.Section>
                     <Image
@@ -41,7 +50,7 @@ export default function Profile({ id }: { id: string }) {
                             name={`${user?.firstName} ${user?.lastName}`}
                             size={100}
                             mt={8}
-                        ></Avatar>
+                        />
                         <Text size="xl" fw={"bold"} mt={4}>
                             {user?.firstName} {user?.lastName} (@
                             {user?.username})
@@ -59,6 +68,7 @@ export default function Profile({ id }: { id: string }) {
                                 w={"100%"}
                                 h={"100%"}
                                 fit="cover"
+                                radius={"md"}
                             />
                         </Carousel.Slide>
                     ))}

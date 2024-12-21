@@ -14,13 +14,13 @@ import { useDisclosure } from "@mantine/hooks";
 import { IconMoon, IconSearch, IconSun } from "@tabler/icons-react";
 import { routes } from "./routes";
 import Link from "next/link";
-import { useAuthStore } from "@/lib/store";
 import UserBox from "./user-box";
 import { useMemo } from "react";
+import { useAuth } from "@/contexts/auth-provider";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
     const [opened, { toggle }] = useDisclosure();
-    const logged: boolean = useAuthStore((state) => state.logged);
+    const { logged } = useAuth();
     const navbarAsideWidth: AppShellResponsiveSize = {
         base: 300,
         md: 300,
@@ -139,3 +139,4 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </AppShell>
     );
 }
+

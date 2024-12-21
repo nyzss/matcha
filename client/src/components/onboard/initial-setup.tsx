@@ -16,7 +16,7 @@ import {
     Textarea,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm, zodResolver } from "@mantine/form";
 import { IPreferences } from "@/types/validation";
 import {
@@ -27,21 +27,21 @@ import {
     SEXUAL_PREFERENCES,
 } from "@/lib/validation";
 import { IconMail, IconPhoto, IconUpload, IconX } from "@tabler/icons-react";
-import { useAuthStore, usePreferencesStore } from "@/lib/store";
-import { useShallow } from "zustand/react/shallow";
 import { Dropzone } from "@mantine/dropzone";
+import { useAuth } from "@/contexts/auth-provider";
 
 export default function InitialSetup() {
     const [opened, { open, close }] = useDisclosure(false);
-    const logged = useAuthStore((state) => state.logged);
+    const [step, setStep] = useState(0);
+    const { logged } = useAuth();
 
-    const { step, next, prev } = usePreferencesStore(
-        useShallow((state) => ({
-            step: state.step,
-            next: state.next,
-            prev: state.prev,
-        }))
-    );
+    const next = () => {
+        setStep((prev) => prev + 1);
+    };
+
+    const prev = () => {
+        setStep((p) => p - 1);
+    };
 
     const form = useForm<IPreferences>({
         initialValues: {

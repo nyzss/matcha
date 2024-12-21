@@ -1,5 +1,4 @@
 import { ILogin, IRegister } from "@/types/validation";
-import { refreshAuth } from "./auth";
 import { IProfile } from "@/types/auth";
 import { notifications } from "@mantine/notifications";
 
@@ -27,36 +26,18 @@ export const fetcher = async (path: string, options?: RequestInit) => {
 /**
  * returns an object with the key being the field name and the value being the error message
  */
-export const authLogin = async (
-    user: ILogin
-): Promise<(Partial<ILogin> & { error?: string }) | void> => {
+export const authLogin = async (user: ILogin): Promise<IProfile | null> => {
     try {
         const res = await fetcher("/auth/login", {
             method: "POST",
             body: JSON.stringify(user),
         });
 
-        const json = await res?.json();
-
-        if (!res?.ok) {
-            if (json && json.error) {
-                const error = json.error.toLowerCase();
-                if (error.includes("username")) {
-                    return {
-                        username: "Invalid username or password.",
-                    };
-                }
-            }
-            console.log(json);
-            throw new Error("An error occurred");
-        }
-    } catch (error) {
-        console.error(error);
-        return {
-            error: "An error occurred",
-        };
-    } finally {
-        await refreshAuth();
+        const json: IProfile = (await res?.json()).user;
+        if (!res?.ok) throw new Error();
+        return json;
+    } catch {
+        return null;
     }
 };
 
@@ -98,12 +79,10 @@ export const authRegister = async (
         return {
             error: "An error occurred",
         };
-    } finally {
-        await refreshAuth();
     }
 };
 
-export const authLogout = async () => {
+export const authLogout = async (): Promise<boolean> => {
     try {
         const res = await fetcher("auth/logout", {
             method: "POST",
@@ -117,8 +96,19 @@ export const authLogout = async () => {
         return true;
     } catch {
         return false;
-    } finally {
-        await refreshAuth();
+    }
+};
+
+export const checkAuth = async (): Promise<IProfile | false> => {
+    try {
+        const res = await fetcher("/profile/@me");
+        const data: IProfile = (await res?.json()).user;
+        if (!res?.ok) {
+            throw new Error();
+        }
+        return data;
+    } catch {
+        return false;
     }
 };
 
@@ -138,6 +128,16 @@ export const getUser = async (id: string): Promise<IProfile | null> => {
             color: "red",
         });
         return null;
+    }
+};
+
+export const updateUser = async (user: Partial<IProfile>) => {
+    try {
+        console.log(user);
+        return true;
+    } catch {
+        console.error("An error occurred");
+        return false;
     }
 };
 

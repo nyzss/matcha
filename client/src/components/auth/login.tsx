@@ -7,9 +7,9 @@ import { useDisclosure } from "@mantine/hooks";
 import React from "react";
 import { ILogin } from "@/types/validation";
 import { IconLock, IconUser } from "@tabler/icons-react";
-import { authLogin } from "@/lib/api";
 import { notifications } from "@mantine/notifications";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/auth-provider";
 
 export function LoginModal() {
     const [opened, { open, close }] = useDisclosure(false);
@@ -30,6 +30,7 @@ export function LoginModal() {
 
 export default function LoginComponent({ close }: { close?: () => void }) {
     const router = useRouter();
+    const { login } = useAuth();
 
     const form = useForm<ILogin>({
         initialValues: {
@@ -41,17 +42,11 @@ export default function LoginComponent({ close }: { close?: () => void }) {
     });
 
     const handleSubmit = async (values: ILogin) => {
-        const fields = await authLogin(values);
+        const fields = await login(values);
         if (fields) {
-            if (fields.error) {
-                notifications.show({
-                    title: "Couldn't create account",
-                    message: "An error has occurred, please try again later.",
-                });
-            } else {
-                form.setErrors(fields);
-            }
+            form.setErrors(fields);
         } else {
+            // checks if the components is inside a modal
             if (close) {
                 close();
             } else {

@@ -7,9 +7,8 @@ import { useForm, zodResolver } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { IconAt, IconCalendar, IconLock, IconUser } from "@tabler/icons-react";
 import { IRegister } from "@/types/validation";
-import { authRegister } from "@/lib/api";
 import { useRouter } from "next/navigation";
-import { notifications } from "@mantine/notifications";
+import { useAuth } from "@/contexts/auth-provider";
 
 export function RegisterModal() {
     const [opened, { open, close }] = useDisclosure(false);
@@ -28,6 +27,7 @@ export function RegisterModal() {
 
 export default function RegisterComponent({ close }: { close?: () => void }) {
     const router = useRouter();
+    const { register } = useAuth();
 
     const form = useForm<IRegister>({
         mode: "uncontrolled",
@@ -44,16 +44,9 @@ export default function RegisterComponent({ close }: { close?: () => void }) {
     });
 
     const handleSubmit = async (values: IRegister) => {
-        const fields = await authRegister(values);
+        const fields = await register(values);
         if (fields) {
-            if (fields.error) {
-                notifications.show({
-                    title: "Couldn't create account",
-                    message: "An error has occurred, please try again later.",
-                });
-            } else {
-                form.setErrors(fields);
-            }
+            form.setErrors(fields);
         } else {
             if (close) {
                 close();
