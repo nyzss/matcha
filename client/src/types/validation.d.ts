@@ -12,7 +12,8 @@ export interface IRoute {
     auth?: boolean;
 }
 
-export type TLogin = z.infer<typeof loginSchema>;
-export type TRegister = z.infer<typeof registerSchema>;
+export type ILogin = z.infer<typeof loginSchema>;
+export type IRegister = z.infer<typeof registerSchema>;
 
-export type TPreferences = z.infer<typeof preferencesSchema>;
+export type IPreferences = z.infer<typeof preferencesSchema>;
+

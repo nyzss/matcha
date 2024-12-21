@@ -5,7 +5,7 @@ import { Box, Button, Flex, Modal, TextInput } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import React from "react";
-import { TLogin } from "@/types/validation";
+import { ILogin } from "@/types/validation";
 import { IconLock, IconUser } from "@tabler/icons-react";
 import { authLogin } from "@/lib/api";
 import { notifications } from "@mantine/notifications";
@@ -31,7 +31,7 @@ export function LoginModal() {
 export default function LoginComponent({ close }: { close?: () => void }) {
     const router = useRouter();
 
-    const form = useForm<TLogin>({
+    const form = useForm<ILogin>({
         initialValues: {
             username: "",
             password: "",
@@ -40,7 +40,7 @@ export default function LoginComponent({ close }: { close?: () => void }) {
         validate: zodResolver(loginSchema),
     });
 
-    const handleSubmit = async (values: TLogin) => {
+    const handleSubmit = async (values: ILogin) => {
         const fields = await authLogin(values);
         if (fields) {
             if (fields.error) {
@@ -95,3 +95,4 @@ export default function LoginComponent({ close }: { close?: () => void }) {
         </Box>
     );
 }
+

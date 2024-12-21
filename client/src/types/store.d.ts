@@ -1,5 +1,5 @@
 import { IProfile } from "./auth";
-import { TPreferences } from "./validation";
+import { IPreferences } from "./validation";
 
 // add notifications
 export interface AuthState {
@@ -11,10 +11,10 @@ export interface AuthState {
 }
 
 export interface PreferencesState {
-    preferences: TPreferences | null;
+    preferences: IPreferences | null;
     step: number;
     clear: () => void;
-    update: (updates: Partial<TPreferences>) => void;
+    update: (updates: Partial<IPreferences>) => void;
     next: () => void;
     prev: () => void;
 }

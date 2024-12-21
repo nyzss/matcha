@@ -1,4 +1,4 @@
-import { TLogin, TRegister } from "@/types/validation";
+import { ILogin, IRegister } from "@/types/validation";
 import { refreshAuth } from "./auth";
 import { IProfile } from "@/types/auth";
 import { notifications } from "@mantine/notifications";
@@ -28,8 +28,8 @@ export const fetcher = async (path: string, options?: RequestInit) => {
  * returns an object with the key being the field name and the value being the error message
  */
 export const authLogin = async (
-    user: TLogin
-): Promise<(Partial<TLogin> & { error?: string }) | void> => {
+    user: ILogin
+): Promise<(Partial<ILogin> & { error?: string }) | void> => {
     try {
         const res = await fetcher("/auth/login", {
             method: "POST",
@@ -64,9 +64,9 @@ export const authLogin = async (
  * returns an object with the key being the field name and the value being the error message
  */
 export const authRegister = async (
-    user: TRegister
+    user: IRegister
 ): Promise<
-    (Partial<TRegister> & { birthDate?: string; error?: string }) | void
+    (Partial<IRegister> & { birthDate?: string; error?: string }) | void
 > => {
     try {
         const res = await fetcher("/auth/register", {

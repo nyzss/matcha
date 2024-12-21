@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { AuthState, PreferencesState } from "@/types/store";
-import { TPreferences } from "@/types/validation";
+import { IPreferences } from "@/types/validation";
 import { IProfile } from "@/types/auth";
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -22,7 +22,7 @@ export const usePreferencesStore = create<PreferencesState>((set) => ({
     clear: () => set(() => ({ preferences: null, step: 0 })),
     update: (updates) =>
         set((state) => ({
-            preferences: { ...state.preferences, ...updates } as TPreferences,
+            preferences: { ...state.preferences, ...updates } as IPreferences,
         })),
     next: () =>
         set((state) => {

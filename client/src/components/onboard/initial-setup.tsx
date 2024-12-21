@@ -18,7 +18,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { useEffect } from "react";
 import { useForm, zodResolver } from "@mantine/form";
-import { TPreferences } from "@/types/validation";
+import { IPreferences } from "@/types/validation";
 import {
     ACCEPTED_IMAGE_TYPES,
     GENDERS,
@@ -43,7 +43,7 @@ export default function InitialSetup() {
         }))
     );
 
-    const form = useForm<TPreferences>({
+    const form = useForm<IPreferences>({
         initialValues: {
             gender: "",
             sexualPreference: "",
@@ -55,7 +55,7 @@ export default function InitialSetup() {
         validate: zodResolver(preferencesSchema),
     });
 
-    const handleSubmit = async (values: TPreferences) => {
+    const handleSubmit = async (values: IPreferences) => {
         try {
             console.log(values);
         } catch (error) {
