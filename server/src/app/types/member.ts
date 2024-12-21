@@ -35,6 +35,7 @@ export interface userProfile {
     avatar: string | null;
     firstName: string;
     lastName: string;
+    isConnected?: boolean;
     age: number;
     gender: userGender | null;
     biography: string | null;
