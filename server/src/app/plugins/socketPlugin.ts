@@ -29,48 +29,55 @@ const customSocketManager: FastifyPluginAsync<SocketManagerOptions> = async (
 
     fastify.ready().then(async () => {
         fastify.io.on('connection', async (socket: Socket) => {
+            try {
+                const cookies = socket.handshake.headers.cookie;
 
-            const cookies = socket.handshake.headers.cookie;
+                if (!cookies) {
+                    socket.emit(SocketEvent.cookieNotFound, {
+                        error: 'No cookies found',
+                    });
 
-            if (!cookies) {
-                socket.emit(SocketEvent.cookieNotFound, {
-                    error: 'No cookies found',
-                });
-
-                socket.disconnect();
-            }
-
-            const accessToken = cookies?.split(';').find((cookie: string) => cookie.includes('accessToken'))?.split('=')[1];
-            const refreshToken = cookies?.split(';').find((cookie: string) => cookie.includes('refreshToken'))?.split('=')[1];
-
-            if (!accessToken || !refreshToken) {
-                socket.emit(SocketEvent.tokenNotFound, {
-                    error: 'No access token or refresh token found',
-                });
-
-                socket.disconnect();
-            }
-
-            const token = await authService.verifyToken(accessToken as string);
-
-            const user = await userService.getUserById(token?.id);
-
-            if (!user) {
-                socket.emit(SocketEvent.userNotFound, {
-                    error: 'User not found',
-                });
-            }
-            socket.emit(SocketEvent.userConnected, {
-                user: {
-                    user,
+                    socket.disconnect();
                 }
-            })
 
-            socket.join(user.id.toString());
+                const accessToken = cookies?.split(';').find((cookie: string) => cookie.includes('accessToken'))?.split('=')[1];
+                const refreshToken = cookies?.split(';').find((cookie: string) => cookie.includes('refreshToken'))?.split('=')[1];
 
-            socket.on("disconnect", () => {
-                console.log('user disconnected');
-            });
+                if (!accessToken || !refreshToken) {
+                    socket.emit(SocketEvent.tokenNotFound, {
+                        error: 'No access token or refresh token found',
+                    });
+
+                    socket.disconnect();
+                }
+
+
+                const token = await authService.verifyToken(accessToken as string);
+
+                const user = await userService.getUserById(token?.id);
+
+                if (!user) {
+                    socket.emit(SocketEvent.userNotFound, {
+                        error: 'User not found',
+                    });
+                }
+                socket.emit(SocketEvent.userConnected, {
+                    user: {
+                        user,
+                    }
+                })
+
+                socket.join(user.id.toString());
+
+                socket.on("disconnect", () => {
+                    console.log('user disconnected');
+                });
+            } catch (error: Error | any) {
+                socket.emit(SocketEvent.tokenNotFound, {
+                    error: error?.message,
+                });
+                socket.disconnect();
+            }
         });
     });
 

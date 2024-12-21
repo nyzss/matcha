@@ -18,7 +18,7 @@ export class ProfileController {
             };
         try {
             const { username } = request.params as { username: string };
-            const user = await this.userService.getUserByUsername(username);
+            const user = await this.userService.getUserByUsername(username, request.user.id);
 
             if (request?.user?.id !== user.id)
                 await this.userService.addView(request?.user?.id, user.id);

@@ -52,7 +52,7 @@ export class UserService {
         };
     }
 
-    async getUserByUsername(username: string): Promise<userProfile> {
+    async getUserByUsername(username: string, meId: number | null = null): Promise<userProfile> {
         const [user] = await this.orm.query(
             `
                 SELECT
@@ -82,6 +82,7 @@ export class UserService {
             id: user.id,
             username: user.username,
             avatar: user.avatar || process.env.DEFAULT_AVATAR_URL as string,
+            ...(meId ? { isConnected: await this.userConnectedTo(user.id, meId) } : {}),
             firstName: user.firstName,
             lastName: user.lastName,
             age: new Date().getFullYear() - new Date(user.birthDate).getFullYear(),
@@ -237,6 +238,15 @@ export class UserService {
         }
     }
 
+    async userConnectedTo(id: number, meId: number): Promise<boolean> {
+        const likes = await Promise.all([
+            this.getLike(id, meId),
+            this.getLike(meId, id),
+        ])
+
+        return likes.every((like) => like.like.me);
+    }
+
 
     async getLike(id: number, meId: number): Promise<userProfileLike> {
         const likes = await this.orm.query(
@@ -298,8 +308,4 @@ export class UserService {
             },
         };
     }
-
-
-
-
 }
