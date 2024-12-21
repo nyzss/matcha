@@ -161,7 +161,6 @@ export class AuthService {
 
             return user;
         } catch (error) {
-            console.log(error);
             throw new Error('Invalid or expired access token');
         }
     }

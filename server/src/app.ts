@@ -14,6 +14,7 @@ import fastifyMultipart from "@fastify/multipart";
 
 import {loggerMiddleware} from "./app/middlewares/loggerMiddleware";
 import {customMiddleware} from "./app/plugins/middlewarePlugin";
+import {conversationParticipantSchema, conversationSchema, messageSchema} from "./app/schemas/orm/chatSchemas";
 
 const buildApp = async () => {
     const app = fastify({ logger: true });
@@ -69,6 +70,12 @@ const buildApp = async () => {
     await app.orm.createTableWithRelations('profiles', publicUserSchema)
     await app.orm.createTableWithRelations('views', viewSchema)
     await app.orm.createTableWithRelations('likes', likeSchema)
+
+    await app.orm.createTableWithRelations('conversations', conversationSchema);
+    await app.orm.createTableWithRelations('conversation_participants', conversationParticipantSchema);
+    await app.orm.createTableWithRelations('conversation_messages', messageSchema);
+
+
 
 
     return app;
