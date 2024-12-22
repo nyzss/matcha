@@ -163,3 +163,37 @@ export const likeSchema: TableSchema = {
         defaultValue: 'CURRENT_TIMESTAMP',
     },
 };
+
+export const blockSchema: TableSchema = {
+    id: {
+        type: 'number',
+        primary: true,
+        nullable: false,
+        autoIncrement: true,
+    },
+    user_id: {
+        type: 'number',
+        nullable: false,
+        relation: {
+            type: 'one-to-one',
+            table: 'userSchema',
+            field: 'id',
+            onDelete: 'CASCADE',
+        },
+    },
+    blocker_id: {
+        type: 'number',
+        nullable: false,
+        relation: {
+            type: 'one-to-one',
+            table: 'userSchema',
+            field: 'id',
+            onDelete: 'CASCADE',
+        },
+    },
+    blocked_at: {
+        type: 'date',
+        nullable: false,
+        defaultValue: 'CURRENT_TIMESTAMP',
+    },
+}
