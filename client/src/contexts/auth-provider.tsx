@@ -1,13 +1,20 @@
 "use client";
 
-import { authLogin, authLogout, authRegister, checkAuth } from "@/lib/api";
+import {
+    authLogin,
+    authLogout,
+    authRegister,
+    checkAuth,
+    updateUser,
+} from "@/lib/api";
 import { IProfile } from "@/types/auth";
 import { IAuthContext } from "@/types/contexts";
-import { ILogin, IRegister } from "@/types/validation";
+import { ILogin, IRegister, IUser } from "@/types/validation";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useAtom } from "jotai";
 import { userAtom } from "@/lib/store";
 import { LoadingOverlay } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 
 export const AuthContext = createContext<IAuthContext | null>(null);
 
@@ -45,6 +52,23 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(null);
     };
 
+    const update = async (data: Partial<IUser>) => {
+        const result = await updateUser(data);
+
+        if (result.success) {
+            console.log(result.data);
+            setUser(result.data);
+            return true;
+        } else if (!result.success) {
+            notifications.show({
+                title: "Couldn't update user",
+                message: "An error has occurred, please try again later.",
+                color: "red",
+            });
+        }
+        return false;
+    };
+
     useEffect(() => {
         const checkUser = async () => {
             const data = await checkAuth();
@@ -70,7 +94,9 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ user, logged, login, logout, register }}>
+        <AuthContext.Provider
+            value={{ user, logged, login, logout, register, update }}
+        >
             {children}
         </AuthContext.Provider>
     );

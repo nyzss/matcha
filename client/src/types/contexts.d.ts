@@ -1,5 +1,5 @@
 import { IProfile } from "./auth";
-import { ILogin, IRegister } from "./validation";
+import { ILogin, IRegister, IUser } from "./validation";
 
 export interface IAuthContext {
     user: IProfile | null;
@@ -7,5 +7,5 @@ export interface IAuthContext {
     register: (data: IRegister) => Promise<Partial<IProfile> | null>;
     logout: () => Promise<void>;
     logged: boolean;
+    update: (data: Partial<IUser>) => Promise<boolean>;
 }
-

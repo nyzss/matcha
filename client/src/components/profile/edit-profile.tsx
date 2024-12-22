@@ -17,7 +17,7 @@ import { useState } from "react";
 
 export default function EditProfile() {
     const [opened, { open, close }] = useDisclosure();
-    const { user } = useAuth();
+    const { user, update } = useAuth();
     const [length, setLength] = useState<number>(user?.biography?.length || 0);
 
     const form = useForm<Partial<IUser>>({
@@ -38,8 +38,11 @@ export default function EditProfile() {
 
     form.watch("biography", (bio) => setLength(bio.value?.length || 0));
 
-    const handleSubmit = (values: Partial<IUser>) => {
-        console.log(values);
+    const handleSubmit = async (values: IUser) => {
+        const success = await update(values);
+        if (success) {
+            close();
+        }
     };
 
     const handleCancel = () => {

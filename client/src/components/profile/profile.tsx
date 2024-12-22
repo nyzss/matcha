@@ -14,13 +14,20 @@ import { useEffect, useState } from "react";
 import { getUser } from "@/lib/api";
 import EditProfile from "./edit-profile";
 import { Carousel } from "@mantine/carousel";
+import { useAuth } from "@/contexts/auth-provider";
 
 export default function Profile({ id }: { id: string }) {
-    const [user, setUser] = useState<IProfile | null>(null);
+    const [currentUser, setCurrentUser] = useState<IProfile | null>(null);
+
+    const { user } = useAuth();
 
     useEffect(() => {
-        getUser(id).then((data) => setUser(data));
-    }, [id]);
+        if (id === "@me") {
+            setCurrentUser(user);
+        } else {
+            getUser(id).then((data) => setCurrentUser(data));
+        }
+    }, [id, user]);
 
     const images = [
         "https://api.dicebear.com/9.x/glass/svg?seed=qwertyui",
@@ -30,7 +37,7 @@ export default function Profile({ id }: { id: string }) {
 
     return (
         <Box h={"100vh"}>
-            <LoadingOverlay visible={!user} />
+            <LoadingOverlay visible={!currentUser} />
             <Card h={"100%"}>
                 {/* <Card.Section>
                     <Image
@@ -47,15 +54,17 @@ export default function Profile({ id }: { id: string }) {
                     <Flex direction={"column"}>
                         <Avatar
                             color="initials"
-                            name={`${user?.firstName} ${user?.lastName}`}
+                            name={`${currentUser?.firstName} ${currentUser?.lastName}`}
                             size={100}
                             mt={8}
                         />
                         <Text size="xl" fw={"bold"} mt={4}>
-                            {user?.firstName} {user?.lastName} (@
-                            {user?.username})
+                            {currentUser?.firstName} {currentUser?.lastName} (@
+                            {currentUser?.username})
                         </Text>
-                        <Text>{user?.biography || "No biography set"}</Text>
+                        <Text>
+                            {currentUser?.biography || "No biography set"}
+                        </Text>
                     </Flex>
                     <EditProfile />
                 </Flex>
@@ -77,4 +86,3 @@ export default function Profile({ id }: { id: string }) {
         </Box>
     );
 }
-

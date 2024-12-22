@@ -1,4 +1,4 @@
-import { ILogin, IRegister } from "@/types/validation";
+import { ILogin, IRegister, IUser } from "@/types/validation";
 import { IProfile } from "@/types/auth";
 import { notifications } from "@mantine/notifications";
 import { FetchResult } from "@/types/types";
@@ -40,9 +40,7 @@ export const authLogin = async (
         if (res?.ok) {
             return {
                 success: true,
-                data: {
-                    ...(json.user as IProfile),
-                },
+                data: json.user as IProfile,
             };
         }
         if (!res?.ok) throw new Error();
@@ -79,9 +77,7 @@ export const authRegister = async (
         if (res?.ok) {
             return {
                 success: true,
-                data: {
-                    ...(json.user as IProfile),
-                },
+                data: json.user as IProfile,
             };
         }
         if (!res?.ok) {
@@ -165,12 +161,29 @@ export const getUser = async (id: string): Promise<IProfile | null> => {
     }
 };
 
-export const updateUser = async (user: Partial<IProfile>) => {
+export const updateUser = async (
+    user: Partial<IUser>
+): Promise<FetchResult<IProfile, Partial<IUser>>> => {
     try {
-        console.log(user);
-        return true;
+        const res = await fetcher("/profile/@me", {
+            method: "PUT",
+            body: JSON.stringify(user),
+        });
+
+        const json = await res?.json();
+        if (!res?.ok) {
+            throw new Error();
+        }
+
+        return {
+            success: true,
+            data: json.user as IProfile,
+        };
     } catch {
         console.error("An error occurred");
-        return false;
+        return {
+            success: false,
+            data: {},
+        };
     }
 };
