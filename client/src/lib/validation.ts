@@ -23,6 +23,10 @@ const messages = {
     confirmPassword: {
         invalid: { message: "Passwords do not match" },
     },
+
+    biography: {
+        max: { message: "Biography mustn't exceed 256 characters" },
+    },
 };
 
 // const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -50,7 +54,7 @@ export const SEXUAL_PREFERENCES = [
 export const preferencesSchema = z.object({
     gender: z.union([z.enum(GENDERS), z.literal("")]),
     sexualPreference: z.union([z.enum(SEXUAL_PREFERENCES), z.literal("")]),
-    biography: z.string().max(500),
+    biography: z.string().max(256, messages.biography.max),
     tags: z.array(z.string().max(32)).max(10),
     pictures: z
         .array(z.custom<File>())

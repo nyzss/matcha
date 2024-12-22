@@ -6,18 +6,19 @@ import {
     Flex,
     Modal,
     TagsInput,
+    Text,
     Textarea,
     TextInput,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { IconUser } from "@tabler/icons-react";
-import React from "react";
+import { useState } from "react";
 
 export default function EditProfile() {
     const [opened, { open, close }] = useDisclosure();
-
     const { user } = useAuth();
+    const [length, setLength] = useState<number>(user?.biography?.length || 0);
 
     const form = useForm<Partial<IUser>>({
         mode: "uncontrolled",
@@ -31,7 +32,11 @@ export default function EditProfile() {
         },
 
         validate: zodResolver(userSchema),
+
+        validateInputOnChange: ["biography"],
     });
+
+    form.watch("biography", (bio) => setLength(bio.value?.length || 0));
 
     const handleSubmit = (values: Partial<IUser>) => {
         console.log(values);
@@ -62,13 +67,18 @@ export default function EditProfile() {
                             leftSectionPointerEvents="none"
                             {...form.getInputProps("username")}
                         />
-                        <Textarea
-                            label="Biography"
-                            placeholder="Write something about yourself"
-                            key={form.key("biography")}
-                            size="lg"
-                            {...form.getInputProps("biography")}
-                        />
+                        <Flex direction={"column"} gap={"2"}>
+                            <Textarea
+                                label="Biography"
+                                placeholder="Write something about yourself"
+                                key={form.key("biography")}
+                                size="lg"
+                                {...form.getInputProps("biography")}
+                            />
+                            <Text size="sm" ml={"auto"}>
+                                {length} / 256
+                            </Text>
+                        </Flex>
                         <TagsInput
                             label="Keywords of your interests"
                             placeholder="Skiing, reading..."
@@ -99,9 +109,11 @@ export default function EditProfile() {
 }
 
 // {
+//     //avatar: "Pas encore fait"
 //     "username": "helloworld",
-//     "gender": 1,
-//     "biography": "hello this is my bio",
-//     "sexualOrientation": 1,
+//     "gender": "Man",
+//     "biography": "haha lmao",
+//     "sexualOrientation": "Woman",
+//     //picture: "Pas encore fait"
 //     "tags": ["reading", "climbing"]
 // }
