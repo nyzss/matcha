@@ -46,7 +46,7 @@ export default function InitialSetup() {
     const form = useForm<IPreferences>({
         initialValues: {
             gender: "",
-            sexualPreference: "",
+            sexualOrientation: "",
             biography: "",
             tags: [],
             pictures: [],
@@ -128,8 +128,8 @@ export default function InitialSetup() {
                                     label="Sexual Preference"
                                     placeholder="Woman"
                                     data={SEXUAL_PREFERENCES}
-                                    key={form.key("sexualPreference")}
-                                    {...form.getInputProps("sexualPreference")}
+                                    key={form.key("sexualOrientation")}
+                                    {...form.getInputProps("sexualOrientation")}
                                 />
                             </Stack>
                         </form>
@@ -222,4 +222,3 @@ export default function InitialSetup() {
         </Modal>
     );
 }
-

@@ -1,9 +1,6 @@
 import { z } from "zod";
 import { userGender, userSexualOrientation } from "../../types/member";
 
-// gender: z.union([z.enum(GENDERS), z.literal("")]),
-// sexualPreference: z.union([z.enum(SEXUAL_PREFERENCES), z.literal("")]),
-
 const GenderEnum = z.union([z.enum(userGender), z.literal("")]);
 
 const SexualOrientationEnum = z.union([

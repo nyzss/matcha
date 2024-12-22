@@ -53,7 +53,7 @@ export const SEXUAL_PREFERENCES = [
 
 export const preferencesSchema = z.object({
     gender: z.union([z.enum(GENDERS), z.literal("")]),
-    sexualPreference: z.union([z.enum(SEXUAL_PREFERENCES), z.literal("")]),
+    sexualOrientation: z.union([z.enum(SEXUAL_PREFERENCES), z.literal("")]),
     biography: z.string().max(256, messages.biography.max),
     tags: z.array(z.string().max(32)).max(10),
     pictures: z

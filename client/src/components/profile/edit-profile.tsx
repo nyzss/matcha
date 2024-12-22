@@ -1,10 +1,11 @@
 import { useAuth } from "@/contexts/auth-provider";
-import { userSchema } from "@/lib/validation";
+import { GENDERS, userSchema } from "@/lib/validation";
 import { IUser } from "@/types/validation";
 import {
     Button,
     Flex,
     Modal,
+    Select,
     TagsInput,
     Text,
     Textarea,
@@ -27,7 +28,7 @@ export default function EditProfile() {
             username: user?.username || "",
             gender: user?.gender || "",
             tags: user?.tags || [],
-            sexualPreference: user?.sexualOrientation || "",
+            sexualOrientation: user?.sexualOrientation || "",
             //add values easily here and in the form based on IUser
         },
 
@@ -60,9 +61,16 @@ export default function EditProfile() {
                 centered
             >
                 <form onSubmit={form.onSubmit(handleSubmit)}>
-                    <Flex gap={"xl"} direction={"column"} mt={"sm"} p={"xl"}>
+                    <Flex
+                        gap={"md"}
+                        direction={"column"}
+                        mt={"sm"}
+                        p={{
+                            sm: "lg",
+                        }}
+                    >
                         <TextInput
-                            label="Username"
+                            label="Username (this will change your login)"
                             placeholder="Username"
                             key={form.key("username")}
                             leftSection={<IconUser size={18} />}
@@ -70,7 +78,7 @@ export default function EditProfile() {
                             leftSectionPointerEvents="none"
                             {...form.getInputProps("username")}
                         />
-                        <Flex direction={"column"} gap={"2"}>
+                        <Flex direction={"column"} gap={"2"} mb={0}>
                             <Textarea
                                 label="Biography"
                                 placeholder="Write something about yourself"
@@ -82,6 +90,22 @@ export default function EditProfile() {
                                 {length} / 256
                             </Text>
                         </Flex>
+                        <Select
+                            label="Gender"
+                            placeholder="Select your gender"
+                            size="lg"
+                            key={form.key("gender")}
+                            data={GENDERS}
+                            {...form.getInputProps("gender")}
+                        />
+                        <Select
+                            label="Sexual Preferences"
+                            placeholder="Select your sexual preferences"
+                            size="lg"
+                            key={form.key("sexualOrientation")}
+                            data={GENDERS}
+                            {...form.getInputProps("sexualOrientation")}
+                        />
                         <TagsInput
                             label="Keywords of your interests"
                             placeholder="Skiing, reading..."
