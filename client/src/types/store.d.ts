@@ -1,19 +1,21 @@
-import { TPreferences } from "./validation";
+import { IProfile } from "./auth";
+import { IPreferences } from "./validation";
 
 // add notifications
 export interface AuthState {
-    user: Profile | null;
+    user: IProfile | null;
     logged: boolean;
     clear: () => void;
-    update: (updates: Partial<Profile>) => void;
-    connect: () => void;
+    update: (updates: Partial<IProfile>) => void;
+    connect: (updates: Partial<IProfile>) => void;
 }
 
 export interface PreferencesState {
-    preferences: TPreferences | null;
+    preferences: IPreferences | null;
     step: number;
     clear: () => void;
-    update: (updates: Partial<TPreferences>) => void;
+    update: (updates: Partial<IPreferences>) => void;
     next: () => void;
     prev: () => void;
 }
+

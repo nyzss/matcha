@@ -1,5 +1,7 @@
-import { TLogin, TRegister } from "@/types/validation";
-import { refreshAuth } from "./auth";
+import { ILogin, IRegister, IUser } from "@/types/validation";
+import { IProfile } from "@/types/auth";
+import { notifications } from "@mantine/notifications";
+import { FetchResult } from "@/types/types";
 
 export const BASE_URL = `/api/`;
 
@@ -26,8 +28,8 @@ export const fetcher = async (path: string, options?: RequestInit) => {
  * returns an object with the key being the field name and the value being the error message
  */
 export const authLogin = async (
-    user: TLogin
-): Promise<(Partial<TLogin> & { error?: string }) | void> => {
+    user: ILogin
+): Promise<FetchResult<IProfile, Partial<ILogin>>> => {
     try {
         const res = await fetcher("/auth/login", {
             method: "POST",
@@ -35,36 +37,32 @@ export const authLogin = async (
         });
 
         const json = await res?.json();
-
-        if (!res?.ok) {
-            if (json && json.error) {
-                const error = json.error.toLowerCase();
-                if (error.includes("username")) {
-                    return {
-                        username: "Invalid username or password.",
-                    };
-                }
-            }
-            console.log(json);
-            throw new Error("An error occurred");
+        if (res?.ok) {
+            return {
+                success: true,
+                data: json.user as IProfile,
+            };
         }
-    } catch (error) {
-        console.error(error);
+        if (!res?.ok) throw new Error();
+    } catch {
         return {
-            error: "An error occurred",
+            success: false,
+            data: { username: "", password: "Invalid username or password" },
         };
-    } finally {
-        await refreshAuth();
     }
+    return {
+        success: false,
+        data: {},
+    };
 };
 
 /**
  * returns an object with the key being the field name and the value being the error message
  */
 export const authRegister = async (
-    user: TRegister
+    user: IRegister
 ): Promise<
-    (Partial<TRegister> & { birthDate?: string; error?: string }) | void
+    FetchResult<IProfile, Partial<IRegister> & { birthDate?: string }>
 > => {
     try {
         const res = await fetcher("/auth/register", {
@@ -76,16 +74,26 @@ export const authRegister = async (
         });
 
         const json = await res?.json();
+        if (res?.ok) {
+            return {
+                success: true,
+                data: json.user as IProfile,
+            };
+        }
         if (!res?.ok) {
             if (json && json.error) {
                 const error = json.error.toLowerCase();
                 if (error.includes("email")) {
                     return {
-                        email: "Email is already taken",
+                        success: false,
+                        data: { email: "Email is already taken" },
                     };
                 } else if (error.includes("username")) {
                     return {
-                        username: "Username is already taken",
+                        success: false,
+                        data: {
+                            username: "Username is already taken",
+                        },
                     };
                 }
             }
@@ -94,14 +102,17 @@ export const authRegister = async (
     } catch (error) {
         console.error(error);
         return {
-            error: "An error occurred",
+            success: false,
+            data: {},
         };
-    } finally {
-        await refreshAuth();
     }
+    return {
+        success: false,
+        data: {},
+    };
 };
 
-export const authLogout = async () => {
+export const authLogout = async (): Promise<boolean> => {
     try {
         const res = await fetcher("auth/logout", {
             method: "POST",
@@ -115,8 +126,64 @@ export const authLogout = async () => {
         return true;
     } catch {
         return false;
-    } finally {
-        await refreshAuth();
     }
 };
 
+export const checkAuth = async (): Promise<IProfile | false> => {
+    try {
+        const res = await fetcher("/profile/@me");
+        const data = await res?.json();
+        if (!res?.ok) {
+            throw new Error();
+        }
+        return data.user;
+    } catch {
+        return false;
+    }
+};
+
+export const getUser = async (id: string): Promise<IProfile | null> => {
+    try {
+        const res = await fetcher("/profile/" + id);
+
+        if (!res?.ok) {
+            throw new Error("Couldn't find user");
+        }
+        const json = await res?.json();
+        return json.user;
+    } catch {
+        notifications.show({
+            title: "An error occurred",
+            message: "Couldn't find user",
+            color: "red",
+        });
+        return null;
+    }
+};
+
+export const updateUser = async (
+    user: Partial<IUser>
+): Promise<FetchResult<IProfile, Partial<IUser>>> => {
+    try {
+        const res = await fetcher("/profile/@me", {
+            method: "PUT",
+            body: JSON.stringify(user),
+        });
+
+        const json = await res?.json();
+        if (!res?.ok) {
+            throw new Error();
+        }
+
+        return {
+            success: true,
+            data: json.user as IProfile,
+        };
+    } catch {
+        console.error("An error occurred");
+        return {
+            success: false,
+            data: {},
+        };
+    }
+};

@@ -2,14 +2,13 @@
 
 import { registerSchema } from "@/lib/validation";
 import { Box, Button, Flex, Modal, TextInput } from "@mantine/core";
-import {DatePickerInput} from "@mantine/dates"
+import { DatePickerInput } from "@mantine/dates";
 import { useForm, zodResolver } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { IconAt, IconCalendar, IconLock, IconUser } from "@tabler/icons-react";
-import { TRegister } from "@/types/validation";
-import { authRegister } from "@/lib/api";
+import { IRegister } from "@/types/validation";
 import { useRouter } from "next/navigation";
-import { notifications } from "@mantine/notifications";
+import { useAuth } from "@/contexts/auth-provider";
 
 export function RegisterModal() {
     const [opened, { open, close }] = useDisclosure(false);
@@ -28,8 +27,9 @@ export function RegisterModal() {
 
 export default function RegisterComponent({ close }: { close?: () => void }) {
     const router = useRouter();
+    const { register } = useAuth();
 
-    const form = useForm<TRegister>({
+    const form = useForm<IRegister>({
         mode: "uncontrolled",
         initialValues: {
             username: "",
@@ -43,17 +43,10 @@ export default function RegisterComponent({ close }: { close?: () => void }) {
         validate: zodResolver(registerSchema),
     });
 
-    const handleSubmit = async (values: TRegister) => {
-        const fields = await authRegister(values);
+    const handleSubmit = async (values: IRegister) => {
+        const fields = await register(values);
         if (fields) {
-            if (fields.error) {
-                notifications.show({
-                    title: "Couldn't create account",
-                    message: "An error has occurred, please try again later.",
-                });
-            } else {
-                form.setErrors(fields);
-            }
+            form.setErrors(fields);
         } else {
             if (close) {
                 close();
@@ -105,7 +98,7 @@ export default function RegisterComponent({ close }: { close?: () => void }) {
                         label="Birth Date"
                         placeholder="Birth Date"
                         key={form.key("birthDate")}
-                        leftSection={<IconCalendar size={18}/>}
+                        leftSection={<IconCalendar size={18} />}
                         leftSectionPointerEvents="none"
                         withAsterisk
                         {...form.getInputProps("birthDate")}

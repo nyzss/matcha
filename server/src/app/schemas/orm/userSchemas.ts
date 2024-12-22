@@ -61,15 +61,15 @@ export const publicUserSchema: TableSchema = {
         nullable: true
     },
     gender: {
-        type: 'number',
-        nullable: true
+        type: "string",
+        nullable: true,
     },
     biography: {
         type: 'string',
         nullable: true,
     },
     sexual_orientation: {
-        type: 'number',
+        type: "string",
         nullable: true,
     },
     pictures: {

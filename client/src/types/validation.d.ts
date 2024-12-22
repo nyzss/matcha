@@ -2,6 +2,7 @@ import {
     loginSchema,
     preferencesSchema,
     registerSchema,
+    userSchema,
 } from "@/lib/validation";
 import { z } from "zod";
 
@@ -12,7 +13,8 @@ export interface IRoute {
     auth?: boolean;
 }
 
-export type TLogin = z.infer<typeof loginSchema>;
-export type TRegister = z.infer<typeof registerSchema>;
+export type ILogin = z.infer<typeof loginSchema>;
+export type IRegister = z.infer<typeof registerSchema>;
 
-export type TPreferences = z.infer<typeof preferencesSchema>;
+export type IUser = z.infer<typeof userSchema>;
+export type IPreferences = z.infer<typeof preferencesSchema>;

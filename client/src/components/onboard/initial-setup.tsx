@@ -16,9 +16,9 @@ import {
     Textarea,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm, zodResolver } from "@mantine/form";
-import { TPreferences } from "@/types/validation";
+import { IPreferences } from "@/types/validation";
 import {
     ACCEPTED_IMAGE_TYPES,
     GENDERS,
@@ -27,25 +27,26 @@ import {
     SEXUAL_PREFERENCES,
 } from "@/lib/validation";
 import { IconMail, IconPhoto, IconUpload, IconX } from "@tabler/icons-react";
-import { usePreferencesStore } from "@/lib/store";
-import { useShallow } from "zustand/react/shallow";
 import { Dropzone } from "@mantine/dropzone";
+import { useAuth } from "@/contexts/auth-provider";
 
 export default function InitialSetup() {
     const [opened, { open, close }] = useDisclosure(false);
+    const [step, setStep] = useState(0);
+    const { logged } = useAuth();
 
-    const { step, next, prev } = usePreferencesStore(
-        useShallow((state) => ({
-            step: state.step,
-            next: state.next,
-            prev: state.prev,
-        }))
-    );
+    const next = () => {
+        setStep((prev) => prev + 1);
+    };
 
-    const form = useForm<TPreferences>({
+    const prev = () => {
+        setStep((p) => p - 1);
+    };
+
+    const form = useForm<IPreferences>({
         initialValues: {
             gender: "",
-            sexualPreference: "",
+            sexualOrientation: "",
             biography: "",
             tags: [],
             pictures: [],
@@ -54,7 +55,7 @@ export default function InitialSetup() {
         validate: zodResolver(preferencesSchema),
     });
 
-    const handleSubmit = async (values: TPreferences) => {
+    const handleSubmit = async (values: IPreferences) => {
         try {
             console.log(values);
         } catch (error) {
@@ -63,11 +64,10 @@ export default function InitialSetup() {
     };
 
     useEffect(() => {
-        open();
-        close();
-    }, [close, open]);
-
-    // const canClose = useMemo(() => step !== 0, [step]);
+        if (logged) {
+            open();
+        }
+    }, [open, logged]);
 
     return (
         <Modal
@@ -128,8 +128,8 @@ export default function InitialSetup() {
                                     label="Sexual Preference"
                                     placeholder="Woman"
                                     data={SEXUAL_PREFERENCES}
-                                    key={form.key("sexualPreference")}
-                                    {...form.getInputProps("sexualPreference")}
+                                    key={form.key("sexualOrientation")}
+                                    {...form.getInputProps("sexualOrientation")}
                                 />
                             </Stack>
                         </form>

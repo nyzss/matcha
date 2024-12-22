@@ -43,6 +43,11 @@ export class ProfileController {
         try {
             const form = request.body as userProfileSettings;
 
+            // error if the username is the same as the one sent, we just remove it from the object
+            if (form.username === request.user.username) {
+                delete form.username;
+            }
+
             const user = await this.userService.updateProfile(userID, {
                 username: form?.username,
                 gender: form?.gender,
