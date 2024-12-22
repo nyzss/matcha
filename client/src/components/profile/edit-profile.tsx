@@ -104,7 +104,13 @@ export default function EditProfile() {
                     </Flex>
                 </form>
             </Modal>
-            <Button ml={"auto"} variant="light" onClick={open}>
+            <Button
+                ml={{
+                    sm: "auto",
+                }}
+                variant="light"
+                onClick={open}
+            >
                 Edit Profile
             </Button>
         </>

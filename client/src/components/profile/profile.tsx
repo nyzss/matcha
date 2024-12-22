@@ -2,6 +2,7 @@
 
 import {
     Avatar,
+    Badge,
     Box,
     Card,
     Flex,
@@ -18,16 +19,19 @@ import { useAuth } from "@/contexts/auth-provider";
 
 export default function Profile({ id }: { id: string }) {
     const [currentUser, setCurrentUser] = useState<IProfile | null>(null);
+    const [isMe, setIsMe] = useState<boolean>(false);
 
     const { user } = useAuth();
 
     useEffect(() => {
-        if (id === "@me") {
+        const checkIsMe = id === "@me";
+        setIsMe(checkIsMe);
+        if (checkIsMe) {
             setCurrentUser(user);
         } else {
             getUser(id).then((data) => setCurrentUser(data));
         }
-    }, [id, user]);
+    }, [isMe, id, user]);
 
     const images = [
         "https://api.dicebear.com/9.x/glass/svg?seed=qwertyui",
@@ -50,7 +54,20 @@ export default function Profile({ id }: { id: string }) {
                         fit="cover"
                     />
                 </Card.Section> */}
-                <Flex justify={"center"} align={"center"} py={16}>
+                <Flex
+                    justify={{
+                        sm: "center",
+                    }}
+                    align={{
+                        sm: "center",
+                    }}
+                    py={16}
+                    gap={"sm"}
+                    direction={{
+                        base: "column",
+                        sm: "row",
+                    }}
+                >
                     <Flex direction={"column"}>
                         <Avatar
                             color="initials"
@@ -65,8 +82,18 @@ export default function Profile({ id }: { id: string }) {
                         <Text>
                             {currentUser?.biography || "No biography set"}
                         </Text>
+                        <Text fw={"bold"} size="md" mt={8} mb={4}>
+                            Interests
+                        </Text>
+                        <Flex gap={"md"} wrap={"wrap"}>
+                            {user?.tags?.map((tag) => (
+                                <Badge key={tag} size="lg">
+                                    {tag}
+                                </Badge>
+                            ))}
+                        </Flex>
                     </Flex>
-                    <EditProfile />
+                    {isMe && <EditProfile />}
                 </Flex>
                 <Carousel withIndicators>
                     {images.map((image, index) => (
