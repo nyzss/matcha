@@ -18,26 +18,24 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const login = async (data: ILogin): Promise<Partial<IProfile> | null> => {
         const result = await authLogin(data);
 
-        console.log("triggered login", result, !!result);
-        if (result === null) {
+        if (!result.success) {
             setUser(null);
+            return result.data;
             // return IProfile type with error to set the form errors (see components/auth/login.tsx)
-            return {
-                username: "Invalid username or password",
-            };
         } else {
-            setUser(result);
+            setUser(result.data);
+            return null;
         }
-        return null;
     };
 
     const register = async (
         data: IRegister
     ): Promise<Partial<IProfile> | null> => {
         const result = await authRegister(data);
-        if (result) {
-            return result;
+        if (!result.success) {
+            return result.data;
         }
+        setUser(result.data);
         return null;
     };
 
@@ -57,6 +55,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             }
             setLoading(false);
         };
+
         checkUser();
     }, [setUser]);
 
@@ -86,4 +85,3 @@ export const useAuth = () => {
 };
 
 export default AuthProvider;
-

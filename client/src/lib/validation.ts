@@ -2,18 +2,18 @@ import { z } from "zod";
 
 const messages = {
     username: {
-        min: { message: "Username must be at least 3 characters long" },
+        min: { message: "Username must be at least 2 characters long" },
         max: { message: "Username mustn't exceed 32 characters" },
     },
     email: {
         email: { message: "Invalid email address" },
     },
     firstName: {
-        min: { message: "First name must be at least 3 characters long" },
+        min: { message: "First name must be at least 2 characters long" },
         max: { message: "First name mustn't exceed 32 characters" },
     },
     lastName: {
-        min: { message: "Last name must be at least 3 characters long" },
+        min: { message: "Last name must be at least 2 characters long" },
         max: { message: "Last name mustn't exceed 32 characters" },
     },
     password: {
@@ -85,15 +85,15 @@ export const loginSchema = z.object({
 export const userSchemaPartial = z.object({
     username: z
         .string()
-        .min(3, messages.username.min)
+        .min(2, messages.username.min)
         .max(32, messages.username.max),
     firstName: z
         .string()
-        .min(3, messages.firstName.min)
+        .min(2, messages.firstName.min)
         .max(32, messages.firstName.max),
     lastName: z
         .string()
-        .min(3, messages.lastName.min)
+        .min(2, messages.lastName.min)
         .max(32, messages.lastName.max),
     email: z.string().email(messages.email.email),
 });

@@ -1,6 +1,7 @@
 import { ILogin, IRegister } from "@/types/validation";
 import { IProfile } from "@/types/auth";
 import { notifications } from "@mantine/notifications";
+import { FetchResult } from "@/types/types";
 
 export const BASE_URL = `/api/`;
 
@@ -26,19 +27,35 @@ export const fetcher = async (path: string, options?: RequestInit) => {
 /**
  * returns an object with the key being the field name and the value being the error message
  */
-export const authLogin = async (user: ILogin): Promise<IProfile | null> => {
+export const authLogin = async (
+    user: ILogin
+): Promise<FetchResult<IProfile, Partial<ILogin>>> => {
     try {
         const res = await fetcher("/auth/login", {
             method: "POST",
             body: JSON.stringify(user),
         });
 
-        const json: IProfile = (await res?.json()).user;
+        const json = await res?.json();
+        if (res?.ok) {
+            return {
+                success: true,
+                data: {
+                    ...(json.user as IProfile),
+                },
+            };
+        }
         if (!res?.ok) throw new Error();
-        return json;
     } catch {
-        return null;
+        return {
+            success: false,
+            data: { username: "", password: "Invalid username or password" },
+        };
     }
+    return {
+        success: false,
+        data: {},
+    };
 };
 
 /**
@@ -47,7 +64,7 @@ export const authLogin = async (user: ILogin): Promise<IProfile | null> => {
 export const authRegister = async (
     user: IRegister
 ): Promise<
-    (Partial<IRegister> & { birthDate?: string; error?: string }) | void
+    FetchResult<IProfile, Partial<IRegister> & { birthDate?: string }>
 > => {
     try {
         const res = await fetcher("/auth/register", {
@@ -59,16 +76,28 @@ export const authRegister = async (
         });
 
         const json = await res?.json();
+        if (res?.ok) {
+            return {
+                success: true,
+                data: {
+                    ...(json.user as IProfile),
+                },
+            };
+        }
         if (!res?.ok) {
             if (json && json.error) {
                 const error = json.error.toLowerCase();
                 if (error.includes("email")) {
                     return {
-                        email: "Email is already taken",
+                        success: false,
+                        data: { email: "Email is already taken" },
                     };
                 } else if (error.includes("username")) {
                     return {
-                        username: "Username is already taken",
+                        success: false,
+                        data: {
+                            username: "Username is already taken",
+                        },
                     };
                 }
             }
@@ -77,9 +106,14 @@ export const authRegister = async (
     } catch (error) {
         console.error(error);
         return {
-            error: "An error occurred",
+            success: false,
+            data: {},
         };
     }
+    return {
+        success: false,
+        data: {},
+    };
 };
 
 export const authLogout = async (): Promise<boolean> => {
@@ -102,11 +136,11 @@ export const authLogout = async (): Promise<boolean> => {
 export const checkAuth = async (): Promise<IProfile | false> => {
     try {
         const res = await fetcher("/profile/@me");
-        const data: IProfile = (await res?.json()).user;
+        const data = await res?.json();
         if (!res?.ok) {
             throw new Error();
         }
-        return data;
+        return data.user;
     } catch {
         return false;
     }
@@ -140,4 +174,3 @@ export const updateUser = async (user: Partial<IProfile>) => {
         return false;
     }
 };
-
