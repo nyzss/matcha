@@ -1,4 +1,4 @@
-import LoginComponent from "@/components/auth/login";
+import LoginComponent from "@/components/auth/login-form";
 import { Anchor, Box, Text } from "@mantine/core";
 import Link from "next/link";
 

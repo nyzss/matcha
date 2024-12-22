@@ -1,4 +1,4 @@
-import RegisterComponent from "@/components/auth/register";
+import RegisterComponent from "@/components/auth/register-form";
 import { Anchor, Box, Text } from "@mantine/core";
 import Link from "next/link";
 
