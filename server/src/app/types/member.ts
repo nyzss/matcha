@@ -1,15 +1,27 @@
-export enum userGender {
-    MALE = 0,
-    FEMALE = 1,
-    OTHER = 2
-}
+// export enum userGender {
+//     MALE = 0,
+//     FEMALE = 1,
+//     OTHER = 2
+// }
 
-export enum userSexualOrientation {
-    HOMOSEXUAL = 0,
-    HETEROSEXUAL = 1,
-    BISEXUAL = 2,
-    PANSEXUAL = 3,
-}
+// export enum userSexualOrientation {
+//     HOMOSEXUAL = 0,
+//     HETEROSEXUAL = 1,
+//     BISEXUAL = 2,
+//     PANSEXUAL = 3,
+// }
+
+export const userGender = ["Man", "Woman", "Beyond Binary"] as const;
+export const userSexualOrientation = [
+    "Man",
+    "Woman",
+    "Both",
+    "Neither",
+    "Other",
+] as const;
+
+export type TUserGender = typeof userGender;
+export type TUserSexualOrientation = typeof userSexualOrientation;
 
 export interface userSettings {
     email: string;
@@ -22,9 +34,9 @@ export interface userSettings {
 
 export interface userProfileSettings {
     username?: string,
-    gender?: userGender,
+    gender?: TUserGender,
     biography?: string,
-    sexualOrientation?: userSexualOrientation,
+    sexualOrientation?: TUserSexualOrientation,
     tags?: string[],
     pictures?: string[],
 }
@@ -37,9 +49,9 @@ export interface userProfile {
     lastName: string;
     isConnected?: boolean;
     age: number;
-    gender: userGender | null;
+    gender: TUserGender | null;
     biography: string | null;
-    sexualOrientation: userSexualOrientation | null;
+    sexualOrientation: TUserSexualOrientation | null;
     pictures: string[];
     tags: string[];
 }

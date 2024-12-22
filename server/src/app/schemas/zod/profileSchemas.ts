@@ -1,27 +1,35 @@
 import { z } from "zod";
-import {userGender, userSexualOrientation} from "../../types/member";
+import { userGender, userSexualOrientation } from "../../types/member";
 
-const GenderEnum = z.nativeEnum(userGender);
+// gender: z.union([z.enum(GENDERS), z.literal("")]),
+// sexualPreference: z.union([z.enum(SEXUAL_PREFERENCES), z.literal("")]),
 
-const SexualOrientationEnum = z.nativeEnum(userSexualOrientation);
+const GenderEnum = z.union([z.enum(userGender), z.literal("")]);
+
+const SexualOrientationEnum = z.union([
+    z.enum(userSexualOrientation),
+    z.literal(""),
+]);
 
 export const userProfileSettings = z
     .object({
-        username: z.string().min(3).max(24).optional(),
-        gender: GenderEnum.optional(),
-        biography: z.string().optional(),
-        sexualOrientation: SexualOrientationEnum.optional(),
-        tags: z.array(z.string()).optional(),
-        pictures: z.array(z.string()).optional(),
+        username: z.string().min(3).max(24),
+        gender: GenderEnum,
+        biography: z.string(),
+        sexualOrientation: SexualOrientationEnum,
+        tags: z.array(z.string()),
+        pictures: z.array(z.string()),
     })
+    .partial()
     .refine(
-        (data) =>
-            data.username !== undefined ||
-            data.gender !== undefined ||
-            data.biography !== undefined ||
-            data.sexualOrientation !== undefined ||
-            data.tags !== undefined ||
-            data.pictures !== undefined,
+        (data) => {
+            for (const el in Object.values(data)) {
+                if (el !== undefined) {
+                    return true;
+                }
+                return false;
+            }
+        },
         {
             message: "At least one field must be provided",
             path: [],
