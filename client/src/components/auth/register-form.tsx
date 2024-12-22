@@ -57,14 +57,15 @@ export default function RegisterComponent({ close }: { close?: () => void }) {
     };
 
     return (
-        <Box>
-            <form onSubmit={form.onSubmit(handleSubmit)}>
+        <form onSubmit={form.onSubmit(handleSubmit)}>
+            <Flex gap={"md"} direction={"column"} mt={"sm"}>
                 <Flex gap={"md"}>
                     <TextInput
                         label="First Name"
                         placeholder="First Name"
                         key={form.key("firstName")}
                         withAsterisk
+                        w={"100%"}
                         {...form.getInputProps("firstName")}
                     />
                     <TextInput
@@ -72,62 +73,62 @@ export default function RegisterComponent({ close }: { close?: () => void }) {
                         placeholder="Last Name"
                         key={form.key("lastName")}
                         withAsterisk
+                        w={"100%"}
                         {...form.getInputProps("lastName")}
                     />
                 </Flex>
-                <Flex gap={"md"} direction={"column"} mt={"sm"}>
-                    <TextInput
-                        label="Username"
-                        placeholder="Username"
-                        key={form.key("username")}
-                        withAsterisk
-                        leftSection={<IconUser size={18} />}
-                        leftSectionPointerEvents="none"
-                        {...form.getInputProps("username")}
-                    />
-                    <TextInput
-                        label="Email"
-                        placeholder="Email"
-                        key={form.key("email")}
-                        leftSection={<IconAt size={18} />}
-                        leftSectionPointerEvents="none"
-                        withAsterisk
-                        {...form.getInputProps("email")}
-                    />
-                    <DatePickerInput
-                        label="Birth Date"
-                        placeholder="Birth Date"
-                        key={form.key("birthDate")}
-                        leftSection={<IconCalendar size={18} />}
-                        leftSectionPointerEvents="none"
-                        withAsterisk
-                        {...form.getInputProps("birthDate")}
-                    />
-                    <TextInput
-                        label="Password"
-                        placeholder="Password"
-                        type="password"
-                        key={form.key("password")}
-                        leftSection={<IconLock size={18} />}
-                        leftSectionPointerEvents="none"
-                        withAsterisk
-                        {...form.getInputProps("password")}
-                    />
-                    <TextInput
-                        label="Confirm Password"
-                        placeholder="Confirm Password"
-                        type="password"
-                        key={form.key("confirmPassword")}
-                        leftSection={<IconLock size={18} />}
-                        leftSectionPointerEvents="none"
-                        withAsterisk
-                        {...form.getInputProps("confirmPassword")}
-                    />
-                </Flex>
-                <Button type="submit" my={"lg"}>
-                    Register
-                </Button>
-            </form>
-        </Box>
+
+                <TextInput
+                    label="Username"
+                    placeholder="Username"
+                    key={form.key("username")}
+                    withAsterisk
+                    leftSection={<IconUser size={18} />}
+                    leftSectionPointerEvents="none"
+                    {...form.getInputProps("username")}
+                />
+                <TextInput
+                    label="Email"
+                    placeholder="Email"
+                    key={form.key("email")}
+                    leftSection={<IconAt size={18} />}
+                    leftSectionPointerEvents="none"
+                    withAsterisk
+                    {...form.getInputProps("email")}
+                />
+                <DatePickerInput
+                    label="Birth Date"
+                    placeholder="Birth Date"
+                    key={form.key("birthDate")}
+                    leftSection={<IconCalendar size={18} />}
+                    leftSectionPointerEvents="none"
+                    withAsterisk
+                    {...form.getInputProps("birthDate")}
+                />
+                <TextInput
+                    label="Password"
+                    placeholder="Password"
+                    type="password"
+                    key={form.key("password")}
+                    leftSection={<IconLock size={18} />}
+                    leftSectionPointerEvents="none"
+                    withAsterisk
+                    {...form.getInputProps("password")}
+                />
+                <TextInput
+                    label="Confirm Password"
+                    placeholder="Confirm Password"
+                    type="password"
+                    key={form.key("confirmPassword")}
+                    leftSection={<IconLock size={18} />}
+                    leftSectionPointerEvents="none"
+                    withAsterisk
+                    {...form.getInputProps("confirmPassword")}
+                />
+            </Flex>
+            <Button type="submit" my={"lg"}>
+                Register
+            </Button>
+        </form>
     );
 }

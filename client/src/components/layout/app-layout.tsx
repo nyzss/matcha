@@ -90,6 +90,28 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                             ))}
                         </Flex>
                         {logged && <UserBox />}
+                        {!logged && (
+                            <Flex
+                                display={{
+                                    sm: "none",
+                                }}
+                                mt={"auto"}
+                                gap={"md"}
+                                w={"100%"}
+                            >
+                                <Link href={"/login"} style={{ width: "100%" }}>
+                                    <Button variant="light" w={"100%"}>
+                                        Login
+                                    </Button>
+                                </Link>
+                                <Link
+                                    href={"/register"}
+                                    style={{ width: "100%" }}
+                                >
+                                    <Button w={"100%"}>Register</Button>
+                                </Link>
+                            </Flex>
+                        )}
                     </Flex>
                 </Flex>
             </AppShell.Navbar>
@@ -139,4 +161,3 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </AppShell>
     );
 }
-

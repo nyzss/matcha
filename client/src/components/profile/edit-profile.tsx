@@ -84,10 +84,11 @@ export default function EditProfile() {
                                 placeholder="Write something about yourself"
                                 key={form.key("biography")}
                                 size="lg"
+                                maxLength={255}
                                 {...form.getInputProps("biography")}
                             />
                             <Text size="sm" ml={"auto"}>
-                                {length} / 256
+                                {length} / 255
                             </Text>
                         </Flex>
                         <Select

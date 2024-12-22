@@ -54,46 +54,38 @@ export default function Profile({ id }: { id: string }) {
                         fit="cover"
                     />
                 </Card.Section> */}
-                <Flex
-                    justify={{
-                        sm: "center",
-                    }}
-                    align={{
-                        sm: "center",
-                    }}
-                    py={16}
-                    gap={"sm"}
-                    direction={{
-                        base: "column",
-                        sm: "row",
-                    }}
-                >
-                    <Flex direction={"column"}>
-                        <Avatar
-                            color="initials"
-                            name={`${currentUser?.firstName} ${currentUser?.lastName}`}
-                            size={100}
-                            mt={8}
-                        />
+                <Flex direction={"column"} py={16}>
+                    <Avatar
+                        color="initials"
+                        name={`${currentUser?.firstName} ${currentUser?.lastName}`}
+                        size={100}
+                        mt={8}
+                    />
+                    <Flex
+                        direction={{
+                            base: "column",
+                            sm: "row",
+                        }}
+                    >
                         <Text size="xl" fw={"bold"} mt={4}>
                             {currentUser?.firstName} {currentUser?.lastName} (@
                             {currentUser?.username})
                         </Text>
-                        <Text>
-                            {currentUser?.biography || "No biography set"}
-                        </Text>
-                        <Text fw={"bold"} size="md" mt={8} mb={4}>
-                            Interests
-                        </Text>
-                        <Flex gap={"md"} wrap={"wrap"}>
-                            {user?.tags?.map((tag) => (
-                                <Badge key={tag} size="lg">
-                                    {tag}
-                                </Badge>
-                            ))}
-                        </Flex>
+                        {isMe && <EditProfile />}
                     </Flex>
-                    {isMe && <EditProfile />}
+                    <Text mt={8}>
+                        {currentUser?.biography || "No biography set"}
+                    </Text>
+                    <Text fw={"bold"} size="md" mt={8} mb={4}>
+                        Interests
+                    </Text>
+                    <Flex gap={"md"} wrap={"wrap"}>
+                        {user?.tags?.map((tag) => (
+                            <Badge key={tag} size="lg">
+                                {tag}
+                            </Badge>
+                        ))}
+                    </Flex>
                 </Flex>
                 <Carousel withIndicators>
                     {images.map((image, index) => (
