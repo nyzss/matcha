@@ -4,14 +4,16 @@ import { authLogin, authLogout, authRegister, checkAuth } from "@/lib/api";
 import { IProfile } from "@/types/auth";
 import { IAuthContext } from "@/types/contexts";
 import { ILogin, IRegister } from "@/types/validation";
-import { createContext, useContext, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useAtom } from "jotai";
 import { userAtom } from "@/lib/store";
+import { LoadingOverlay } from "@mantine/core";
 
 export const AuthContext = createContext<IAuthContext | null>(null);
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useAtom(userAtom);
+    const [loading, setLoading] = useState<boolean>(true);
 
     const login = async (data: ILogin): Promise<Partial<IProfile> | null> => {
         const result = await authLogin(data);
@@ -47,20 +49,29 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         const checkUser = async () => {
-            const user = await checkAuth();
-            if (!user) {
+            const data = await checkAuth();
+            if (!data) {
                 setUser(null);
             } else {
-                setUser(user);
+                setUser(data);
             }
+            setLoading(false);
         };
         checkUser();
     }, [setUser]);
 
+    const logged = !!user;
+
+    if (loading) {
+        return (
+            <>
+                <LoadingOverlay visible={loading} />
+            </>
+        );
+    }
+
     return (
-        <AuthContext.Provider
-            value={{ user, logged: !!user, login, logout, register }}
-        >
+        <AuthContext.Provider value={{ user, logged, login, logout, register }}>
             {children}
         </AuthContext.Provider>
     );
