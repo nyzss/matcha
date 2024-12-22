@@ -25,51 +25,6 @@ const messages = {
     },
 };
 
-export const loginSchema = z.object({
-    username: z
-        .string()
-        .min(1, { message: "Username is required" })
-        .max(1000, { message: "You cannot have a username that long!" }),
-    password: z
-        .string()
-        .min(1, { message: "Password is required" })
-        .max(1000, { message: "You cannot have a password that long!" }),
-});
-
-export const registerSchema = z
-    .object({
-        username: z
-            .string()
-            .min(3, messages.username.min)
-            .max(32, messages.username.max),
-        firstName: z
-            .string()
-            .min(3, messages.firstName.min)
-            .max(32, messages.firstName.max),
-        lastName: z
-            .string()
-            .min(3, messages.lastName.min)
-            .max(32, messages.lastName.max),
-        email: z.string().email(messages.email.email),
-        password: z
-            .string()
-            .min(6, messages.password.min)
-            .max(64, messages.password.max),
-        confirmPassword: z
-            .string()
-            .min(1, { message: "Confirm password is required" }),
-        birthDate: z
-            .date({ message: "Please enter a valid birth date" })
-            .max(
-                new Date(new Date().setFullYear(new Date().getFullYear() - 18)),
-                { message: "You must be at least 18 years old" }
-            ),
-    })
-    .refine((data) => data.password === data.confirmPassword, {
-        message: messages.confirmPassword.invalid.message,
-        path: ["confirmPassword"],
-    });
-
 // const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 export const MAX_FILE_SIZE = 2 ** 23; // 8MB
 export const ACCEPTED_IMAGE_TYPES = [
@@ -116,3 +71,55 @@ export const preferencesSchema = z.object({
         ),
 });
 
+export const loginSchema = z.object({
+    username: z
+        .string()
+        .min(1, { message: "Username is required" })
+        .max(1000, { message: "You cannot have a username that long!" }),
+    password: z
+        .string()
+        .min(1, { message: "Password is required" })
+        .max(1000, { message: "You cannot have a password that long!" }),
+});
+
+export const userSchemaPartial = z.object({
+    username: z
+        .string()
+        .min(3, messages.username.min)
+        .max(32, messages.username.max),
+    firstName: z
+        .string()
+        .min(3, messages.firstName.min)
+        .max(32, messages.firstName.max),
+    lastName: z
+        .string()
+        .min(3, messages.lastName.min)
+        .max(32, messages.lastName.max),
+    email: z.string().email(messages.email.email),
+});
+
+export const registerSchema = z
+    .object({
+        ...userSchemaPartial.shape,
+        birthDate: z
+            .date({ message: "Please enter a valid birth date" })
+            .max(
+                new Date(new Date().setFullYear(new Date().getFullYear() - 18)),
+                {
+                    message: "You must be at least 18 years old",
+                }
+            ),
+        password: z
+            .string()
+            .min(6, messages.password.min)
+            .max(64, messages.password.max),
+        confirmPassword: z
+            .string()
+            .min(1, { message: "Confirm password is required" }),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: messages.confirmPassword.invalid.message,
+        path: ["confirmPassword"],
+    });
+
+export const userSchema = userSchemaPartial.merge(preferencesSchema).partial();

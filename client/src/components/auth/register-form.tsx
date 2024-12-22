@@ -131,4 +131,3 @@ export default function RegisterComponent({ close }: { close?: () => void }) {
         </Box>
     );
 }
-
