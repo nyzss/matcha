@@ -9,11 +9,19 @@ export type SocketStore = Map<string, {
     socket: Socket,
 }>;
 
+export enum NotificationType {
+    like = 'Like',
+    view = 'View',
+    connected = 'Connected',
+    unConnected = 'UnConnected',
+}
+
 export enum SocketEvent {
     cookieNotFound = 'CookieNotFound',
     tokenNotFound = 'TokenNotFound',
     userNotFound = 'UserNotFound',
     userConnected = 'UserConnected',
+    notificationCreate = 'NotificationCreate',
     messageCreate = 'MessageCreate',
 }
 

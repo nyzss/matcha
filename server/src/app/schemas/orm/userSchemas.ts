@@ -197,3 +197,46 @@ export const blockSchema: TableSchema = {
         defaultValue: 'CURRENT_TIMESTAMP',
     },
 }
+
+export const notificationSchema: TableSchema = {
+    id: {
+        type: 'number',
+        primary: true,
+        nullable: false,
+        autoIncrement: true,
+    },
+    user_id: {
+        type: 'number',
+        nullable: false,
+        relation: {
+            type: 'one-to-one',
+            table: 'userSchema',
+            field: 'id',
+            onDelete: 'CASCADE',
+        },
+    },
+    sender_id: {
+        type: 'number',
+        nullable: false,
+        relation: {
+            type: 'one-to-one',
+            table: 'userSchema',
+            field: 'id',
+            onDelete: 'CASCADE',
+        },
+    },
+    type: {
+        type: 'string',
+        nullable: false,
+    },
+    read: {
+        type: 'boolean',
+        nullable: false,
+        defaultValue: false,
+    },
+    created_at: {
+        type: 'date',
+        nullable: false,
+        defaultValue: 'CURRENT_TIMESTAMP',
+    },
+}
