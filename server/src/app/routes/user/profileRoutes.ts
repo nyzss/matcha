@@ -57,6 +57,14 @@ const authRoutes: FastifyPluginAsync = async (app) => {
         profileController.getProfileLike.bind(profileController)
     );
 
+    app.delete(
+        "/:username/like",
+        {
+            preHandler: [app.verifyAuth],
+        },
+        profileController.removeProfileLike.bind(profileController)
+    );
+
     app.get(
         "/@me/block",
         {
@@ -82,6 +90,14 @@ const authRoutes: FastifyPluginAsync = async (app) => {
             preHandler: [app.verifyAuth],
         },
         profileController.getProfilView.bind(profileController)
+    );
+
+    app.get(
+        "/@me/notification",
+        {
+            preHandler: [app.verifyAuth],
+        },
+        profileController.getProfileNotification.bind(profileController)
     );
 };
 

@@ -84,6 +84,10 @@ export const publicUserSchema: TableSchema = {
         type: 'json',
         nullable: true
     },
+    last_connection: {
+        type: 'date',
+        nullable: true
+    },
     user_id: {
         type: 'number',
         nullable: true,

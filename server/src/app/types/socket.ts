@@ -35,6 +35,7 @@ export interface SocketData {
 declare module 'fastify' {
     interface FastifyInstance {
         io: Server<Record<string, any>>;
+        userOnline: (userId: string) => boolean;
         sendSocket: (userId: string, data: SocketData) => void;
         sendsSocket: (userIds: string[], data: SocketData) => void;
     }

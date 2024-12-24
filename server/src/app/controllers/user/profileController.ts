@@ -15,6 +15,8 @@ export class ProfileController {
         if (request.url.endsWith("/@me"))
             return {
                 user: request.user,
+                notifications: (await this.userService.getNotifications(request.user.id)).total,
+                views: (await this.userService.getViews(request.user.id)).total,
             };
         try {
             const { username } = request.params as { username: string };
@@ -72,10 +74,7 @@ export class ProfileController {
                 const user = request.user;
                 const view = await this.userService.getViews(user.id);
 
-                return {
-                    users: view.users,
-                    view: view.view,
-                };
+                return view;
 
             } else {
                 throw new Error("Unauthorized");
@@ -91,7 +90,7 @@ export class ProfileController {
             const { username } = request.params as { username: string };
             const user = await this.userService.getUserByUsername(username);
 
-            return await this.userService.setLike(request?.user?.id, user.id);
+            return await this.userService.setLike(user.id, request?.user?.id);
         } catch (error: Error | any) {
             return reply.status(404).send({ error: error.message });
         }
@@ -102,7 +101,7 @@ export class ProfileController {
             const { username } = request.params as { username: string };
             const user = await this.userService.getUserByUsername(username);
 
-            return await this.userService.deleteLike(request?.user?.id, user.id);
+            return await this.userService.deleteLike(user.id, request?.user?.id);
         } catch (error: Error | any) {
             return reply.status(404).send({ error: error.message });
         }
@@ -113,7 +112,7 @@ export class ProfileController {
             const { username } = request.params as { username: string };
             const user = await this.userService.getUserByUsername(username);
 
-            return await this.userService.getLike(request?.user?.id, user.id);
+            return await this.userService.getLike(user.id, request?.user?.id);
         } catch (error: Error | any) {
             return reply.status(404).send({error: error.message});
         }
@@ -124,7 +123,7 @@ export class ProfileController {
             const { username } = request.params as { username: string };
             const user = await this.userService.getUserByUsername(username);
 
-            await this.userService.blockUser(request?.user?.id, user.id);
+            await this.userService.blockUser(user.id, request?.user?.id);
 
             return {message: "User blocked"};
         } catch (error: Error | any) {
@@ -137,7 +136,7 @@ export class ProfileController {
             const { username } = request.params as { username: string };
             const user = await this.userService.getUserByUsername(username);
 
-            await this.userService.unblockUser(request?.user?.id, user.id);
+            await this.userService.unblockUser(user.id, request?.user?.id);
 
             return {message: "User unblocked"};
         } catch (error: Error | any) {
@@ -150,6 +149,16 @@ export class ProfileController {
             const blocked = await this.userService.getBlockedUsers(request?.user?.id);
 
             return blocked;
+        } catch (error: Error | any) {
+            return reply.status(404).send({error: error.message});
+        }
+    }
+
+    async getProfileNotification(request: FastifyRequest, reply: FastifyReply) {
+        try {
+            const notifications = await this.userService.getNotifications(request?.user?.id, true);
+
+            return notifications;
         } catch (error: Error | any) {
             return reply.status(404).send({error: error.message});
         }
