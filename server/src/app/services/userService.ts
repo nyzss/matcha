@@ -1,14 +1,29 @@
-import fastify, { FastifyInstance } from 'fastify';
-import bcrypt from 'bcrypt';
-import { ORM } from '../types/orm';
-import {RegisterForm, AuthResult, LoginForm} from "../types/auth";
-import fastifyJwt, {VerifyPayloadType} from "@fastify/jwt";
-import {userProfile, userProfileSettings, userProfileLike, userProfileView} from "../types/member";
+import {FastifyInstance} from 'fastify';
+import {ORM} from '../types/orm';
+import {userProfile, userProfileLike, userProfileSettings, userProfileView} from "../types/member";
+import {NotificationType, SocketEvent} from "../types/socket";
 
 export class UserService {
     private orm: ORM;
+    private app: FastifyInstance;
     constructor(fastify: FastifyInstance) {
         this.orm = fastify.orm;
+        this.app = fastify;
+    }
+
+    async notifyUser(id: number, meId: number, type: string): Promise<void> {
+        await this.orm.query(
+            `INSERT INTO notifications (user_id, notifier_id, type) VALUES ($1, $2, $3)`,
+            [id, meId, type]
+        );
+
+        this.app.sendSocket(id.toString(), {
+            event: SocketEvent.notificationCreate,
+            data: {
+                type: type,
+                sender: await this.getUserById(meId),
+            },
+        });
     }
 
     async blockUser(id: number, blockerId: number): Promise<void> {
@@ -250,7 +265,12 @@ export class UserService {
             `SELECT COUNT(id) FROM likes WHERE user_id = $1`,
             [id]
         );
-        
+
+        if (await this.userConnectedTo(id, likedId))
+            await this.notifyUser(id, likedId, NotificationType.connected);
+        else
+            await this.notifyUser(id, likedId, NotificationType.like);
+
         return {
             like: {
                 me: true,
@@ -268,10 +288,16 @@ export class UserService {
         if (result.length === 0)
             throw new Error("Like not found");
 
+        if (await this.userConnectedTo(id, likedId))
+            await this.notifyUser(id, likedId, NotificationType.unConnected);
+        else
+            await this.notifyUser(id, likedId, NotificationType.unLike);
+
         await this.orm.query(
             `DELETE FROM likes WHERE user_id = $1 AND liker_id = $2`,
             [id, likedId]
         );
+
 
         const likesCount = await this.orm.query(
             `SELECT COUNT(id) FROM likes WHERE user_id = $1`,
@@ -318,6 +344,7 @@ export class UserService {
             [viewerId, userId]
         );
 
+
         if (existingView.length > 0) await this.orm.query(
             `UPDATE views SET viewed_at = CURRENT_TIMESTAMP WHERE viewer_id = $1 AND user_id = $2`,
             [viewerId, userId]
@@ -326,6 +353,8 @@ export class UserService {
             `INSERT INTO views (user_id, viewer_id, viewed_at) VALUES ($1, $2, CURRENT_TIMESTAMP)`,
             [userId, viewerId]
         );
+
+        await this.notifyUser(userId, viewerId, NotificationType.view);
     }
 
     async getViews(userId: number): Promise<userProfileView> {

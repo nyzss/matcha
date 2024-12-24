@@ -11,6 +11,7 @@ export type SocketStore = Map<string, {
 
 export enum NotificationType {
     like = 'Like',
+    unLike = 'UnLike',
     view = 'View',
     connected = 'Connected',
     unConnected = 'UnConnected',
