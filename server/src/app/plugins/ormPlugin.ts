@@ -54,7 +54,6 @@ const customPostgresORM: FastifyPluginAsync<OrmOptions> = async (
                 const result: QueryResult = await client.query(text, params);
                 return result.rows;
             } catch (error: unknown) {
-                console.log(error)
                 fastify.log.error(`Query failed: ${text} - ${error instanceof Error ? error.message : 'Unknown error'}`);
                 return [];
             } finally {

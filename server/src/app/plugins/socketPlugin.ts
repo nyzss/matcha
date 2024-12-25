@@ -13,6 +13,12 @@ const customSocketManager: FastifyPluginAsync<SocketManagerOptions> = async (
     const authService = new AuthService(fastify);
     const userService = new UserService(fastify);
 
+    const users: SocketStore = new Map();
+
+    const userOnline = (userId: string) => {
+        return [...users.values()].some((user) => user.userID === userId);
+    }
+
     const sendSocket = async (userId: string, data: SocketData): Promise<void> => {
         fastify.io.to(userId).emit(data.event, data.data)
     };
@@ -24,6 +30,7 @@ const customSocketManager: FastifyPluginAsync<SocketManagerOptions> = async (
     }
 
 
+    fastify.decorate('userOnline', userOnline);
     fastify.decorate('sendSocket', sendSocket);
     fastify.decorate('sendsSocket', sendsSocket);
 
@@ -61,13 +68,13 @@ const customSocketManager: FastifyPluginAsync<SocketManagerOptions> = async (
                         error: 'User not found',
                     });
                 }
-                socket.emit(SocketEvent.userConnected, {
-                    user: {
-                        user,
-                    }
-                })
+                socket.emit(SocketEvent.userConnected, {user})
 
                 socket.join(user.id.toString());
+                users.set(socket.id, {
+                    userID: user.id.toString(),
+                    socket,
+                });
 
                 socket.on("disconnect", () => {
                     console.log('user disconnected');
