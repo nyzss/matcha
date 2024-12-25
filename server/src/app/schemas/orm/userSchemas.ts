@@ -84,6 +84,10 @@ export const publicUserSchema: TableSchema = {
         type: 'json',
         nullable: true
     },
+    last_connection: {
+        type: 'date',
+        nullable: true
+    },
     user_id: {
         type: 'number',
         nullable: true,
@@ -192,6 +196,49 @@ export const blockSchema: TableSchema = {
         },
     },
     blocked_at: {
+        type: 'date',
+        nullable: false,
+        defaultValue: 'CURRENT_TIMESTAMP',
+    },
+}
+
+export const notificationSchema: TableSchema = {
+    id: {
+        type: 'number',
+        primary: true,
+        nullable: false,
+        autoIncrement: true,
+    },
+    user_id: {
+        type: 'number',
+        nullable: false,
+        relation: {
+            type: 'one-to-one',
+            table: 'userSchema',
+            field: 'id',
+            onDelete: 'CASCADE',
+        },
+    },
+    sender_id: {
+        type: 'number',
+        nullable: false,
+        relation: {
+            type: 'one-to-one',
+            table: 'userSchema',
+            field: 'id',
+            onDelete: 'CASCADE',
+        },
+    },
+    type: {
+        type: 'string',
+        nullable: false,
+    },
+    read: {
+        type: 'boolean',
+        nullable: false,
+        defaultValue: false,
+    },
+    created_at: {
         type: 'date',
         nullable: false,
         defaultValue: 'CURRENT_TIMESTAMP',

@@ -11,6 +11,8 @@
 //     PANSEXUAL = 3,
 // }
 
+import {NotificationType} from "./socket";
+
 export const userGender = ["Man", "Woman", "Beyond Binary"] as const;
 export const userSexualOrientation = [
     "Man",
@@ -47,6 +49,8 @@ export interface userProfile {
     avatar: string | null;
     firstName: string;
     lastName: string;
+    isOnline?: boolean;
+    lastConnection?: Date;
     isConnected?: boolean;
     age: number;
     gender: TUserGender | null;
@@ -65,8 +69,14 @@ export interface userProfileLike {
 }
 
 export interface userProfileView {
+    total: number;
     users: userProfile[];
-    view: {
-        count: number;
-    },
+}
+
+export interface userNotification {
+    id: number;
+    user: userProfile;
+    type: NotificationType;
+    read: boolean;
+    createdAt: Date;
 }
