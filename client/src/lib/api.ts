@@ -1,7 +1,7 @@
 import { ILogin, IRegister, IUser } from "@/types/validation";
 import { IProfile } from "@/types/auth";
 import { notifications } from "@mantine/notifications";
-import { FetchResult } from "@/types/types";
+import { FetchResult, IConversation } from "@/types/types";
 
 export const BASE_URL = `/api/`;
 
@@ -185,5 +185,16 @@ export const updateUser = async (
             success: false,
             data: {},
         };
+    }
+};
+
+export const fetchAllConversations = async (): Promise<IConversation[]> => {
+    try {
+        const res = await fetcher("/conversation/@me");
+
+        return (await res?.json()).conversations;
+    } catch {
+        // TODO: might wanna do a better error handling (or not lol)
+        return [];
     }
 };
