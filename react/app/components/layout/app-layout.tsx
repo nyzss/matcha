@@ -98,17 +98,21 @@ export default function AppLayout() {
                                 gap={"md"}
                                 w={"100%"}
                             >
-                                <Link to={"/login"} style={{ width: "100%" }}>
-                                    <Button variant="light" w={"100%"}>
-                                        Login
-                                    </Button>
-                                </Link>
-                                <Link
-                                    to={"/register"}
-                                    style={{ width: "100%" }}
+                                <Button
+                                    component={Link}
+                                    to={"login"}
+                                    variant="light"
+                                    w={"100%"}
                                 >
-                                    <Button w={"100%"}>Register</Button>
-                                </Link>
+                                    Login
+                                </Button>
+                                <Button
+                                    component={Link}
+                                    w={"100%"}
+                                    to={"register"}
+                                >
+                                    Register
+                                </Button>
                             </Flex>
                         )}
                     </Flex>

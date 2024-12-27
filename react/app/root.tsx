@@ -16,7 +16,6 @@ import "@mantine/carousel/styles.css";
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 
 import type { Route } from "./+types/root";
-import { theme } from "./lib/theme";
 import Providers from "./contexts/providers";
 
 export const links: Route.LinksFunction = () => [

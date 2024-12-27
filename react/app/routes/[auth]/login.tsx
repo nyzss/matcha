@@ -8,9 +8,9 @@ export default function Login() {
             <LoginComponent />
             <Text ta="center" mt="md">
                 Don&apos;t have an account?{" "}
-                <Link to="/register">
-                    <Anchor component="span">Register</Anchor>
-                </Link>
+                <Anchor component={Link} to={"/register"}>
+                    Register
+                </Anchor>
             </Text>
         </Box>
     );

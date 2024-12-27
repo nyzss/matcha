@@ -1,9 +1,12 @@
 import { useAuth } from "~/contexts/auth-provider";
 import { ActionIcon, Box, Flex, Menu, Text } from "@mantine/core";
 import { IconLogout, IconSettings } from "@tabler/icons-react";
+import { useNavigate } from "react-router";
 
 export default function UserBox() {
     const { user, logout } = useAuth();
+
+    const navigate = useNavigate();
 
     return (
         <Box style={{ marginTop: "auto" }}>
@@ -29,7 +32,10 @@ export default function UserBox() {
                         </Menu.Item>
                         <Menu.Item
                             leftSection={<IconLogout />}
-                            onClick={logout}
+                            onClick={() => {
+                                logout();
+                                navigate("/");
+                            }}
                         >
                             Logout
                         </Menu.Item>
