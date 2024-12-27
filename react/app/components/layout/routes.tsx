@@ -1,0 +1,61 @@
+import {
+    IconBell,
+    IconClover,
+    IconHome,
+    IconMessage,
+    IconUserCircle,
+    // IconLogin,
+    // IconSettingsUp,
+} from "@tabler/icons-react";
+import type { IRoute } from "~/types/validation";
+
+export const routes: IRoute[] = [
+    {
+        name: "Home",
+        link: "/",
+        icon: <IconHome />,
+    },
+    {
+        name: "Messages",
+        link: "/messages",
+        icon: <IconMessage />,
+        auth: true,
+    },
+    {
+        name: "Matches",
+        link: "/matches",
+        icon: <IconClover />,
+        auth: true,
+    },
+    {
+        name: "Notifications",
+        link: "/notifications",
+        icon: <IconBell />,
+        auth: true,
+    },
+    {
+        name: "Profile",
+        link: "/profile",
+        icon: <IconUserCircle />,
+        auth: true,
+    },
+    // {
+    //     name: "Login",
+    //     link: "/login",
+    //     icon: <IconLogin />,
+    //     auth: false,
+    // },
+    // {
+    //     name: "Register",
+    //     link: "/register",
+    //     icon: <IconSettingsUp />,
+    //     auth: false,
+    // },
+];
+
+export const protectedRoutes = routes
+    .filter((route) => route.auth === true)
+    .map((route) => route.link);
+export const publicRoutes = routes
+    .filter((route) => route.auth === false)
+    .map((route) => route.link);
