@@ -1,15 +1,12 @@
-"use client";
-
-import { loginSchema } from "@/lib/validation";
+import { loginSchema } from "~/lib/validation";
 import { Box, Button, Flex, Modal, TextInput } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import React from "react";
-import { ILogin } from "@/types/validation";
 import { IconLock, IconUser } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/auth-provider";
+import { useAuth } from "~/contexts/auth-provider";
+import { useNavigate } from "react-router";
+import type { ILogin } from "~/types/validation";
 
 export function LoginModal() {
     const [opened, { open, close }] = useDisclosure(false);
@@ -29,8 +26,8 @@ export function LoginModal() {
 }
 
 export default function LoginComponent({ close }: { close?: () => void }) {
-    const router = useRouter();
     const { login } = useAuth();
+    const navigate = useNavigate();
 
     const form = useForm<ILogin>({
         initialValues: {
@@ -54,7 +51,7 @@ export default function LoginComponent({ close }: { close?: () => void }) {
                     title: "Logged in.",
                     message: "You have successfully logged in!",
                 });
-                router.push("/");
+                navigate("/");
             }
         }
     };
@@ -90,4 +87,3 @@ export default function LoginComponent({ close }: { close?: () => void }) {
         </Box>
     );
 }
-

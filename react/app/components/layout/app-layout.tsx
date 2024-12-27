@@ -1,5 +1,3 @@
-"use client";
-
 import {
     AppShell,
     Burger,
@@ -150,12 +148,16 @@ export default function AppLayout() {
                                     base: "auto",
                                 }}
                             >
-                                <Link to={"/login"}>
-                                    <Button variant="light">Login</Button>
-                                </Link>
-                                <Link to={"/register"}>
-                                    <Button>Register</Button>
-                                </Link>
+                                <Button
+                                    component={Link}
+                                    to={"/login"}
+                                    variant="light"
+                                >
+                                    Login
+                                </Button>
+                                <Button component={Link} to={"/register"}>
+                                    Register
+                                </Button>
                             </Group>
                         )}
                     </Flex>

@@ -3,9 +3,9 @@ import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
-    css: {
-        postcss: {
-            plugins: [],
+    server: {
+        proxy: {
+            "/api": { target: "http://localhost:8000", changeOrigin: true },
         },
     },
     plugins: [reactRouter(), tsconfigPaths()],

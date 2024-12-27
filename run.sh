@@ -14,7 +14,7 @@ then
 fi
 
 server="$dir ./server"
-client="$dir ./client"
+client="$dir ./react"
 
 $pkg install $client &
 $pkg install $server &

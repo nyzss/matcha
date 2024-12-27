@@ -1,14 +1,12 @@
-"use client";
-
-import { registerSchema } from "@/lib/validation";
+import { registerSchema } from "~/lib/validation";
 import { Box, Button, Flex, Modal, TextInput } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import { useForm, zodResolver } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { IconAt, IconCalendar, IconLock, IconUser } from "@tabler/icons-react";
-import { IRegister } from "@/types/validation";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/auth-provider";
+import { useAuth } from "~/contexts/auth-provider";
+import { useNavigate } from "react-router";
+import type { IRegister } from "~/types/validation";
 
 export function RegisterModal() {
     const [opened, { open, close }] = useDisclosure(false);
@@ -26,8 +24,8 @@ export function RegisterModal() {
 }
 
 export default function RegisterComponent({ close }: { close?: () => void }) {
-    const router = useRouter();
     const { register } = useAuth();
+    const navigate = useNavigate();
 
     const form = useForm<IRegister>({
         mode: "uncontrolled",
@@ -51,7 +49,7 @@ export default function RegisterComponent({ close }: { close?: () => void }) {
             if (close) {
                 close();
             } else {
-                router.push("/");
+                navigate("/");
             }
         }
     };

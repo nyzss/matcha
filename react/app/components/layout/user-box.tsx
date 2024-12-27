@@ -1,9 +1,6 @@
-"use client";
-
 import { useAuth } from "~/contexts/auth-provider";
 import { ActionIcon, Box, Flex, Menu, Text } from "@mantine/core";
 import { IconLogout, IconSettings } from "@tabler/icons-react";
-import React from "react";
 
 export default function UserBox() {
     const { user, logout } = useAuth();

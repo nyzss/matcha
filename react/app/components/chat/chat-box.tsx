@@ -1,5 +1,3 @@
-"use client";
-
 import { fetchConversation } from "@/lib/api";
 import { IConversation } from "@/types/types";
 import { Avatar, Flex } from "@mantine/core";

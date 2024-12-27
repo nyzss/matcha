@@ -1,18 +1,16 @@
-"use client";
 import { AppShell, Box, Button, Paper, Text, Title } from "@mantine/core";
 import classes from "./auth.module.css";
 import { IconArrowLeft } from "@tabler/icons-react";
-import { useRouter } from "next-nprogress-bar";
+import { Outlet, useNavigate } from "react-router";
 
 export default function AuthLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const router = useRouter();
-
+    const navigate = useNavigate();
     const redirection = () => {
-        router.push("/");
+        navigate("/");
     };
 
     return (
@@ -38,7 +36,9 @@ export default function AuthLayout({
                             Cupid called; he outsourced his job to us.
                         </Text>
                     </Title>
-                    <Box>{children}</Box>
+                    <Box>
+                        <Outlet />
+                    </Box>
                 </Paper>
             </AppShell.Navbar>
             <AppShell.Main className={classes.wrapper}></AppShell.Main>
