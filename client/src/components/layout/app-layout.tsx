@@ -115,7 +115,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     </Flex>
                 </Flex>
             </AppShell.Navbar>
-            <AppShell.Main>{children}</AppShell.Main>
+            <AppShell.Main h={"100vh"}>{children}</AppShell.Main>
             <AppShell.Aside p="md">
                 <Flex h={"100%"} w="100%">
                     <Flex
