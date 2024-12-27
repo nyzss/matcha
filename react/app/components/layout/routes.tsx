@@ -39,18 +39,6 @@ export const routes: IRoute[] = [
         icon: <IconUserCircle />,
         auth: true,
     },
-    // {
-    //     name: "Login",
-    //     link: "/login",
-    //     icon: <IconLogin />,
-    //     auth: false,
-    // },
-    // {
-    //     name: "Register",
-    //     link: "/register",
-    //     icon: <IconSettingsUp />,
-    //     auth: false,
-    // },
 ];
 
 export const protectedRoutes = routes
