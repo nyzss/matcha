@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/contexts/auth-provider";
 import {
     fetchConversation,
     fetchMessageHistory,
@@ -28,6 +29,8 @@ export default function ChatBox({ chatId }: { chatId: string }) {
     const [messageHistory, setMessageHistory] = useState<TMessageHistory>();
     const [message, setMessage] = useState<string>("");
     const router = useRouter();
+
+    const { user } = useAuth();
 
     useEffect(() => {
         fetchConversation(chatId)
@@ -91,29 +94,39 @@ export default function ChatBox({ chatId }: { chatId: string }) {
             <ScrollArea h={"100%"} scrollbars="y">
                 <Flex direction={"column"} gap={"md"}>
                     {messageHistory &&
-                        messageHistory.messages.map((msg) => (
-                            <Paper
-                                key={msg.id}
-                                style={{
-                                    alignSelf: "flex-end",
-                                }}
-                                radius={"md"}
-                                shadow="sm"
-                                withBorder
-                                maw={"70%"}
-                                bg={"var(--mantine-color-blue-light)"}
-                                py={6}
-                                px={"md"}
-                            >
-                                <Text
+                        messageHistory.messages.reverse().map((msg) => {
+                            const isMe = msg.sender.id === user?.id;
+
+                            return (
+                                <Paper
+                                    key={msg.id}
                                     style={{
-                                        wordBreak: "break-word",
+                                        alignSelf: isMe
+                                            ? "flex-end"
+                                            : "flex-start",
                                     }}
+                                    radius={"md"}
+                                    shadow="sm"
+                                    withBorder
+                                    maw={"70%"}
+                                    bg={
+                                        isMe
+                                            ? "var(--mantine-primary-color-light)"
+                                            : "var(--mantine-color-blue-light)"
+                                    }
+                                    py={6}
+                                    px={"md"}
                                 >
-                                    {msg.content}
-                                </Text>
-                            </Paper>
-                        ))}
+                                    <Text
+                                        style={{
+                                            wordBreak: "break-word",
+                                        }}
+                                    >
+                                        {msg.content}
+                                    </Text>
+                                </Paper>
+                            );
+                        })}
                 </Flex>
             </ScrollArea>
             <Box mt={"auto"} mb={"md"}>

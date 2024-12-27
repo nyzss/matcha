@@ -218,7 +218,13 @@ export const fetchMessageHistory = async (
     if (!res?.ok) {
         throw new Error("Couldn't find conversation");
     }
-    return await res?.json();
+
+    const messageHistory: TMessageHistory = await res?.json();
+
+    return {
+        ...messageHistory,
+        messages: messageHistory.messages.reverse(),
+    };
 };
 
 export const mutateMessage = async (
