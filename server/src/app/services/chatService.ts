@@ -130,18 +130,16 @@ export class ChatService {
             [id]
         );
 
-        const allParticipants = await Promise.all(
+        const users = await Promise.all(
             participants.map(
                 async (participant) =>
                     await this.userService.getUserById(participant.user_id)
             )
         );
 
-        const users = allParticipants.filter((user) => user.id !== meId);
-
         return {
             id: conversation.id,
-            users: users.length === 0 ? [allParticipants[0]] : users,
+            users: users,
             lastMessage: await this.getMessages(id, meId, 1).then(
                 (messages) => messages.messages[0] || null
             ),
@@ -199,32 +197,14 @@ export class ChatService {
                 conversations: [],
             };
 
-        const queriedConversations = await Promise.all(
-            conversations.map(
-                async (conversation: { id: number }) =>
-                    await this.getConversation(conversation.id, meId)
-            )
-        );
-
-        // we filter out the current user from the users array, easier to manage on the client side
-        const computedConversations = queriedConversations.map((conv) => {
-            const filtered = conv.users.filter((user) => user.id !== meId);
-
-            return {
-                ...conv,
-                // if the filtered array is empty (so the user has a chat with himself)
-                // we return an array with only the user himself
-                users:
-                    filtered.length !== 0
-                        ? filtered
-                        : [conv.users.find((user) => user.id === meId)],
-            };
-        });
-
         return {
             total: conversations.length,
-            conversations: computedConversations,
+            conversations: await Promise.all(
+                conversations.map(
+                    async (conversation: { id: number }) =>
+                        await this.getConversation(conversation.id, meId)
+                )
+            ),
         };
     }
-
 }

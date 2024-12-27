@@ -202,12 +202,10 @@ export const fetchAllConversations = async (): Promise<IConversation[]> => {
 export const fetchConversation = async (
     chatId: string
 ): Promise<IConversation | undefined> => {
-    try {
-        const res = await fetcher("/conversation/" + chatId);
+    const res = await fetcher("/conversation/" + chatId);
 
-        return await res?.json();
-    } catch {
-        // TODO: might wanna do a better error handling (or not lol)
-        return undefined;
+    if (!res?.ok) {
+        throw new Error("Couldn't find conversation");
     }
+    return await res?.json();
 };
