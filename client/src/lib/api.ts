@@ -1,7 +1,7 @@
 import { ILogin, IRegister, IUser } from "@/types/validation";
 import { IProfile } from "@/types/auth";
 import { notifications } from "@mantine/notifications";
-import { FetchResult, IConversation } from "@/types/types";
+import { FetchResult, IConversation, TMessageHistory } from "@/types/types";
 
 export const BASE_URL = `/api/`;
 
@@ -201,11 +201,40 @@ export const fetchAllConversations = async (): Promise<IConversation[]> => {
 
 export const fetchConversation = async (
     chatId: string
-): Promise<IConversation | undefined> => {
+): Promise<IConversation> => {
     const res = await fetcher("/conversation/" + chatId);
 
     if (!res?.ok) {
         throw new Error("Couldn't find conversation");
     }
+    return await res?.json();
+};
+
+export const fetchMessageHistory = async (
+    chatId: string
+): Promise<TMessageHistory> => {
+    const res = await fetcher("/conversation/" + chatId + "/message");
+
+    if (!res?.ok) {
+        throw new Error("Couldn't find conversation");
+    }
+    return await res?.json();
+};
+
+export const mutateMessage = async (
+    conversationId: string,
+    content: string
+) => {
+    const res = await fetcher("/conversation/" + conversationId + "/message", {
+        method: "POST",
+        body: JSON.stringify({
+            content,
+        }),
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't send message");
+    }
+
     return await res?.json();
 };

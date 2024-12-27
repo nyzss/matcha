@@ -23,3 +23,8 @@ export interface IMessage {
     content: string;
     sentAt: Date;
 }
+
+export type TMessageHistory = {
+    total: number;
+    messages: IMessage[];
+};
