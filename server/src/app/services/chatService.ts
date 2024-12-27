@@ -130,17 +130,21 @@ export class ChatService {
             [id]
         );
 
-        const users = await Promise.all(
-            participants.map(async (participant) =>
-                await this.userService.getUserById(participant.user_id)
+        const allParticipants = await Promise.all(
+            participants.map(
+                async (participant) =>
+                    await this.userService.getUserById(participant.user_id)
             )
         );
 
+        const users = allParticipants.filter((user) => user.id !== meId);
 
         return {
             id: conversation.id,
-            users: users,
-            lastMessage: await this.getMessages(id, meId, 1).then((messages) => messages.messages[0] || null),
+            users: users.length === 0 ? [allParticipants[0]] : users,
+            lastMessage: await this.getMessages(id, meId, 1).then(
+                (messages) => messages.messages[0] || null
+            ),
         };
     }
 
