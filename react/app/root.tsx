@@ -12,6 +12,7 @@ import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 
 import type { Route } from "./+types/root";
 import { theme } from "./lib/theme";
+import Providers from "./contexts/providers";
 
 export const links: Route.LinksFunction = () => [
     { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -40,7 +41,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <ColorSchemeScript />
             </head>
             <body>
-                <MantineProvider theme={theme}>{children}</MantineProvider>
+                <Providers>{children}</Providers>
                 <ScrollRestoration />
                 <Scripts />
             </body>
