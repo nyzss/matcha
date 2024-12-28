@@ -81,6 +81,14 @@ const accounts = [
         firstName: "Selena",
         lastName: "Gomez",
     },
+    {
+        username: "okoca",
+        email: "oknakoca@gmail.com",
+        password: "password123",
+        birthDate: "2004-01-11",
+        firstName: "Okan",
+        lastName: "Koca",
+    },
 ];
 
 Promise.all(

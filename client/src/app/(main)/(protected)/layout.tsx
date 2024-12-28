@@ -5,14 +5,13 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-    const { user } = useAuth();
+    const { logged } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
-        if (!user) {
+        if (!logged) {
             router.push("/login");
         }
-    }, [router, user]);
-    return <>{children}</>;
+    }, [router, logged]);
+    return children;
 }
-

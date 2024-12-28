@@ -13,5 +13,18 @@ export type FetchResult<T, E> =
 export interface IConversation {
     id: number;
     users: IProfile[];
-    lastMessage: string | null;
+    lastMessage: IMessage | null;
 }
+
+export interface IMessage {
+    id: number;
+    conversationId: number;
+    sender: IProfile;
+    content: string;
+    sentAt: Date;
+}
+
+export type TMessageHistory = {
+    total: number;
+    messages: IMessage[];
+};

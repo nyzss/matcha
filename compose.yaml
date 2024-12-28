@@ -7,6 +7,8 @@ services:
       - db-data:/var/lib/postgresql/data
     env_file:
       - .env
+    environment:
+      TZ: "UTC"
     ports:
       - "5432:5432"
     networks:

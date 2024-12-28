@@ -35,6 +35,9 @@ importers:
       '@tabler/icons-react':
         specifier: ^3.22.0
         version: 3.22.0(react@19.0.0-rc-66855b96-20241106)
+      dayjs:
+        specifier: ^1.11.13
+        version: 1.11.13
       embla-carousel-react:
         specifier: ^7.1.0
         version: 7.1.0(react@19.0.0-rc-66855b96-20241106)

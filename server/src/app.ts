@@ -63,7 +63,8 @@ const buildApp = async () => {
             origin: '*', // Match your client URL
             methods: ["GET", "POST"],
             allowedHeaders: ["*"],
-        }
+        },
+        prefix: "/ws"
     });
 
     await app.register(customSocketManager, {

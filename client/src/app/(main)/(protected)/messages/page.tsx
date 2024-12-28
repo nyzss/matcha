@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/contexts/auth-provider";
 import { fetchAllConversations } from "@/lib/api";
 import { IConversation } from "@/types/types";
 import {
@@ -18,14 +19,14 @@ import { useEffect, useState } from "react";
 export default function MessagesPage() {
     const [conversations, setConversations] = useState<IConversation[]>([]);
 
-    //  fetchAllConversations,
+    const { user } = useAuth();
 
     useEffect(() => {
         const getConversations = async () => {
-            setConversations(await fetchAllConversations());
+            setConversations(await fetchAllConversations(user!.id));
         };
         getConversations();
-    }, []);
+    }, [user]);
 
     return (
         <Flex direction={"column"} gap={"xs"}>
@@ -75,8 +76,21 @@ export default function MessagesPage() {
                                                 .map((user) => user.username)
                                                 .join(", ")}`}
                                         </Text>
-                                        <Text size="sm" fw={"lighter"}>
-                                            {conv.lastMessage ||
+                                        <Text
+                                            size="sm"
+                                            fw={"lighter"}
+                                            truncate="end"
+                                            w={{
+                                                base: 150,
+                                                sm: 200,
+                                                md: 300,
+                                            }}
+                                        >
+                                            {conv.lastMessage?.sender.id ===
+                                            user?.id
+                                                ? "You: "
+                                                : ""}
+                                            {conv.lastMessage?.content ||
                                                 "Start the conversation!"}
                                         </Text>
                                     </Flex>
