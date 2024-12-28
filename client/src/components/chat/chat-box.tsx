@@ -22,7 +22,12 @@ import {
 import { notifications } from "@mantine/notifications";
 import { IconChevronLeft, IconSend2 } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import dayjs from "dayjs";
+import isToday from "dayjs/plugin/isToday";
+import isYesterday from "dayjs/plugin/isYesterday";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
 export default function ChatBox({ chatId }: { chatId: string }) {
     const [conversation, setConversation] = useState<IConversation>();
@@ -31,9 +36,10 @@ export default function ChatBox({ chatId }: { chatId: string }) {
     const router = useRouter();
 
     const { user } = useAuth();
+    const viewport = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        fetchConversation(chatId)
+        fetchConversation(chatId, user!.id)
             .then((data) => {
                 console.log(data);
                 setConversation(data);
@@ -41,12 +47,13 @@ export default function ChatBox({ chatId }: { chatId: string }) {
             .catch(() => {
                 router.push("/messages");
             });
-    }, [chatId, router]);
+    }, [chatId, router, user]);
 
     useEffect(() => {
         fetchMessageHistory(chatId)
             .then((data) => {
                 setMessageHistory(data);
+                scrollToBottom();
             })
             .catch(() => {
                 notifications.show({
@@ -56,6 +63,18 @@ export default function ChatBox({ chatId }: { chatId: string }) {
                 });
             });
     }, [chatId]);
+
+    useEffect(() => {
+        dayjs.extend(isToday);
+        dayjs.extend(isYesterday);
+        dayjs.extend(utc);
+        dayjs.extend(timezone);
+        dayjs.tz.setDefault(dayjs.tz.guess());
+    }, []);
+
+    // const computeMessages = useMemo(() => {
+    //     const all = messageHistory?.messages;
+    // }, [messageHistory])
 
     const handleMessageSend = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -75,6 +94,13 @@ export default function ChatBox({ chatId }: { chatId: string }) {
             });
     };
 
+    const scrollToBottom = () => {
+        viewport.current!.scrollTo({
+            top: viewport.current!.scrollHeight,
+            behavior: "smooth",
+        });
+    };
+
     return (
         <Flex direction={"column"} gap={"xs"} h={"100%"}>
             <Flex direction={"row"} align={"center"} gap={"sm"}>
@@ -91,40 +117,65 @@ export default function ChatBox({ chatId }: { chatId: string }) {
                 </Title>
             </Flex>
             <Divider size={"sm"} />
-            <ScrollArea h={"100%"} scrollbars="y">
-                <Flex direction={"column"} gap={"md"}>
+            <ScrollArea
+                h={"100%"}
+                scrollbars="y"
+                viewportRef={viewport}
+                offsetScrollbars
+            >
+                <Flex direction={"column"} gap={"md"} pb={100} pt={50}>
                     {messageHistory &&
-                        messageHistory.messages.reverse().map((msg) => {
+                        messageHistory.messages.map((msg) => {
                             const isMe = msg.sender.id === user?.id;
 
+                            const formatDate = (date: Date) => {
+                                if (dayjs(date).isToday()) {
+                                    return `Today at ${dayjs(date).format(
+                                        "HH:mm"
+                                    )}`;
+                                } else if (dayjs(date).isYesterday()) {
+                                    return `Yesterday at ${dayjs(date).format(
+                                        "HH:mm"
+                                    )}`;
+                                } else {
+                                    return dayjs(date).format(
+                                        "DD/MM/YYYY HH:mm"
+                                    );
+                                }
+                            };
+
                             return (
-                                <Paper
+                                <Flex
                                     key={msg.id}
-                                    style={{
-                                        alignSelf: isMe
-                                            ? "flex-end"
-                                            : "flex-start",
-                                    }}
-                                    radius={"md"}
-                                    shadow="sm"
-                                    withBorder
-                                    maw={"70%"}
-                                    bg={
-                                        isMe
-                                            ? "var(--mantine-primary-color-light)"
-                                            : "var(--mantine-color-blue-light)"
-                                    }
-                                    py={6}
-                                    px={"md"}
+                                    direction={"column"}
+                                    gap={"xs"}
+                                    align={isMe ? "flex-end" : "flex-start"}
                                 >
-                                    <Text
-                                        style={{
-                                            wordBreak: "break-word",
-                                        }}
+                                    <Paper
+                                        radius={"md"}
+                                        shadow="sm"
+                                        withBorder
+                                        maw={"70%"}
+                                        bg={
+                                            isMe
+                                                ? "var(--mantine-primary-color-light)"
+                                                : "var(--mantine-color-blue-light)"
+                                        }
+                                        py={6}
+                                        px={"md"}
                                     >
-                                        {msg.content}
+                                        <Text
+                                            style={{
+                                                wordBreak: "break-word",
+                                            }}
+                                        >
+                                            {msg.content}
+                                        </Text>
+                                    </Paper>
+                                    <Text size="xs" c={"gray"} fw={400}>
+                                        {formatDate(msg.sentAt)}
                                     </Text>
-                                </Paper>
+                                </Flex>
                             );
                         })}
                 </Flex>
@@ -147,6 +198,7 @@ export default function ChatBox({ chatId }: { chatId: string }) {
                             </ActionIcon>
                         }
                         size="lg"
+                        radius={"lg"}
                     />
                 </form>
             </Box>

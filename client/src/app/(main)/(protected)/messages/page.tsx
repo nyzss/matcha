@@ -23,10 +23,10 @@ export default function MessagesPage() {
 
     useEffect(() => {
         const getConversations = async () => {
-            setConversations(await fetchAllConversations());
+            setConversations(await fetchAllConversations(user!.id));
         };
         getConversations();
-    }, []);
+    }, [user]);
 
     return (
         <Flex direction={"column"} gap={"xs"}>

@@ -188,11 +188,21 @@ export const updateUser = async (
     }
 };
 
-export const fetchAllConversations = async (): Promise<IConversation[]> => {
+export const fetchAllConversations = async (
+    userId: number
+): Promise<IConversation[]> => {
     try {
         const res = await fetcher("/conversation/@me");
 
-        return (await res?.json()).conversations;
+        const convs: IConversation[] = (await res?.json()).conversations;
+
+        const computed = convs.map((conv) => {
+            const filtered = conv.users.filter((user) => user.id !== userId);
+
+            conv.users = filtered.length > 0 ? filtered : [conv.users[0]];
+            return conv;
+        });
+        return computed;
     } catch {
         // TODO: might wanna do a better error handling (or not lol)
         return [];
@@ -200,14 +210,19 @@ export const fetchAllConversations = async (): Promise<IConversation[]> => {
 };
 
 export const fetchConversation = async (
-    chatId: string
+    chatId: string,
+    userId: number
 ): Promise<IConversation> => {
     const res = await fetcher("/conversation/" + chatId);
 
     if (!res?.ok) {
         throw new Error("Couldn't find conversation");
     }
-    return await res?.json();
+    const data: IConversation = await res?.json();
+    const filtered = data.users.filter((user) => user.id !== userId);
+    data.users = filtered.length > 0 ? filtered : [data.users[0]];
+
+    return data;
 };
 
 export const fetchMessageHistory = async (
