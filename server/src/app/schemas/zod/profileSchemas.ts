@@ -10,7 +10,7 @@ const SexualOrientationEnum = z.union([
 
 export const userProfileSettings = z
     .object({
-        username: z.string().min(3).max(24),
+        username: z.string().min(2).max(24),
         gender: GenderEnum,
         biography: z.string(),
         sexualOrientation: SexualOrientationEnum,

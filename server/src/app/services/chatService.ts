@@ -131,16 +131,18 @@ export class ChatService {
         );
 
         const users = await Promise.all(
-            participants.map(async (participant) =>
-                await this.userService.getUserById(participant.user_id)
+            participants.map(
+                async (participant) =>
+                    await this.userService.getUserById(participant.user_id)
             )
         );
-
 
         return {
             id: conversation.id,
             users: users,
-            lastMessage: await this.getMessages(id, meId, 1).then((messages) => messages.messages[0] || null),
+            lastMessage: await this.getMessages(id, meId, 1).then(
+                (messages) => messages.messages[0] || null
+            ),
         };
     }
 
@@ -198,9 +200,11 @@ export class ChatService {
         return {
             total: conversations.length,
             conversations: await Promise.all(
-                conversations.map(async (conversation: {id: number}) => await this.getConversation(conversation.id, meId))
+                conversations.map(
+                    async (conversation: { id: number }) =>
+                        await this.getConversation(conversation.id, meId)
+                )
             ),
         };
     }
-
 }
