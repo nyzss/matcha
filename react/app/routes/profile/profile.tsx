@@ -8,50 +8,38 @@ import {
     LoadingOverlay,
     Text,
 } from "@mantine/core";
-import { IProfile } from "@/types/auth";
 import { useEffect, useState } from "react";
-import { getUser } from "@/lib/api";
-import EditProfile from "./edit-profile";
+import EditProfile from "~/components/profile/edit-profile";
+import { getUser } from "~/lib/api";
 import { Carousel } from "@mantine/carousel";
-import { useAuth } from "@/contexts/auth-provider";
+import { useAuth } from "~/contexts/auth-provider";
 
-export default function Profile({ id }: { id: string }) {
+import type { Route } from "./+types/profile";
+
+export default function Profile({ params: { userId } }: Route.ComponentProps) {
     const [currentUser, setCurrentUser] = useState<IProfile | null>(null);
     const [isMe, setIsMe] = useState<boolean>(false);
 
     const { user } = useAuth();
-
     useEffect(() => {
-        const checkIsMe = id === "@me";
+        const checkIsMe = userId === "@me";
         setIsMe(checkIsMe);
         if (checkIsMe) {
             setCurrentUser(user);
         } else {
-            getUser(id).then((data) => setCurrentUser(data));
+            getUser(userId).then((data) => setCurrentUser(data));
         }
-    }, [isMe, id, user]);
+    }, [isMe, userId, user]);
 
     const images = [
         "https://api.dicebear.com/9.x/glass/svg?seed=qwertyui",
         "https://api.dicebear.com/9.x/glass/svg?seed=1234567",
         "https://api.dicebear.com/9.x/glass/svg?seed=zxcvb1234",
     ];
-
     return (
         <Box h={"100vh"}>
             <LoadingOverlay visible={!currentUser} />
             <Card h={"100%"}>
-                {/* <Card.Section>
-                    <Image
-                        src={
-                            "https://api.dicebear.com/9.x/glass/svg?seed=matcha"
-                        }
-                        alt="profile background"
-                        w={"100%"}
-                        h={"160"}
-                        fit="cover"
-                    />
-                </Card.Section> */}
                 <Flex direction={"column"} py={16}>
                     <Avatar
                         color="initials"

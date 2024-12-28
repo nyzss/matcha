@@ -13,7 +13,7 @@ import "@mantine/notifications/styles.css";
 import "@mantine/dates/styles.css";
 import "@mantine/carousel/styles.css";
 
-import { ColorSchemeScript, MantineProvider } from "@mantine/core";
+import { ColorSchemeScript } from "@mantine/core";
 
 import type { Route } from "./+types/root";
 import Providers from "./contexts/providers";

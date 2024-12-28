@@ -35,7 +35,7 @@ export const routes: IRoute[] = [
     },
     {
         name: "Profile",
-        link: "/profile",
+        link: "/profile/@me",
         icon: <IconUserCircle />,
         auth: true,
     },

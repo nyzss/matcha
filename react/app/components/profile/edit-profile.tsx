@@ -1,6 +1,5 @@
-import { useAuth } from "@/contexts/auth-provider";
-import { GENDERS, userSchema } from "@/lib/validation";
-import { IUser } from "@/types/validation";
+import { useAuth } from "~/contexts/auth-provider";
+import { GENDERS, userSchema } from "~/lib/validation";
 import {
     Button,
     Flex,
@@ -15,6 +14,7 @@ import { useForm, zodResolver } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { IconUser } from "@tabler/icons-react";
 import { useState } from "react";
+import type { IUser } from "~/types/validation";
 
 export default function EditProfile() {
     const [opened, { open, close }] = useDisclosure();
