@@ -12,6 +12,11 @@ import {
 import { IconPlus, IconSearch } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
+import type { Route } from "./+types/chats";
+
+export function meta({}: Route.MetaArgs) {
+    return [{ title: "Messages | matcha " }];
+}
 
 export default function MessagesPage() {
     const [conversations, setConversations] = useState<IConversation[]>([]);

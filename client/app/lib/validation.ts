@@ -89,6 +89,10 @@ export const loginSchema = z.object({
 export const userSchemaPartial = z.object({
     username: z
         .string()
+        .regex(/^\w+$/, {
+            message:
+                "Username must contain only letters, numbers, and underscores",
+        })
         .min(2, messages.username.min)
         .max(32, messages.username.max),
     firstName: z

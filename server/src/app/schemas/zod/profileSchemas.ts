@@ -10,12 +10,28 @@ const SexualOrientationEnum = z.union([
 
 export const userProfileSettings = z
     .object({
-        username: z.string().min(2).max(24),
+        username: z
+            .string()
+            .regex(/^\w+$/, {
+                message:
+                    "Username must contain only letters, numbers, and underscores",
+            })
+
+            .min(2, { message: "Username must be at least 2 characters long" })
+            .max(24, {
+                message: "Username must be at most 24 characters long",
+            }),
         gender: GenderEnum,
-        biography: z.string(),
+        biography: z.string().max(255, {
+            message: "Biography must be at most 255 characters long",
+        }),
         sexualOrientation: SexualOrientationEnum,
-        tags: z.array(z.string()),
-        pictures: z.array(z.string()),
+        tags: z.array(z.string()).max(10, {
+            message: "You can only have up to 10 tags",
+        }),
+        pictures: z.array(z.string()).max(5, {
+            message: "You can only have up to 5 pictures",
+        }),
     })
     .partial()
     .refine(
