@@ -11,6 +11,7 @@ interface IRoute {
     link: string;
     icon: React.ReactNode;
     auth?: boolean;
+    indicator?: boolean;
 }
 
 type ILogin = z.infer<typeof loginSchema>;
