@@ -7,16 +7,18 @@ export default function SocketProvider({
 }: {
     children: React.ReactNode;
 }) {
-    const { logged } = useAuth();
+    const { user } = useAuth();
 
     useEffect(() => {
-        if (logged) {
+        if (user) {
             setup();
+        } else {
+            cleanUp();
         }
         return () => {
             cleanUp();
         };
-    }, [logged]);
+    }, [user]);
 
     return children;
 }

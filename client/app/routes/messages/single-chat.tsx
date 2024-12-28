@@ -41,7 +41,6 @@ export default function SingleChat({
     useEffect(() => {
         fetchConversation(chatId, user!.id)
             .then((data) => {
-                console.log(data);
                 setConversation(data);
             })
             .catch(() => {
@@ -81,8 +80,7 @@ export default function SingleChat({
         if (!message) return;
 
         mutateMessage(chatId, message)
-            .then((data) => {
-                console.log(data);
+            .then(() => {
                 setMessage("");
             })
             .catch(() => {

@@ -18,7 +18,7 @@ const onError = (error: Error) => {
 };
 
 const catchAll = (eventName: string, args: any[]) => {
-    console.log("Socket event: ", eventName, "\n", args);
+    console.log("CATCH_ALL EVENTS: ", eventName, "\n", args);
 };
 
 export const setup = () => {
