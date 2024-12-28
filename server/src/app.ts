@@ -64,7 +64,6 @@ const buildApp = async () => {
             methods: ["GET", "POST"],
             allowedHeaders: ["*"],
         },
-        prefix: "/ws"
     });
 
     await app.register(customSocketManager, {
