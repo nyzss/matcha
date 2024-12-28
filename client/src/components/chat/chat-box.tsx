@@ -129,18 +129,17 @@ export default function ChatBox({ chatId }: { chatId: string }) {
                             const isMe = msg.sender.id === user?.id;
 
                             const formatDate = (date: Date) => {
-                                if (dayjs(date).isToday()) {
-                                    return `Today at ${dayjs(date).format(
+                                const d = dayjs(date).add(1, "hour");
+                                if (dayjs(d).isToday()) {
+                                    return `Today at ${dayjs(d).format(
                                         "HH:mm"
                                     )}`;
-                                } else if (dayjs(date).isYesterday()) {
-                                    return `Yesterday at ${dayjs(date).format(
+                                } else if (dayjs(d).isYesterday()) {
+                                    return `Yesterday at ${dayjs(d).format(
                                         "HH:mm"
                                     )}`;
                                 } else {
-                                    return dayjs(date).format(
-                                        "DD/MM/YYYY HH:mm"
-                                    );
+                                    return dayjs(d).format("DD/MM/YYYY HH:mm");
                                 }
                             };
 
