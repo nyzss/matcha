@@ -32,10 +32,7 @@ export const setup = () => {
 };
 
 export const cleanUp = () => {
-    socket.off("connect", onConnect);
-    socket.off("disconnect", onDisconnect);
-    socket.off("error", onError);
-    socket.offAny(catchAll);
+    socket.removeAllListeners();
 
     socket.disconnect();
 };

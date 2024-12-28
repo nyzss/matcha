@@ -26,6 +26,7 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { useNavigate } from "react-router";
 import type { Route } from "./+types/single-chat";
+import { socket } from "~/socket/socket";
 
 export default function SingleChat({
     params: { chatId },
@@ -71,6 +72,28 @@ export default function SingleChat({
         dayjs.tz.setDefault(dayjs.tz.guess());
     }, []);
 
+    useEffect(() => {
+        const updateWithMessage = (data: IMessage) => {
+            console.log("MESSAGE CREATE", data);
+            if (data.conversationId === chatId) {
+                setMessageHistory((prev) => {
+                    if (!prev) return;
+                    return {
+                        total: prev.total + 1,
+                        messages: [...prev?.messages, data],
+                    };
+                });
+                scrollToBottom("instant");
+            }
+        };
+
+        socket.on("MessageCreate", updateWithMessage);
+
+        return () => {
+            socket.removeAllListeners("MessageCreate");
+        };
+    }, []);
+
     // const computeMessages = useMemo(() => {
     //     const all = messageHistory?.messages;
     // }, [messageHistory])
@@ -92,10 +115,10 @@ export default function SingleChat({
             });
     };
 
-    const scrollToBottom = () => {
+    const scrollToBottom = (behavior: ScrollBehavior = "smooth") => {
         viewport.current!.scrollTo({
             top: viewport.current!.scrollHeight,
-            behavior: "smooth",
+            behavior,
         });
     };
 
