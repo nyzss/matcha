@@ -11,6 +11,8 @@ export default [
         layout("routes/protected.tsx", [
             route("profile", "routes/profile/redirection-profile.tsx"),
             route("profile/:userId", "routes/profile/profile.tsx"),
+            route("messages", "routes/messages/chats.tsx"),
+            route("messages/:chatId", "routes/messages/single-chat.tsx"),
         ]),
     ]),
     layout("components/layout/auth-layout.tsx", [

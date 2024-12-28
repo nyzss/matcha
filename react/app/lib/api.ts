@@ -186,11 +186,21 @@ export const updateUser = async (
     }
 };
 
-export const fetchAllConversations = async (): Promise<IConversation[]> => {
+export const fetchAllConversations = async (
+    userId: number
+): Promise<IConversation[]> => {
     try {
         const res = await fetcher("/conversation/@me");
 
-        return (await res?.json()).conversations;
+        const convs: IConversation[] = (await res?.json()).conversations;
+
+        const computed = convs.map((conv) => {
+            const filtered = conv.users.filter((user) => user.id !== userId);
+
+            conv.users = filtered.length > 0 ? filtered : [conv.users[0]];
+            return conv;
+        });
+        return computed;
     } catch {
         // TODO: might wanna do a better error handling (or not lol)
         return [];
@@ -198,14 +208,52 @@ export const fetchAllConversations = async (): Promise<IConversation[]> => {
 };
 
 export const fetchConversation = async (
-    chatId: string
-): Promise<IConversation | undefined> => {
-    try {
-        const res = await fetcher("/conversation/" + chatId);
+    chatId: string,
+    userId: number
+): Promise<IConversation> => {
+    const res = await fetcher("/conversation/" + chatId);
 
-        return await res?.json();
-    } catch {
-        // TODO: might wanna do a better error handling (or not lol)
-        return undefined;
+    if (!res?.ok) {
+        throw new Error("Couldn't find conversation");
     }
+    const data: IConversation = await res?.json();
+    const filtered = data.users.filter((user) => user.id !== userId);
+    data.users = filtered.length > 0 ? filtered : [data.users[0]];
+
+    return data;
+};
+
+export const fetchMessageHistory = async (
+    chatId: string
+): Promise<TMessageHistory> => {
+    const res = await fetcher("/conversation/" + chatId + "/message");
+
+    if (!res?.ok) {
+        throw new Error("Couldn't find conversation");
+    }
+
+    const messageHistory: TMessageHistory = await res?.json();
+
+    return {
+        ...messageHistory,
+        messages: messageHistory.messages.reverse(),
+    };
+};
+
+export const mutateMessage = async (
+    conversationId: string,
+    content: string
+) => {
+    const res = await fetcher("/conversation/" + conversationId + "/message", {
+        method: "POST",
+        body: JSON.stringify({
+            content,
+        }),
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't send message");
+    }
+
+    return await res?.json();
 };

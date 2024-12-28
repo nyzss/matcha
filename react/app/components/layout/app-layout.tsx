@@ -118,7 +118,7 @@ export default function AppLayout() {
                     </Flex>
                 </Flex>
             </AppShell.Navbar>
-            <AppShell.Main>
+            <AppShell.Main h={"100vh"}>
                 <Outlet />
             </AppShell.Main>
             <AppShell.Aside p="md">

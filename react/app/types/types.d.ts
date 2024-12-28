@@ -11,5 +11,18 @@ type FetchResult<T, E> =
 interface IConversation {
     id: number;
     users: IProfile[];
-    lastMessage: string | null;
+    lastMessage: IMessage | null;
 }
+
+interface IMessage {
+    id: number;
+    conversationId: number;
+    sender: IProfile;
+    content: string;
+    sentAt: Date;
+}
+
+type TMessageHistory = {
+    total: number;
+    messages: IMessage[];
+};

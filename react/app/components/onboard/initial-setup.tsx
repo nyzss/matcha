@@ -16,17 +16,17 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import { useForm, zodResolver } from "@mantine/form";
-import { IPreferences } from "@/types/validation";
+import type { IPreferences } from "~/types/validation";
 import {
     ACCEPTED_IMAGE_TYPES,
     GENDERS,
     MAX_FILE_SIZE,
     preferencesSchema,
     SEXUAL_PREFERENCES,
-} from "@/lib/validation";
+} from "~/lib/validation";
 import { IconMail, IconPhoto, IconUpload, IconX } from "@tabler/icons-react";
 import { Dropzone } from "@mantine/dropzone";
-import { useAuth } from "@/contexts/auth-provider";
+import { useAuth } from "~/contexts/auth-provider";
 
 export default function InitialSetup() {
     const [opened, { open, close }] = useDisclosure(false);
