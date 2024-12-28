@@ -1,4 +1,3 @@
-import { notifications } from "@mantine/notifications";
 import type { ILogin, IRegister, IUser } from "~/types/validation";
 
 export const BASE_URL = `/api/`;
@@ -140,23 +139,14 @@ export const checkAuth = async (): Promise<IProfile | false> => {
     }
 };
 
-export const getUser = async (id: string): Promise<IProfile | null> => {
-    try {
-        const res = await fetcher("/profile/" + id);
+export const getUser = async (username: string): Promise<IProfile | null> => {
+    const res = await fetcher("/profile/" + username);
 
-        if (!res?.ok) {
-            throw new Error("Couldn't find user");
-        }
-        const json = await res?.json();
-        return json.user;
-    } catch {
-        notifications.show({
-            title: "An error occurred",
-            message: "Couldn't find user",
-            color: "red",
-        });
-        return null;
+    if (!res?.ok) {
+        throw new Error("Couldn't find user");
     }
+    const json = await res?.json();
+    return json.user;
 };
 
 export const updateUser = async (

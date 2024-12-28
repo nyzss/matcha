@@ -24,7 +24,7 @@ import isToday from "dayjs/plugin/isToday";
 import isYesterday from "dayjs/plugin/isYesterday";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import type { Route } from "./+types/single-chat";
 import { socket } from "~/socket/socket";
 
@@ -83,7 +83,7 @@ export default function SingleChat({
                         messages: [...prev?.messages, data],
                     };
                 });
-                scrollToBottom("instant");
+                scrollToBottom();
             }
         };
 
@@ -115,7 +115,7 @@ export default function SingleChat({
             });
     };
 
-    const scrollToBottom = (behavior: ScrollBehavior = "smooth") => {
+    const scrollToBottom = (behavior: ScrollBehavior = "instant") => {
         viewport.current!.scrollTo({
             top: viewport.current!.scrollHeight,
             behavior,
@@ -124,7 +124,15 @@ export default function SingleChat({
 
     return (
         <Flex direction={"column"} gap={"xs"} h={"100%"}>
-            <Flex direction={"row"} align={"center"} gap={"sm"}>
+            <Flex
+                direction={"row"}
+                align={"center"}
+                gap={"sm"}
+                component={Link}
+                to={"/profile/" + conversation?.users[0].username}
+                style={{ textDecoration: "none" }}
+                c="var(--mantine-color-dark)"
+            >
                 <ActionIcon
                     variant="transparent"
                     onClick={() => navigate("/messages")}
