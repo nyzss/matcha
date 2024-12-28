@@ -56,6 +56,9 @@ importers:
       jotai:
         specifier: ^2.11.0
         version: 2.11.0(@types/react@19.0.2)(react@19.0.0)
+      mantine-form-zod-resolver:
+        specifier: ^1.1.0
+        version: 1.1.0(@mantine/form@7.15.2(react@19.0.0))(zod@3.24.1)
       react:
         specifier: ^19.0.0
         version: 19.0.0
@@ -1190,6 +1193,13 @@ packages:
   lru-cache@7.18.3:
     resolution: {integrity: sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==}
     engines: {node: '>=12'}
+
+  mantine-form-zod-resolver@1.1.0:
+    resolution: {integrity: sha512-hidTuYq6agSF5XbkcVVcr0mkGs9ki/x8OC9ldZMxGLVGja6bdl+x4k1hCNrigCG90DBoMDnu0bo3hprGBBlUZA==}
+    engines: {node: '>=16.6.0'}
+    peerDependencies:
+      '@mantine/form': '>=7.0.0'
+      zod: '>=3.0.0'
 
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
@@ -2998,6 +3008,11 @@ snapshots:
       yallist: 3.1.1
 
   lru-cache@7.18.3: {}
+
+  mantine-form-zod-resolver@1.1.0(@mantine/form@7.15.2(react@19.0.0))(zod@3.24.1):
+    dependencies:
+      '@mantine/form': 7.15.2(react@19.0.0)
+      zod: 3.24.1
 
   math-intrinsics@1.1.0: {}
 

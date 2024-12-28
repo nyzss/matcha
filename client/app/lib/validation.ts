@@ -131,3 +131,5 @@ export const registerSchema = z
     });
 
 export const userSchema = userSchemaPartial.merge(preferencesSchema).partial();
+
+export const chatMessageSchema = z.string().max(1000);

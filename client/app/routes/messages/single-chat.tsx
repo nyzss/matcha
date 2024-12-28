@@ -17,7 +17,11 @@ import {
     Title,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconChevronLeft, IconSend2 } from "@tabler/icons-react";
+import {
+    IconChevronLeft,
+    IconChevronRight,
+    IconSend2,
+} from "@tabler/icons-react";
 import React, { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
 import isToday from "dayjs/plugin/isToday";
@@ -27,14 +31,25 @@ import timezone from "dayjs/plugin/timezone";
 import { Link, useNavigate } from "react-router";
 import type { Route } from "./+types/single-chat";
 import { socket } from "~/socket/socket";
+import { useField } from "@mantine/form";
+import { chatMessageSchema } from "~/lib/validation";
 
 export default function SingleChat({
     params: { chatId },
 }: Route.ComponentProps) {
     const [conversation, setConversation] = useState<IConversation>();
     const [messageHistory, setMessageHistory] = useState<TMessageHistory>();
-    const [message, setMessage] = useState<string>("");
     const navigate = useNavigate();
+
+    const field = useField({
+        initialValue: "",
+
+        validate: (value) => {
+            const v = chatMessageSchema.safeParse(value);
+
+            return !v.success ? "Max 1000 characters" : null;
+        },
+    });
 
     const { user } = useAuth();
     const viewport = useRef<HTMLDivElement>(null);
@@ -94,25 +109,14 @@ export default function SingleChat({
         };
     }, []);
 
-    // const computeMessages = useMemo(() => {
-    //     const all = messageHistory?.messages;
-    // }, [messageHistory])
-
     const handleMessageSend = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!message) return;
+        if (!field.getValue()) return;
 
-        mutateMessage(chatId, message)
-            .then(() => {
-                setMessage("");
-            })
-            .catch(() => {
-                notifications.show({
-                    title: "An error occurred",
-                    message: "Couldn't send message",
-                    color: "red",
-                });
-            });
+        if (await field.validate()) return;
+        mutateMessage(chatId, field.getValue()).then(() => {
+            field.setValue("");
+        });
     };
 
     const scrollToBottom = (behavior: ScrollBehavior = "instant") => {
@@ -214,22 +218,22 @@ export default function SingleChat({
             <Box mt={"auto"} mb={"md"}>
                 <form onSubmit={(e) => handleMessageSend(e)}>
                     <TextInput
-                        value={message}
-                        onChange={(e) => setMessage(e.currentTarget.value)}
+                        {...field.getInputProps()}
                         placeholder="Type a message..."
                         rightSectionPointerEvents="all"
                         rightSectionWidth={42}
                         rightSection={
                             <ActionIcon
                                 type="submit"
-                                variant="subtle"
+                                variant="filled"
                                 size={32}
+                                radius={"xl"}
                             >
-                                <IconSend2 stroke={2} />
+                                <IconChevronRight size={24} stroke={2} />
                             </ActionIcon>
                         }
-                        size="lg"
-                        radius={"lg"}
+                        size="md"
+                        radius={"xl"}
                     />
                 </form>
             </Box>

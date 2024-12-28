@@ -71,7 +71,7 @@ export const messageSchema: TableSchema = {
         },
     },
     content: {
-        type: 'string',
+        type: 'text',
         nullable: false,
     },
     sent_at: {
