@@ -5,11 +5,19 @@ const startServer = async () => {
 
     try {
         const PORT = 8000;
-        const HOST = process.env.NODE_ENV === "production" ? "::" : "localhost";
+        const HOST =
+            process.env.NODE_ENV === "production" ? "0.0.0.0" : "localhost";
         await app.listen({ port: PORT, host: HOST });
 
         await app.ready();
-        console.log(`🚀 Server running at http://localhost:${PORT}`);
+        if (process.env.NODE_ENV === "development") {
+            console.log(
+                `DEVELOPEMENT SERVER: 🚀 Server running at http://${HOST}:${PORT}`
+            );
+        } else if (process.env.NODE_ENV === "production") {
+            console.log(`🚀 Server running at https://${HOST}:${PORT}`);
+        }
+        // prod:
     } catch (err) {
         app.log.error(err);
         process.exit(1);
