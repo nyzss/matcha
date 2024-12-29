@@ -30,7 +30,7 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { Link, useNavigate } from "react-router";
 import type { Route } from "./+types/single-chat";
-import { socket } from "~/socket/socket";
+import { socket } from "~/lib/socket";
 import { useField } from "@mantine/form";
 import { chatMessageSchema } from "~/lib/validation";
 

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useAuth } from "./auth-provider";
-import { cleanUp, setup } from "~/socket/socket";
+import { cleanUp, setup } from "~/lib/socket";
 
 export default function SocketProvider({
     children,

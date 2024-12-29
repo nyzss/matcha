@@ -1,6 +1,6 @@
 import type { ILogin, IRegister, IUser } from "~/types/validation";
 
-export const BASE_URL = `/api/`;
+export const BASE_URL = "/api/";
 
 export const fetcher = async (path: string, options?: RequestInit) => {
     if (path.startsWith("/")) {
