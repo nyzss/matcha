@@ -26,6 +26,8 @@ services:
       - .env
     networks:
       - matcha-network
+    ports:
+      - "3000:3000"
     volumes:
       - static-data:/usr/src/app
 
@@ -34,6 +36,8 @@ services:
       context: server
     env_file:
       - .env
+    environment:
+      POSTGRES_HOST: "db"
     networks:
       - matcha-network
     depends_on:
