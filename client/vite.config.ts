@@ -5,9 +5,13 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
     server: {
         proxy: {
-            "/api": { target: "http://localhost:8000", changeOrigin: true },
+            "/api": {
+                target: process.env?.PROXY_API || "http://localhost:8000",
+                changeOrigin: true,
+            },
             "/ws": {
-                target: "ws://localhost:8000",
+                // target: "ws://localhost:8000",
+                target: process.env?.PROXY_API_WS || "ws://localhost:8000",
                 rewriteWsOrigin: true,
                 secure: false,
                 ws: true,
