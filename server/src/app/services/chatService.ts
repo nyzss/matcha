@@ -36,14 +36,12 @@ export class ChatService {
     async createConversation(id: number, meId: number) {
         const conversation = await this.getConversationId(id, meId);
 
+        const users = await Promise.all([
+            this.userService.getUserById(id),
+            this.userService.getUserById(meId),
+        ])
+
         if (conversation) {
-            const users = await Promise.all([
-                this.userService.getUserById(id),
-                this.userService.getUserById(meId),
-            ]);
-
-            console.log(users);
-
             return {
                 id: conversation.id,
                 users: users,
@@ -65,11 +63,6 @@ export class ChatService {
             `INSERT INTO conversation_participants (conversation_id, user_id) VALUES ($1, $2), ($1, $3)`,
             [newConversation.id, id, meId]
         );
-
-        const users = await Promise.all([
-            this.userService.getUserById(id),
-            this.userService.getUserById(meId),
-        ]);
 
         return {
             id: conversation.id,
