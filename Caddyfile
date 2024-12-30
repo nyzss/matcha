@@ -1,13 +1,19 @@
 matcha.localhost {
-	reverse_proxy /* client:3000
-
-	reverse_proxy /api/* backend:8000
-
-	handle_path /ws/* {
-		reverse_proxy backend:8000
-	}
+	reverse_proxy /* localhost:8000
 }
 
+# IF WE HOST MATCHA WITH DOCKER:
+# matcha.localhost {
+# 	reverse_proxy /* client:3000
+
+# 	reverse_proxy /api/* backend:8000
+
+# 	handle_path /ws/* {
+# 		reverse_proxy backend:8000
+# 	}
+# }
+
+# IF WE RUN LOCAL PROD MATCHA WITHOUT DOCKER:
 # matcha.localhost {
 # 	reverse_proxy /* http://localhost:3000
 

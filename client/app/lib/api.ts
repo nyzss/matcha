@@ -1,6 +1,8 @@
 import type { ILogin, IRegister, IUser } from "~/types/validation";
 
-export const BASE_URL = "/api/";
+export const BASE_URL =
+    `${import.meta.env.VITE_BACKEND_API_URL}/api/` ||
+    "https://matcha.localhost/api/";
 
 export const fetcher = async (path: string, options?: RequestInit) => {
     if (path.startsWith("/")) {
@@ -12,6 +14,7 @@ export const fetcher = async (path: string, options?: RequestInit) => {
             headers: {
                 "Content-Type": "application/json",
             },
+            credentials: "include",
             ...options,
         });
 

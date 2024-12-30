@@ -18,16 +18,16 @@ export class AuthController {
 
             return await reply.setCookie('refreshToken', result.refreshToken, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
+                secure: true,
                 maxAge: 60 * 60 * 24 * 7,
                 path: '/',
-                sameSite: 'strict'
+                sameSite: 'none'
             }).setCookie('accessToken', result.accessToken, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
+                secure: true,
                 maxAge: 60 * 60,
                 path: '/',
-                sameSite: 'strict'
+                sameSite: 'none'
             }).send({
                 user: result.user,
             });
@@ -42,16 +42,16 @@ export class AuthController {
 
             return await reply.setCookie('refreshToken', result.refreshToken, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
+                secure: true,
                 maxAge: 60 * 60 * 24 * 7,
                 path: '/',
-                sameSite: 'strict'
+                sameSite: 'none'
             }).setCookie('accessToken', result.accessToken, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
+                secure: true,
                 maxAge: 60 * 60,
                 path: '/',
-                sameSite: 'strict'
+                sameSite: 'none'
             }).send({
                 user: result.user,
             });

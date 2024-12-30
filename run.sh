@@ -24,4 +24,8 @@ sleep 3
 $pkg run $client dev &
 $pkg run $server dev &
 
+sleep 3
+
+caddy run &
+
 wait
