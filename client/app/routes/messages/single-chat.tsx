@@ -54,6 +54,29 @@ export default function SingleChat({
     const { user } = useAuth();
     const viewport = useRef<HTMLDivElement>(null);
 
+    // helper func to add messages to the message history
+    // we filter out the duplicates, sometimes the socket.io instance can be tricky and multiply
+    // eg. when not cleaned up properly after useEffect()
+    const addMessage = (msg: IMessage) => {
+        setMessageHistory((prev) => {
+            const val: TMessageHistory = {
+                total: 0,
+                messages: [],
+            };
+            if (!prev) {
+                val.messages = [msg];
+                val.total = 1;
+            } else {
+                val.total = prev.total + 1;
+                val.messages = [...prev.messages, msg];
+            }
+            val.messages = val.messages.filter(
+                (el, i, arr) => arr.findIndex((el2) => el2.id === el.id) === i
+            );
+            return val;
+        });
+    };
+
     useEffect(() => {
         fetchConversation(chatId, user!.id)
             .then((data) => {
@@ -89,15 +112,8 @@ export default function SingleChat({
 
     useEffect(() => {
         const updateWithMessage = (data: IMessage) => {
-            console.log("MESSAGE CREATE", data);
             if (data.conversationId === chatId) {
-                setMessageHistory((prev) => {
-                    if (!prev) return;
-                    return {
-                        total: prev.total + 1,
-                        messages: [...prev?.messages, data],
-                    };
-                });
+                addMessage(data);
                 scrollToBottom();
             }
         };
