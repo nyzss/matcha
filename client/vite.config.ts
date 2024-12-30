@@ -1,7 +1,6 @@
 import { reactRouter } from "@react-router/dev/vite";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
-import mkcert from "vite-plugin-mkcert";
 
 export default defineConfig({
     server: {
@@ -20,5 +19,5 @@ export default defineConfig({
             },
         },
     },
-    plugins: [reactRouter(), tsconfigPaths(), mkcert()],
+    plugins: [reactRouter(), tsconfigPaths()],
 });

@@ -1,11 +1,13 @@
 import { useAuth } from "~/contexts/auth-provider";
-import { fetchAllConversations } from "~/lib/api";
+import { fetchAllConversations, mutateConversation } from "~/lib/api";
 import {
     Avatar,
     Box,
     Button,
     Flex,
     Group,
+    Modal,
+    NumberInput,
     Text,
     TextInput,
 } from "@mantine/core";
@@ -13,6 +15,8 @@ import { IconPlus, IconSearch } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import type { Route } from "./+types/chats";
+import { useDisclosure } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
 
 export function meta({}: Route.MetaArgs) {
     return [{ title: "Messages | matcha " }];
@@ -20,6 +24,9 @@ export function meta({}: Route.MetaArgs) {
 
 export default function MessagesPage() {
     const [conversations, setConversations] = useState<IConversation[]>([]);
+    const [opened, { open, close }] = useDisclosure();
+    const [newChatId, setNewChatId] = useState<string | number>();
+    const [error, setError] = useState<string>();
 
     const { user } = useAuth();
 
@@ -30,8 +37,45 @@ export default function MessagesPage() {
         getConversations();
     }, [user]);
 
+    const startChat = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        if (!newChatId) return;
+
+        mutateConversation(newChatId)
+            .then((conv) => {
+                setConversations([...conversations, conv]);
+                close();
+            })
+            .catch(() => {
+                setError("Couldn't start the conversation");
+            });
+    };
+
     return (
         <Flex direction={"column"} gap={"xs"}>
+            <Modal
+                opened={opened}
+                onClose={close}
+                title="Start conversation"
+                centered
+            >
+                <form onSubmit={startChat}>
+                    <NumberInput
+                        label="ID of user"
+                        placeholder="Enter the ID of the user you want to chat with"
+                        value={newChatId}
+                        onChange={(e) => {
+                            setNewChatId(e);
+                            if (error) setError("");
+                        }}
+                        error={error}
+                    />
+                    <Button mt={"sm"} type="submit">
+                        Start chat
+                    </Button>
+                </form>
+            </Modal>
             <Group w={"100%"}>
                 <TextInput
                     leftSection={<IconSearch size={16} />}
@@ -40,7 +84,9 @@ export default function MessagesPage() {
                     width={"100%"}
                     flex={1}
                 />
-                <Button leftSection={<IconPlus size={16} />}>New chat</Button>
+                <Button leftSection={<IconPlus size={16} />} onClick={open}>
+                    New chat
+                </Button>
             </Group>
             {conversations &&
                 conversations.map((conv) => (

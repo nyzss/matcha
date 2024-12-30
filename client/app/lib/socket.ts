@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 export const socket = io(import.meta.env.VITE_BACKEND_API_URL, {
     autoConnect: false,
     withCredentials: true,
-    // path: "/ws/socket.io",
+    path: "/api/ws",
 });
 
 const onConnect = () => {

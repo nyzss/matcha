@@ -72,6 +72,7 @@ const buildApp = async () => {
             allowedHeaders: ["*"],
             credentials: true,
         },
+        path: "/api/ws"
     });
 
     await app.register(customSocketManager, {

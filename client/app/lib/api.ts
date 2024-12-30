@@ -250,3 +250,27 @@ export const mutateMessage = async (
 
     return await res?.json();
 };
+
+export const mutateConversation = async (
+    userId: string | number
+): Promise<IConversation> => {
+    const res = await fetcher("/conversation/create", {
+        method: "POST",
+        body: JSON.stringify({
+            userId,
+        }),
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't create conversation");
+    }
+
+    return await res?.json();
+    // const data: IConversation = await res?.json();
+    // const filtered = data.users.filter((user) => user.id !== userId);
+
+    // return {
+    //     ...data,
+    //     users: filtered.length > 0 ? filtered : [data.users[0]],
+    // };
+};

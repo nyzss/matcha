@@ -1,5 +1,6 @@
-matcha.localhost {
-	reverse_proxy /* localhost:8000
+localhost {
+	reverse_proxy /* localhost:5173
+	reverse_proxy /api/* localhost:5173
 }
 
 # IF WE HOST MATCHA WITH DOCKER:
