@@ -13,30 +13,31 @@ export const routes: IRoute[] = [
     {
         name: "Home",
         link: "/",
-        icon: <IconHome />,
+        icon: <IconHome size={28} />,
     },
     {
         name: "Messages",
         link: "/messages",
-        icon: <IconMessage />,
+        icon: <IconMessage size={28} />,
         auth: true,
     },
     {
         name: "Matches",
         link: "/matches",
-        icon: <IconClover />,
+        icon: <IconClover size={28} />,
         auth: true,
     },
     {
         name: "Notifications",
         link: "/notifications",
-        icon: <IconBell />,
+        icon: <IconBell size={28} />,
         auth: true,
+        indicator: true,
     },
     {
         name: "Profile",
         link: "/profile/@me",
-        icon: <IconUserCircle />,
+        icon: <IconUserCircle size={28} />,
         auth: true,
     },
 ];

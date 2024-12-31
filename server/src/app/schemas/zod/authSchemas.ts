@@ -15,6 +15,10 @@ export const loginSchema = z.object({
 export const registerSchema = z.object({
     username: z
         .string()
+        .regex(/^\w+$/, {
+            message:
+                "Username must contain only letters, numbers, and underscores",
+        })
         .min(2, { message: "Username must be at least 2 characters long" })
         .max(24, { message: "Username must be at most 24 characters long" }),
 
@@ -30,7 +34,9 @@ export const registerSchema = z.object({
         .min(3, { message: "Last name must be at least 3 characters long" })
         .max(24, { message: "Last name must be at most 24 characters long" }),
 
-    birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { message: "Birth date must be a valid date" }),
+    birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
+        message: "Birth date must be a valid date",
+    }),
 
     password: z
         .string()

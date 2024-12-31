@@ -1,8 +1,9 @@
 import { io } from "socket.io-client";
 
-export const socket = io("http://localhost:5173", {
+export const socket = io(import.meta.env.VITE_BACKEND_API_URL, {
     autoConnect: false,
-    path: "/ws/socket.io",
+    withCredentials: true,
+    path: "/api/ws",
 });
 
 const onConnect = () => {
@@ -18,7 +19,7 @@ const onError = (error: Error) => {
 };
 
 const catchAll = (eventName: string, args: any[]) => {
-    console.log("Socket event: ", eventName, "\n", args);
+    console.log("CATCH_ALL EVENTS: ", eventName, "\n", args);
 };
 
 export const setup = () => {
@@ -32,10 +33,7 @@ export const setup = () => {
 };
 
 export const cleanUp = () => {
-    socket.off("connect", onConnect);
-    socket.off("disconnect", onDisconnect);
-    socket.off("error", onError);
-    socket.offAny(catchAll);
+    socket.removeAllListeners();
 
     socket.disconnect();
 };

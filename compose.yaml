@@ -1,4 +1,24 @@
 services:
+  caddy:
+    image: caddy:2.8.4
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    networks:
+      - matcha-network
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - client
+      - backend
+      - db
+
   db:
     image: postgres:17
     restart: always
@@ -24,6 +44,8 @@ services:
       context: client
     env_file:
       - .env
+    environment:
+      NODE_ENV: "production"
     networks:
       - matcha-network
     volumes:
@@ -34,27 +56,15 @@ services:
       context: server
     env_file:
       - .env
+    environment:
+      NODE_ENV: "production"
+      POSTGRES_HOST: "db"
     networks:
       - matcha-network
     depends_on:
       db:
         condition: service_healthy
 
-  # webserver:
-  #   build:
-  #     context: services/webserver
-  #   networks:
-  #     - matcha-network
-  #   volumes:
-  #     - static-data:/next
-  #   env_file:
-  #     - .env
-  #   ports:
-  #     - 8080:80
-  #     - 8443:443
-  #   depends_on:
-  #     - client
-  #     - backend
 
 networks:
   matcha-network:
@@ -63,3 +73,5 @@ networks:
 volumes:
   db-data:
   static-data:
+  caddy_data:
+  caddy_config:

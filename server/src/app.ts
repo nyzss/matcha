@@ -1,4 +1,4 @@
-import fastify, {FastifyError, FastifyReply, FastifyRequest} from 'fastify';
+import fastify, { FastifyError, FastifyReply, FastifyRequest} from 'fastify';
 import routes from './app/routes';
 import errorHandler from "./app/utils/errorHandler";
 import { serializerCompiler, validatorCompiler, hasZodFastifySchemaValidationErrors } from "fastify-type-provider-zod";
@@ -22,6 +22,7 @@ import fastifyMultipart from "@fastify/multipart";
 import {loggerMiddleware} from "./app/middlewares/loggerMiddleware";
 import {customMiddleware} from "./app/plugins/middlewarePlugin";
 import {conversationParticipantSchema, conversationSchema, messageSchema} from "./app/schemas/orm/chatSchemas";
+import cors from "@fastify/cors"
 
 const buildApp = async () => {
     const app = fastify({ logger: true });
@@ -34,7 +35,10 @@ const buildApp = async () => {
     // a déplacé dans un fichier
 
     // allowing cors for frontend
-    // await app.register(cors, {});
+    await app.register(cors, {
+        origin: process.env.FRONTEND_URL || "https://localhost:5173",
+        credentials: true
+    });
 
     await app.register(fastifyJwt, {
         secret: process.env.JWT_SECRET as string,
@@ -54,16 +58,21 @@ const buildApp = async () => {
             host: process.env.POSTGRES_HOST,
             database: process.env.POSTGRES_DB,
             password: process.env.POSTGRES_PASSWORD,
-            port: 5432,
+            port:
+                (process.env.POSTGRES_PORT &&
+                    parseInt(process.env?.POSTGRES_PORT)) ||
+                5432,
         },
     });
 
     await app.register(fastifyIO, {
         cors: {
-            origin: '*', // Match your client URL
+            origin: process.env.FRONTEND_URL || 'https://localhost:5173', // Match your client URL
             methods: ["GET", "POST"],
             allowedHeaders: ["*"],
+            credentials: true,
         },
+        path: "/api/ws"
     });
 
     await app.register(customSocketManager, {

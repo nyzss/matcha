@@ -1,7 +1,4 @@
-#!/bin/bash
 
-# FOR DEVELOPMENT PURPOSES ONLY
-# RUN `docker compose up --build` for prod (42 evaluation), or not...
 
 pkg="npm"
 dir="--prefix"
@@ -19,13 +16,15 @@ client="$dir ./client"
 $pkg install $client &
 $pkg install $server &
 
-docker compose up db --build &
-sleep 3
-$pkg run $client dev &
-$pkg run $server dev &
 
-sleep 3
+$pkg run $client build &
+$pkg run $server build &
 
+$pkg run $client start &
+$pkg run $server start &
+
+sleep 6
 caddy run &
 
 wait
+

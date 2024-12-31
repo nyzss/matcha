@@ -31,9 +31,16 @@ export const links: Route.LinksFunction = () => [
     },
 ];
 
+export function meta({}: Route.MetaArgs) {
+    return [
+        { title: "matcha" },
+        { name: "description", content: "The dating app a la Twitter" },
+    ];
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
             <head>
                 <meta charSet="utf-8" />
                 <meta

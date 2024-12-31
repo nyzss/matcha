@@ -4,6 +4,7 @@ import {
     Button,
     Flex,
     Group,
+    Indicator,
     TextInput,
     useMantineColorScheme,
 } from "@mantine/core";
@@ -78,7 +79,19 @@ export default function AppLayout() {
                                 <Button
                                     variant="subtle"
                                     size="xl"
-                                    leftSection={route.icon}
+                                    leftSection={
+                                        route.indicator ? (
+                                            <Indicator
+                                                inline
+                                                label="16"
+                                                size={16}
+                                            >
+                                                {route.icon}
+                                            </Indicator>
+                                        ) : (
+                                            route.icon
+                                        )
+                                    }
                                     component={Link}
                                     to={route.link}
                                     key={route.name}

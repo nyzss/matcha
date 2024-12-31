@@ -1,22 +1,24 @@
 import { useEffect } from "react";
 import { useAuth } from "./auth-provider";
-import { cleanUp, setup } from "~/socket/socket";
+import { cleanUp, setup } from "~/lib/socket";
 
 export default function SocketProvider({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const { logged } = useAuth();
+    const { user } = useAuth();
 
     useEffect(() => {
-        if (logged) {
+        if (user) {
             setup();
+        } else {
+            cleanUp();
         }
         return () => {
             cleanUp();
         };
-    }, [logged]);
+    }, [user]);
 
     return children;
 }

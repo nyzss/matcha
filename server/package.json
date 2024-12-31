@@ -5,6 +5,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsc-watch --onSuccess \"npm start\"",
+    "start:prod": "node dist/server.js",
     "start": "node --env-file=../.env dist/server.js"
   },
   "keywords": [],

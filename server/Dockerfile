@@ -73,4 +73,4 @@ COPY --from=build /usr/src/app/dist ./dist
 EXPOSE 8000
 
 # Run the application.
-CMD pnpm start
+CMD pnpm run start:prod

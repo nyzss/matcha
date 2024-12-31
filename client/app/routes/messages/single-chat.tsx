@@ -17,31 +17,66 @@ import {
     Title,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconChevronLeft, IconSend2 } from "@tabler/icons-react";
+import {
+    IconChevronLeft,
+    IconChevronRight,
+    IconSend2,
+} from "@tabler/icons-react";
 import React, { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
 import isToday from "dayjs/plugin/isToday";
 import isYesterday from "dayjs/plugin/isYesterday";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import type { Route } from "./+types/single-chat";
+import { socket } from "~/lib/socket";
+import { useField } from "@mantine/form";
+import { chatMessageSchema } from "~/lib/validation";
 
 export default function SingleChat({
     params: { chatId },
 }: Route.ComponentProps) {
     const [conversation, setConversation] = useState<IConversation>();
     const [messageHistory, setMessageHistory] = useState<TMessageHistory>();
-    const [message, setMessage] = useState<string>("");
     const navigate = useNavigate();
+
+    const field = useField({
+        initialValue: "",
+
+        validate: (value) => {
+            const v = chatMessageSchema.safeParse(value);
+
+            return !v.success ? "Max 1000 characters" : null;
+        },
+    });
 
     const { user } = useAuth();
     const viewport = useRef<HTMLDivElement>(null);
 
+    // helper func to add messages to the message history
+    // we filter out the duplicates, sometimes the socket.io instance can be tricky and multiply
+    // eg. when not cleaned up properly after useEffect()
+    const addMessage = (msg: IMessage) => {
+        setMessageHistory((prev) => {
+            if (prev?.messages.some((el) => el.id === msg.id)) return prev;
+            if (!prev) {
+                return {
+                    messages: [msg],
+                    total: 1,
+                };
+            } else {
+                return {
+                    total: prev.total + 1,
+                    messages: [...prev.messages, msg],
+                };
+            }
+        });
+    };
+
     useEffect(() => {
         fetchConversation(chatId, user!.id)
             .then((data) => {
-                console.log(data);
                 setConversation(data);
             })
             .catch(() => {
@@ -72,38 +107,49 @@ export default function SingleChat({
         dayjs.tz.setDefault(dayjs.tz.guess());
     }, []);
 
-    // const computeMessages = useMemo(() => {
-    //     const all = messageHistory?.messages;
-    // }, [messageHistory])
+    useEffect(() => {
+        const updateWithMessage = (data: IMessage) => {
+            if (data.conversationId === chatId) {
+                addMessage(data);
+                scrollToBottom();
+            }
+        };
+
+        socket.on("MessageCreate", updateWithMessage);
+
+        return () => {
+            socket.removeAllListeners("MessageCreate");
+        };
+    }, []);
 
     const handleMessageSend = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!message) return;
+        if (!field.getValue()) return;
 
-        mutateMessage(chatId, message)
-            .then((data) => {
-                console.log(data);
-                setMessage("");
-            })
-            .catch(() => {
-                notifications.show({
-                    title: "An error occurred",
-                    message: "Couldn't send message",
-                    color: "red",
-                });
-            });
+        if (await field.validate()) return;
+        mutateMessage(chatId, field.getValue()).then(() => {
+            field.setValue("");
+        });
     };
 
-    const scrollToBottom = () => {
+    const scrollToBottom = (behavior: ScrollBehavior = "instant") => {
         viewport.current!.scrollTo({
             top: viewport.current!.scrollHeight,
-            behavior: "smooth",
+            behavior,
         });
     };
 
     return (
         <Flex direction={"column"} gap={"xs"} h={"100%"}>
-            <Flex direction={"row"} align={"center"} gap={"sm"}>
+            <Flex
+                direction={"row"}
+                align={"center"}
+                gap={"sm"}
+                component={Link}
+                to={"/profile/" + conversation?.users[0].username}
+                style={{ textDecoration: "none" }}
+                c="var(--mantine-color-dark)"
+            >
                 <ActionIcon
                     variant="transparent"
                     onClick={() => navigate("/messages")}
@@ -185,22 +231,22 @@ export default function SingleChat({
             <Box mt={"auto"} mb={"md"}>
                 <form onSubmit={(e) => handleMessageSend(e)}>
                     <TextInput
-                        value={message}
-                        onChange={(e) => setMessage(e.currentTarget.value)}
+                        {...field.getInputProps()}
                         placeholder="Type a message..."
                         rightSectionPointerEvents="all"
                         rightSectionWidth={42}
                         rightSection={
                             <ActionIcon
                                 type="submit"
-                                variant="subtle"
+                                variant="filled"
                                 size={32}
+                                radius={"xl"}
                             >
-                                <IconSend2 stroke={2} />
+                                <IconChevronRight size={24} stroke={2} />
                             </ActionIcon>
                         }
-                        size="lg"
-                        radius={"lg"}
+                        size="md"
+                        radius={"xl"}
                     />
                 </form>
             </Box>

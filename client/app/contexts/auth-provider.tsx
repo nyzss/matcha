@@ -52,7 +52,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const result = await updateUser(data);
 
         if (result.success) {
-            console.log(result.data);
             setUser(result.data);
             return true;
         } else if (!result.success) {

@@ -1,7 +1,8 @@
-import { notifications } from "@mantine/notifications";
 import type { ILogin, IRegister, IUser } from "~/types/validation";
 
-export const BASE_URL = `/api/`;
+export const BASE_URL =
+    `${import.meta.env.VITE_BACKEND_API_URL}/api/` ||
+    "https://matcha.localhost/api/";
 
 export const fetcher = async (path: string, options?: RequestInit) => {
     if (path.startsWith("/")) {
@@ -13,6 +14,7 @@ export const fetcher = async (path: string, options?: RequestInit) => {
             headers: {
                 "Content-Type": "application/json",
             },
+            credentials: "include",
             ...options,
         });
 
@@ -140,23 +142,14 @@ export const checkAuth = async (): Promise<IProfile | false> => {
     }
 };
 
-export const getUser = async (id: string): Promise<IProfile | null> => {
-    try {
-        const res = await fetcher("/profile/" + id);
+export const getUser = async (username: string): Promise<IProfile | null> => {
+    const res = await fetcher("/profile/" + username);
 
-        if (!res?.ok) {
-            throw new Error("Couldn't find user");
-        }
-        const json = await res?.json();
-        return json.user;
-    } catch {
-        notifications.show({
-            title: "An error occurred",
-            message: "Couldn't find user",
-            color: "red",
-        });
-        return null;
+    if (!res?.ok) {
+        throw new Error("Couldn't find user");
     }
+    const json = await res?.json();
+    return json.user;
 };
 
 export const updateUser = async (
@@ -256,4 +249,28 @@ export const mutateMessage = async (
     }
 
     return await res?.json();
+};
+
+export const mutateConversation = async (
+    userId: string | number
+): Promise<IConversation> => {
+    const res = await fetcher("/conversation/create", {
+        method: "POST",
+        body: JSON.stringify({
+            userId,
+        }),
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't create conversation");
+    }
+
+    return await res?.json();
+    // const data: IConversation = await res?.json();
+    // const filtered = data.users.filter((user) => user.id !== userId);
+
+    // return {
+    //     ...data,
+    //     users: filtered.length > 0 ? filtered : [data.users[0]],
+    // };
 };

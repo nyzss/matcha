@@ -16,7 +16,7 @@ interface IConversation {
 
 interface IMessage {
     id: number;
-    conversationId: number;
+    conversationId: string;
     sender: IProfile;
     content: string;
     sentAt: Date;

@@ -1,12 +1,15 @@
 import {
+    ActionIcon,
     Avatar,
     Badge,
     Box,
+    Button,
     Card,
     Flex,
     Image,
     LoadingOverlay,
     Text,
+    Title,
 } from "@mantine/core";
 import { useEffect, useState } from "react";
 import EditProfile from "~/components/profile/edit-profile";
@@ -15,21 +18,49 @@ import { Carousel } from "@mantine/carousel";
 import { useAuth } from "~/contexts/auth-provider";
 
 import type { Route } from "./+types/profile";
+import {
+    IconAlertSquareRoundedFilled,
+    IconChevronLeft,
+} from "@tabler/icons-react";
+import { useNavigate } from "react-router";
 
-export default function Profile({ params: { userId } }: Route.ComponentProps) {
+export default function Profile({
+    params: { userId: username },
+}: Route.ComponentProps) {
     const [currentUser, setCurrentUser] = useState<IProfile | null>(null);
     const [isMe, setIsMe] = useState<boolean>(false);
+    const navigate = useNavigate();
 
     const { user } = useAuth();
+
     useEffect(() => {
-        const checkIsMe = userId === "@me";
+        const checkIsMe = username === "@me";
         setIsMe(checkIsMe);
         if (checkIsMe) {
             setCurrentUser(user);
         } else {
-            getUser(userId).then((data) => setCurrentUser(data));
+            getUser(username)
+                .then((data) => setCurrentUser(data))
+                .catch(() => {
+                    setCurrentUser(null);
+                });
         }
-    }, [isMe, userId, user]);
+    }, [username, user]);
+
+    if (!currentUser) {
+        return (
+            <Box h={"100vh"}>
+                <Button variant="subtle" onClick={() => navigate("/")}>
+                    <IconChevronLeft /> Go back
+                </Button>
+                <Flex h={"100%"} align={"center"} direction={"column"} pt={50}>
+                    <IconAlertSquareRoundedFilled size={96} />
+                    <Title mt={"sm"}>Oops!</Title>
+                    <Text>We couldn't find the user you're looking for.</Text>
+                </Flex>
+            </Box>
+        );
+    }
 
     const images = [
         "https://api.dicebear.com/9.x/glass/svg?seed=qwertyui",
@@ -66,11 +97,15 @@ export default function Profile({ params: { userId } }: Route.ComponentProps) {
                         Interests
                     </Text>
                     <Flex gap={"md"} wrap={"wrap"}>
-                        {user?.tags?.map((tag) => (
-                            <Badge key={tag} size="lg">
-                                {tag}
-                            </Badge>
-                        ))}
+                        {currentUser?.tags && currentUser?.tags.length > 0 ? (
+                            currentUser?.tags?.map((tag) => (
+                                <Badge key={tag} size="lg">
+                                    {tag}
+                                </Badge>
+                            ))
+                        ) : (
+                            <Text>No interests</Text>
+                        )}
                     </Flex>
                 </Flex>
                 <Carousel withIndicators>
