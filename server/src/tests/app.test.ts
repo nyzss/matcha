@@ -15,6 +15,8 @@ test("Health check", async (t: TestContext) => {
     });
 
     t.assert.strictEqual(resp.statusCode, 200, "returns a status code of 200");
+
+    await app.close();
 });
 
 test("User creation", async (t: TestContext) => {
@@ -38,7 +40,6 @@ test("User creation", async (t: TestContext) => {
             body: body,
         });
 
-        console.log(resp.cookies);
         const json = await resp.json();
 
         st.assert.strictEqual(
@@ -130,4 +131,6 @@ test("User creation", async (t: TestContext) => {
             );
         }
     );
+
+    await app.close();
 });
