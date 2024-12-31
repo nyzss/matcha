@@ -8,14 +8,13 @@ on:
 
 # testing environment variables
 env:
-    NODE_ENV: "development"
+    NODE_ENV: "production"
     POSTGRES_DB: "matcha"
-    POSTGRES_PASSWORD: "dummy_password123"
+    POSTGRES_PASSWORD: "password123"
     POSTGRES_USER: "postgres"
     POSTGRES_HOST: "localhost"
-
-    COOKIE_SECRET: "dummy_cookie_secret"
-    JWT_SECRET: "dummy_jwt_secret"
+    COOKIE_SECRET: "cookie_secret"
+    JWT_SECRET: "jwt_secret"
     FRONTEND_URL: "https://localhost"
 
 jobs:
@@ -42,7 +41,7 @@ jobs:
 
             - name: Install dependencies
               working-directory: server
-              run: pnpm install
+              run: pnpm install -P false
 
             - name: Build backend
               working-directory: server
