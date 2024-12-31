@@ -1,13 +1,12 @@
-// import { test } from "node:test";
+import { test, TestContext } from "node:test";
 import buildApp from "../app";
 
-console.log(
-    "CHECK IF POSTGRES ENVIRONMENT EXISTS ATLEAST: ",
-    process.env.POSTGRES_DB,
-    !!process.env.POSTGRES_DB
-);
+import crypto from "node:crypto";
 
-const test = async () => {
+const rand = () => crypto.randomBytes(20).toString("hex").slice(0, 12);
+
+test("Health check", async (t: TestContext) => {
+    t.plan(1);
     const app = await buildApp(false);
 
     const resp = await app.inject({
@@ -15,9 +14,120 @@ const test = async () => {
         url: "/api/healthcheck",
     });
 
-    console.log(resp.statusCode);
-    console.log(resp.body);
-    console.log(resp.headers);
-};
+    t.assert.strictEqual(resp.statusCode, 200, "returns a status code of 200");
+});
 
-test();
+test("User creation", async (t: TestContext) => {
+    // t.plan(2);
+    const app = await buildApp(false);
+    const randomName = rand();
+
+    await t.test("Valid User creation", async (st: TestContext) => {
+        const body = {
+            username: randomName,
+            email: `${randomName}@gmail.com`,
+            password: "password123",
+            birthDate: "2004-11-01",
+            firstName: randomName,
+            lastName: "LastName",
+        };
+
+        const resp = await app.inject({
+            method: "POST",
+            url: "/api/auth/register",
+            body: body,
+        });
+
+        console.log(resp.cookies);
+        const json = await resp.json();
+
+        st.assert.strictEqual(
+            resp.statusCode,
+            200,
+            "returns a status code of 200"
+        );
+        st.assert.strictEqual(
+            json.user.username,
+            randomName,
+            "returns the correct username"
+        );
+
+        const cookies = ["accessToken", "refreshToken"];
+
+        const checkCookies = resp.cookies
+            .map((cookie) => cookie.name)
+            .every((cookie) => cookies.includes(cookie));
+        st.assert.strictEqual(
+            checkCookies,
+            true,
+            "returns the correct cookies"
+        );
+    });
+
+    await t.test(
+        "Invalid User creation (same email/username)",
+        async (st: TestContext) => {
+            const body = {
+                username: randomName,
+                email: `${randomName}@gmail.com`,
+                password: "password123",
+                birthDate: "2004-11-01",
+                firstName: randomName,
+                lastName: "LastName",
+            };
+
+            const resp = await app.inject({
+                method: "POST",
+                url: "/api/auth/register",
+                body: body,
+            });
+
+            const json = await resp.json();
+
+            st.assert.strictEqual(
+                resp.statusCode,
+                400,
+                "returns a status code of 400"
+            );
+            st.assert.strictEqual(
+                json.error,
+                "Email already exists",
+                "Email should already exist"
+            );
+        }
+    );
+
+    await t.test(
+        "Invalid User creation (not sending all required fields - birthDate)",
+        async (st: TestContext) => {
+            const body = {
+                username: randomName,
+                email: `${randomName}@gmail.com`,
+                password: "password123",
+                // birthdate missing in this case
+                // birthDate: "2004-11-01",
+                firstName: randomName,
+                lastName: "LastName",
+            };
+
+            const resp = await app.inject({
+                method: "POST",
+                url: "/api/auth/register",
+                body: body,
+            });
+
+            const json = await resp.json();
+
+            st.assert.strictEqual(
+                resp.statusCode,
+                400,
+                "returns a status code of 400"
+            );
+            st.assert.strictEqual(
+                json.message,
+                "Invalid request data",
+                "should be catched by fastify schema validation"
+            );
+        }
+    );
+});
