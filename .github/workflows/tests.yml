@@ -1,0 +1,57 @@
+name: Tests Backend
+
+on:
+    push:
+        branches: ["main"]
+    pull_request:
+        branches: ["main"]
+
+# testing environment variables
+env:
+    NODE_ENV: "development"
+    POSTGRES_DB: "matcha"
+    POSTGRES_PASSWORD: "dummy_password123"
+    POSTGRES_USER: "postgres"
+    POSTGRES_HOST: "localhost"
+
+    COOKIE_SECRET: "dummy_cookie_secret"
+    JWT_SECRET: "dummy_jwt_secret"
+    FRONTEND_URL: "https://localhost"
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v4.0.0
+              with:
+                  version: 9
+
+            - name: Create empty .env file for docker compose
+              run: touch .env
+
+            - name: Run docker compose build
+              run: docker compose up -d db --build
+
+            - name: Install dependencies
+              working-directory: server
+              run: pnpm install
+
+            - name: Build backend
+              working-directory: server
+              run: pnpm run build
+
+            - name: Run tests
+              working-directory: server
+              run: pnpm run test
+
+            - name: Run docker compose down
+              if: always()
+              run: docker compose down

@@ -25,7 +25,7 @@ docker compose up -d db --build
 sleep 3
 
 $pkg run $server build
-$pkg run $server test:local
+$pkg run $server test
 output=$?
 
 docker compose down

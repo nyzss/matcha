@@ -7,8 +7,8 @@
     "dev": "tsc-watch --onSuccess \"npm start\"",
     "start:prod": "node dist/server.js",
     "start": "node dist/server.js",
-    "test:local": "node --test",
-    "test": "node --test --watch"
+    "test:local": "node --test --watch",
+    "test": "node --test"
   },
   "keywords": [],
   "author": "",
