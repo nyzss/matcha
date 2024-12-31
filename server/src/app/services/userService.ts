@@ -121,6 +121,7 @@ export class UserService {
                 SELECT
                     u.id,
                     u.password,
+                    u.verified,
                     p.username,
                     p.avatar,
                     p.birth_date as "birthDate",
@@ -153,6 +154,7 @@ export class UserService {
             sexualOrientation: user.sexualOrientation,
             pictures: user.pictures || [],
             tags: user.tags || [],
+            verified: user.verified || false,
         };
     }
 
