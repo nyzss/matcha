@@ -32,6 +32,8 @@ export default function InitialSetup() {
     const [opened, { open, close }] = useDisclosure(false);
     const [step, setStep] = useState(0);
     const { logged } = useAuth();
+    const [pinValue, setPinValue] = useState<string>();
+    const [pinError, setPinError] = useState<boolean>();
 
     const next = () => {
         setStep((prev) => prev + 1);
@@ -61,11 +63,26 @@ export default function InitialSetup() {
         }
     };
 
+    const handleEmailVerification = async (
+        e: React.FormEvent<HTMLFormElement>
+    ) => {
+        e.preventDefault();
+        try {
+            console.log("Verifying email with PIN: ", pinValue);
+            setTimeout(() => {
+                console.log("Email verified.");
+            }, 1000);
+        } catch {
+            console.error("Failed to verify email.");
+            setPinError(true);
+        }
+    };
+
     useEffect(() => {
         if (logged) {
             open();
         }
-    }, [open, logged]);
+    }, []);
 
     return (
         <Modal
@@ -86,26 +103,33 @@ export default function InitialSetup() {
                 <Stepper active={step}>
                     <Stepper.Step label="First Step" description="Verify Email">
                         <Center py={"xl"}>
-                            <Flex
-                                justify={"center"}
-                                align={"center"}
-                                direction={"column"}
-                                gap={"lg"}
-                            >
-                                <IconMail size={80} />
-                                <Title>Confirm your email address.</Title>
-                                <Text>
-                                    To access Matcha we have to ensure your
-                                    email address is valid.
-                                </Text>
-                                <PinInput
-                                    oneTimeCode
-                                    size="lg"
-                                    length={5}
-                                    type={"number"}
-                                />
-                                <Button variant="light">Validate</Button>
-                            </Flex>
+                            <form onSubmit={handleEmailVerification}>
+                                <Flex
+                                    justify={"center"}
+                                    align={"center"}
+                                    direction={"column"}
+                                    gap={"lg"}
+                                >
+                                    <IconMail size={80} />
+                                    <Title>Confirm your email address.</Title>
+                                    <Text>
+                                        To access Matcha we have to ensure your
+                                        email address is valid.
+                                    </Text>
+                                    <PinInput
+                                        oneTimeCode
+                                        size="lg"
+                                        length={5}
+                                        type={"number"}
+                                        error={pinError}
+                                        value={pinValue}
+                                        onChange={setPinValue}
+                                    />
+                                    <Button variant="light" type="submit">
+                                        Validate
+                                    </Button>
+                                </Flex>
+                            </form>
                         </Center>
                     </Stepper.Step>
 
@@ -200,7 +224,7 @@ export default function InitialSetup() {
                     </Stepper.Step>
                 </Stepper>
 
-                {true && (
+                {false && (
                     <Group mt={"auto"}>
                         <Button onClick={prev}>Back</Button>
                         <Button
