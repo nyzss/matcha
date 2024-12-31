@@ -1,4 +1,4 @@
-import fastify, { FastifyError, FastifyReply, FastifyRequest} from 'fastify';
+import fastify, { FastifyError, FastifyHttpOptions, FastifyLoggerOptions, FastifyReply, FastifyRequest} from 'fastify';
 import routes from './app/routes';
 import errorHandler from "./app/utils/errorHandler";
 import { serializerCompiler, validatorCompiler, hasZodFastifySchemaValidationErrors } from "fastify-type-provider-zod";
@@ -23,9 +23,12 @@ import {loggerMiddleware} from "./app/middlewares/loggerMiddleware";
 import {customMiddleware} from "./app/plugins/middlewarePlugin";
 import {conversationParticipantSchema, conversationSchema, messageSchema} from "./app/schemas/orm/chatSchemas";
 import cors from "@fastify/cors"
+import { PinoLoggerOptions } from 'fastify/types/logger';
 
-const buildApp = async () => {
-    const app = fastify({ logger: true });
+const buildApp = async (log: FastifyLoggerOptions & PinoLoggerOptions | boolean = true) => {
+    const app = fastify({
+        logger: log
+    });
 
     app.setValidatorCompiler(validatorCompiler);
     app.setSerializerCompiler(serializerCompiler);
