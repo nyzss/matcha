@@ -59,21 +59,18 @@ export default function SingleChat({
     // eg. when not cleaned up properly after useEffect()
     const addMessage = (msg: IMessage) => {
         setMessageHistory((prev) => {
-            const val: TMessageHistory = {
-                total: 0,
-                messages: [],
-            };
+            if (prev?.messages.some((el) => el.id === msg.id)) return prev;
             if (!prev) {
-                val.messages = [msg];
-                val.total = 1;
+                return {
+                    messages: [msg],
+                    total: 1,
+                };
             } else {
-                val.total = prev.total + 1;
-                val.messages = [...prev.messages, msg];
+                return {
+                    total: prev.total + 1,
+                    messages: [...prev.messages, msg],
+                };
             }
-            val.messages = val.messages.filter(
-                (el, i, arr) => arr.findIndex((el2) => el2.id === el.id) === i
-            );
-            return val;
         });
     };
 
