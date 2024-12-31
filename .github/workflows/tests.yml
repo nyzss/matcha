@@ -43,6 +43,9 @@ jobs:
               working-directory: server
               run: pnpm install -P false
 
+            - name: Check environment variables
+              run: echo $POSTGRES_DB $POSTGRES_PASSWORD $POSTGRES_USER $POSTGRES_HOST $COOKIE_SECRET $JWT_SECRET $FRONTEND_URL
+
             - name: Build backend
               working-directory: server
               run: pnpm run build
