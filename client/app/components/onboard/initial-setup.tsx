@@ -224,7 +224,7 @@ export default function InitialSetup() {
                     </Stepper.Step>
                 </Stepper>
 
-                {false && (
+                {true && (
                     <Group mt={"auto"}>
                         <Button onClick={prev}>Back</Button>
                         <Button

@@ -28,7 +28,7 @@ export const userSchema: TableSchema = {
             type: "one-to-one",
             table: "email_verifications",
             field: "id",
-            onDelete: "CASCADE"
+            onDelete: "SET NULL"
         }
     },
     profile_id: {
@@ -274,7 +274,7 @@ export const emailVerificationSchema: TableSchema = {
             type: "one-to-one",
             table: "users",
             field: "id",
-            onDelete: "CASCADE"
+            onDelete: "SET NULL"
         }
     }
 }

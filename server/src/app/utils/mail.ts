@@ -10,7 +10,10 @@ export const transporter = nodemailer.createTransport({
     },
 });
 
-export const sendMail = async (to: string, code: string, link: string) => {
+export const sendMail = async (to: string, code: string) => {
+
+    const link = `${process.env.FRONTEND_URL}/verify-email?code=${code}`
+
     return await transporter.sendMail({
         from: '"Matcha" <okoca@matchaa.me>',
         to,
