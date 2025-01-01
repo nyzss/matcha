@@ -8,6 +8,7 @@
 
 pkg="npm"
 dir="--prefix"
+output=0
 
 # check if pnpm exists
 if command -v pnpm &> /dev/null
@@ -17,23 +18,16 @@ then
 fi
 
 server="$dir ./server"
-client="$dir ./client"
 
-$pkg install $client &
-$pkg install $server &
+$pkg install $server
 
-docker compose up -d db --build &
-sleep 3
-$pkg run $client dev &
-$pkg run $server dev &
-
+docker compose up -d db --build
 sleep 3
 
-caddy run &
+$pkg run $server build
+$pkg run $server test
+output=$?
 
-sleep 3
-
-$pkg run $server test:local &
-
-wait
 docker compose down
+
+exit $output

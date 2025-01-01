@@ -1,7 +1,12 @@
 import buildApp from "./app";
 
 const startServer = async () => {
-    const app = await buildApp();
+    const app = await buildApp({
+        level: "info",
+        transport: {
+            target: "pino-pretty",
+        },
+    });
 
     try {
         const PORT = 8000;

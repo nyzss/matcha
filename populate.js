@@ -93,7 +93,7 @@ const accounts = [
 
 Promise.all(
     accounts.map(async (acc) => {
-        return await fetch("http://localhost:8000/api/auth/register", {
+        return await fetch("https://localhost/api/auth/register", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
