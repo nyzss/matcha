@@ -10,6 +10,15 @@ export const transporter = nodemailer.createTransport({
     },
 });
 
+export const sendMail = async (to: string, code: string, link: string) => {
+    return await transporter.sendMail({
+        from: '"Matcha" <okoca@matchaa.me>',
+        to,
+        subject: "Confirm your email",
+        html: templateMail(code, link),
+    });
+};
+
 export const templateMail = (code: string, link: string) => {
     return `
         <!DOCTYPE html>
