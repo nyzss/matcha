@@ -7,6 +7,7 @@ import { IconAt, IconCalendar, IconLock, IconUser } from "@tabler/icons-react";
 import { useAuth } from "~/contexts/auth-provider";
 import { useNavigate } from "react-router";
 import type { IRegister } from "~/types/validation";
+import { notifications } from "@mantine/notifications";
 
 export function RegisterModal() {
     const [opened, { open, close }] = useDisclosure(false);
@@ -50,6 +51,12 @@ export default function RegisterComponent({ close }: { close?: () => void }) {
                 close();
             } else {
                 navigate("/");
+                notifications.show({
+                    title: "Confirm your email",
+                    message: "We sent you an email to confirm your account",
+                    color: "grape",
+                    radius: "md",
+                });
             }
         }
     };

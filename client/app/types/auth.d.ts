@@ -12,4 +12,5 @@ interface IProfile {
     sexualOrientation: SexualPreferences | null;
     pictures: string[] | null;
     tags: string[] | null;
+    verified?: boolean;
 }

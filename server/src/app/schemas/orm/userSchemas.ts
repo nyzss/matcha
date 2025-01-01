@@ -21,6 +21,16 @@ export const userSchema: TableSchema = {
         defaultValue: false,
         nullable: false
     },
+    email_verification_id: {
+        type: "number",
+        nullable: true,
+        relation: {
+            type: "one-to-one",
+            table: "email_verifications",
+            field: "id",
+            onDelete: "SET NULL"
+        }
+    },
     profile_id: {
         type: 'number',
         nullable: true,
@@ -243,4 +253,28 @@ export const notificationSchema: TableSchema = {
         nullable: false,
         defaultValue: 'CURRENT_TIMESTAMP',
     },
+}
+
+export const emailVerificationSchema: TableSchema = {
+    id: {
+        type: 'number',
+        primary: true,
+        nullable: false,
+        autoIncrement: true,
+    },
+    value: {
+        type: "number",
+        nullable: false,
+        defaultValue: false
+    },
+    user_id: {
+        type: "number",
+        nullable: false,
+        relation: {
+            type: "one-to-one",
+            table: "users",
+            field: "id",
+            onDelete: "SET NULL"
+        }
+    }
 }

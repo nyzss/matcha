@@ -58,6 +58,7 @@ export interface userProfile {
     sexualOrientation: TUserSexualOrientation | null;
     pictures: string[];
     tags: string[];
+    verified?: false;
 }
 
 export interface userProfileLike {
