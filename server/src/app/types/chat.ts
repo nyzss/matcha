@@ -5,6 +5,7 @@ export interface messageSchema {
     conversationId: number;
     sender: userProfile;
     content: string;
+    read?: boolean;
     sentAt: Date;
 }
 
@@ -13,5 +14,4 @@ export interface conversationSchema {
     users: userProfile[];
     messages?: messageSchema[];
     lastMessage?: messageSchema | null;
-
 }

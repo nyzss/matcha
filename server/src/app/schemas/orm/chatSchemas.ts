@@ -74,6 +74,11 @@ export const messageSchema: TableSchema = {
         type: 'string',
         nullable: false,
     },
+    read: {
+        type: 'boolean',
+        nullable: false,
+        defaultValue: false,
+    },
     sent_at: {
         type: 'date',
         nullable: false,

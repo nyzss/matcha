@@ -42,8 +42,6 @@ export class ChatService {
                 this.userService.getUserById(meId),
             ]);
 
-            console.log(users);
-
             return {
                 id: conversation.id,
                 users: users,
@@ -77,9 +75,45 @@ export class ChatService {
         };
     }
 
-    async getMessages(conversationId: number, meId: number, limit: number | null = null) {
-        const conversation = await  this.getConversationId(conversationId, meId);
+    async getUnreadMessagesCount(meId: number) {
+        const conversations = await this.orm.query(
+            `SELECT * FROM conversations
+        WHERE id IN (
+            SELECT conversation_id FROM conversation_participants
+            WHERE user_id = $1
+        )`,
+            [meId]
+        );
 
+        if (!conversations)
+            return 0;
+
+        let messages = await Promise.all(
+            conversations.map(
+                async (conversation: { id: number }) =>
+                    await this.orm.query(
+                        `SELECT * FROM conversation_messages WHERE conversation_id = $1 AND sender_id != $2 AND read = FALSE`,
+                        [conversation.id, meId]
+                    )
+            )
+        );
+
+        return messages.length;
+    }
+
+    async readConversation(conversationId: number, userId: number) {
+        try {
+            await this.orm.query(
+                `UPDATE conversation_messages SET read = TRUE WHERE conversation_id = $1 AND sender_id != $2`,
+                [conversationId, userId]
+            );
+            return true;
+        } catch (error) {
+            throw new Error('Failed to read messages');
+        }
+    }
+
+    async getMessages(conversationId: number, meId: number, limit: number | null = null) {
         const messages: any = await this.orm.query(
             `SELECT * FROM conversation_messages WHERE conversation_id = $1 ORDER BY sent_at DESC ${limit ? `LIMIT ${limit}` : ''}`,
             [conversationId]
@@ -105,6 +139,7 @@ export class ChatService {
                 conversationId: parseInt(message.conversation_id),
                 sender: users.find((user) => user.id === message.sender_id),
                 content: message.content,
+                read: message.read || message.sender_id === meId,
                 sentAt: message.sent_at,
             })),
         };
@@ -134,6 +169,19 @@ export class ChatService {
             participants.map(
                 async (participant) =>
                     await this.userService.getUserById(participant.user_id)
+                        .catch(() => ({
+                            id: participant.user_id,
+                            username: 'Unknown',
+                            avatar: null,
+                            firstName: 'Deleted',
+                            lastName: 'User',
+                            age: 0,
+                            gender: null,
+                            biography: null,
+                            sexualOrientation: null,
+                            pictures: [],
+                            tags: [],
+                        }))
             )
         );
 
