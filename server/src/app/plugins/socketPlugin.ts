@@ -76,8 +76,18 @@ const customSocketManager: FastifyPluginAsync<SocketManagerOptions> = async (
                     socket,
                 });
 
-                socket.on("disconnect", () => {
-                    console.log('user disconnected');
+                socket.on("disconnect", async () => {
+                    //set last connection data profile
+
+                    await fastify.orm.query(
+                        `UPDATE profiles SET last_connection = NOW() WHERE user_id = $1`,
+                        [user.id]
+                    )
+
+
+
+
+                    users.delete(socket.id);
                 });
             } catch (error: Error | any) {
                 socket.emit(SocketEvent.tokenNotFound, {

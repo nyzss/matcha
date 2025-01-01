@@ -34,6 +34,7 @@ export class ProfileController {
 
             return {
                 user: user,
+
             };
         } catch (error) {
             return reply.status(404).send({ error: "User not found" });

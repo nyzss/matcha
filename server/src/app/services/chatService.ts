@@ -134,9 +134,6 @@ export class ChatService {
             usersID.map(async (id) => await this.userService.getUserById(id as number))
         );
 
-        console.log(messages)
-
-
         return {
             total: messages.length,
             messages: messages.map((message: any) => ({
