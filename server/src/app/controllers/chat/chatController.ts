@@ -55,6 +55,7 @@ export class ChatController {
             const message = await this.chatService.createMessage(id, meId, content);
             return message;
         } catch (error: Error | any) {
+            console.log(error)
             return reply.status(500).send({error: error?.message});
         }
     }

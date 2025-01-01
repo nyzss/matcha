@@ -4,6 +4,7 @@ import {UserService} from "./userService";
 import {conversationSchema} from "../types/chat";
 import {userProfile} from "../types/member";
 import {SocketEvent} from "../types/socket";
+import {messageSchema} from "../schemas/orm/chatSchemas";
 
 export class ChatService {
     private orm: ORM;
@@ -88,7 +89,7 @@ export class ChatService {
         if (!conversations)
             return 0;
 
-        let messages = await Promise.all(
+        let messages =( await Promise.all(
             conversations.map(
                 async (conversation: { id: number }) =>
                     await this.orm.query(
@@ -96,17 +97,19 @@ export class ChatService {
                         [conversation.id, meId]
                     )
             )
-        );
+        )).flat();
 
         return messages.length;
     }
 
-    async readConversation(conversationId: number, userId: number) {
+    async readConversation(conversationId: number, meId: number) {
         try {
             await this.orm.query(
                 `UPDATE conversation_messages SET read = TRUE WHERE conversation_id = $1 AND sender_id != $2`,
-                [conversationId, userId]
+                [conversationId, meId]
             );
+
+
             return true;
         } catch (error) {
             throw new Error('Failed to read messages');
@@ -130,6 +133,8 @@ export class ChatService {
         const users: userProfile[] = await Promise.all(
             usersID.map(async (id) => await this.userService.getUserById(id as number))
         );
+
+        console.log(messages)
 
 
         return {
@@ -205,9 +210,12 @@ export class ChatService {
             throw new Error('User is not connected');
 
         const result = await this.orm.query(
-            `INSERT INTO conversation_messages (conversation_id, sender_id, content, sent_at) VALUES ($1, $2, $3, NOW()) RETURNING *`,
+            `INSERT INTO conversation_messages (conversation_id, sender_id, content, sent_at, read) VALUES ($1, $2, $3, NOW(), false) RETURNING *`,
             [conversationId, userId, content]
         );
+
+        if (!result.length)
+            throw new Error('Failed to send message');
 
         this.app.sendsSocket(conversation.users.map((user) => user.id.toString()), {
             event: SocketEvent.messageCreate,
