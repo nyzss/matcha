@@ -25,6 +25,8 @@ const authRoutes: FastifyPluginAsync = async (app) => {
     );
 
     app.post("/logout", authController.logout.bind(authController));
+
+    app.get("/verify-email", authController.verifyEmail.bind(authController));
 };
 
 export default authRoutes;

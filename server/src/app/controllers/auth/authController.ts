@@ -74,4 +74,28 @@ export class AuthController {
                 .send({ error: "Couldn't logout user." });
         }
     }
+
+    async verifyEmail(
+        request: FastifyRequest<{ Querystring: { code: string } }>,
+        reply: FastifyReply
+    ) {
+        try {
+            if (!request.query.code) {
+                return await reply.status(400).send({
+                    error: "No verification code provided in query params. (should be: /verify-email?code=<token>)",
+                });
+            }
+
+            await this.authService.verifyEmail(request.query.code);
+
+            return await reply.send({
+                status: "ok",
+                message: "Email verified.",
+            });
+        } catch (error) {
+            return await reply
+                .status(400)
+                .send({ error: "Couldn't verify email." });
+        }
+    }
 }

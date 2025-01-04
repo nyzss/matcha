@@ -177,4 +177,19 @@ export class AuthService {
             throw new Error('Invalid or expired access token');
         }
     }
+
+    async verifyEmail(code: string): Promise<void> {
+        const [emailVerification] = await this.orm.query(
+            `SELECT * FROM email_verifications WHERE value = $1`,
+            [code] 
+        );
+
+        if (!emailVerification) {
+            throw new Error("Invalid verification code");
+        }
+
+        await this.orm.query(`UPDATE users SET verified = true WHERE id = $1`, [
+            emailVerification.user_id,
+        ]);
+    }
 }
