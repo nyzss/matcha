@@ -132,4 +132,5 @@ dist
 .idea
 .idea/
 
-_tmp*
+_tmp*client/certificates/localhost-key.pem
+client/certificates/localhost-key.pem

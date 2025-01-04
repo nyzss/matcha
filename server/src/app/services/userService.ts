@@ -121,6 +121,7 @@ export class UserService {
                 SELECT
                     u.id,
                     u.password,
+                    u.verified,
                     p.username,
                     p.avatar,
                     p.birth_date as "birthDate",
@@ -153,6 +154,7 @@ export class UserService {
             sexualOrientation: user.sexualOrientation,
             pictures: user.pictures || [],
             tags: user.tags || [],
+            verified: user.verified || false,
         };
     }
 
@@ -171,13 +173,16 @@ export class UserService {
                     p.biography,
                     p.sexual_orientation as "sexualOrientation",
                     p.pictures,
-                    p.tags
+                    p.tags,
+                    p.last_connection as "lastConnection"
                 FROM profiles p
                          JOIN users u ON p.user_id = u.id
                 WHERE p.username = $1
             `,
             [username]
         );
+
+        console.log(user)
 
         if (!user)
             throw new Error('User not found');
@@ -186,6 +191,7 @@ export class UserService {
             id: user.id,
             username: user.username,
             avatar: user.avatar || process.env.DEFAULT_AVATAR_URL as string,
+            isOnline: this.app.userOnline(user.id.toString()),
             ...(meId ? { isConnected: await this.userConnectedTo(user.id, meId) } : {}),
             firstName: user.firstName,
             lastName: user.lastName,
@@ -195,6 +201,7 @@ export class UserService {
             sexualOrientation: user.sexualOrientation,
             pictures: user.pictures || [],
             tags: user.tags || [],
+            lastConnection: user.lastConnection,
         };
     }
 

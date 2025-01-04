@@ -17,6 +17,7 @@ import { Link, Outlet } from "react-router";
 import UserBox from "./user-box";
 import { useMemo } from "react";
 import { useAuth } from "~/contexts/auth-provider";
+import Onboarding from "../onboard/onboarding";
 
 export default function AppLayout() {
     const [opened, { toggle }] = useDisclosure();
@@ -133,6 +134,7 @@ export default function AppLayout() {
             </AppShell.Navbar>
             <AppShell.Main h={"100vh"}>
                 <Outlet />
+                <Onboarding />
             </AppShell.Main>
             <AppShell.Aside p="md">
                 <Flex h={"100%"} w="100%">

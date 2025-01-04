@@ -10,7 +10,8 @@ import {
     viewSchema,
     likeSchema,
     blockSchema,
-    notificationSchema
+    notificationSchema,
+    emailVerificationSchema
 } from "./app/schemas/orm/userSchemas";
 import fastifyIO from "fastify-socket.io";
 
@@ -96,8 +97,7 @@ const buildApp = async (log: FastifyLoggerOptions & PinoLoggerOptions | boolean 
     await app.orm.createTableWithRelations('conversation_participants', conversationParticipantSchema);
     await app.orm.createTableWithRelations('conversation_messages', messageSchema);
 
-
-
+    await app.orm.createTableWithRelations('email_verifications', emailVerificationSchema);
 
     return app;
 };

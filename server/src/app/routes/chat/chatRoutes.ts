@@ -54,6 +54,14 @@ const chatRoutes: FastifyPluginAsync = async (app) => {
         },
         chatController.getMessages.bind(chatController)
     );
+
+    app.withTypeProvider<ZodTypeProvider>().put(
+        "/:id/read",
+        {
+            preHandler: [app.verifyAuth],
+        },
+        chatController.readConversation.bind(chatController)
+    );
 };
 
 export default chatRoutes;

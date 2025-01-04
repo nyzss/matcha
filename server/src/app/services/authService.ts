@@ -3,6 +3,8 @@ import bcrypt from 'bcrypt';
 import { ORM } from '../types/orm';
 import {RegisterForm, AuthResult, LoginForm, JwtPayload} from "../types/auth";
 import fastifyJwt, {VerifyPayloadType} from "@fastify/jwt";
+import crypto from "node:crypto"
+import { sendMail } from '../utils/mail';
 
 export class AuthService {
     private orm: ORM;
@@ -43,20 +45,28 @@ export class AuthService {
                 [form.username, form.firstName, form.lastName, form.birthDate, newUser.id] // 5 parameters here
             );
 
-            // Update the user with the new profile id
+            const [emailVerification] = await this.orm.query(
+                `INSERT INTO email_verifications (user_id, value)
+             VALUES ($1, $2)
+             RETURNING id, value`,
+                [newUser.id, crypto.randomInt(10000, 100000)]
+            )
+
             await this.orm.query(
-                `UPDATE users SET profile_id = $1 WHERE id = $2`,
-                [newProfile.id, newUser.id]
-            );
+                `UPDATE users SET profile_id = $1, email_verification_id = $2 WHERE id = $3`,
+                [newProfile.id, emailVerification.id, newUser.id]
+            )
 
             await this.orm.query('COMMIT');
 
+            sendMail(newUser.email, emailVerification.value)
+
             const accessToken = this.jwt.sign(
-                { id: newUser.id },
+                { id: newUser.id, email: newUser.email },
                 { expiresIn: '1h' }
             );
             const refreshToken = this.jwt.sign(
-                { id: newUser.id },
+                { id: newUser.id, email: newUser.email },
                 { expiresIn: '7d' }
             );
 
@@ -96,6 +106,7 @@ export class AuthService {
         SELECT 
             u.id,
             u.password,
+            u.email,
             p.username,
             p.avatar,
             p.birth_date as "birthDate",
@@ -125,6 +136,7 @@ export class AuthService {
         const accessToken = this.jwt.sign(
             {
                 id: user.id,
+                email: user.email
             },
             { expiresIn: '24h' }
         );
@@ -132,6 +144,7 @@ export class AuthService {
         const refreshToken = this.jwt.sign(
             {
                 id: user.id,
+                email: user.email
             },
             { expiresIn: '7d' }
         );
@@ -163,5 +176,20 @@ export class AuthService {
         } catch (error) {
             throw new Error('Invalid or expired access token');
         }
+    }
+
+    async verifyEmail(code: string): Promise<void> {
+        const [emailVerification] = await this.orm.query(
+            `SELECT * FROM email_verifications WHERE value = $1`,
+            [code] 
+        );
+
+        if (!emailVerification) {
+            throw new Error("Invalid verification code");
+        }
+
+        await this.orm.query(`UPDATE users SET verified = true WHERE id = $1`, [
+            emailVerification.user_id,
+        ]);
     }
 }
