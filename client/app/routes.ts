@@ -6,6 +6,7 @@ import {
 } from "@react-router/dev/routes";
 
 export default [
+    route("verify", "routes/validated.tsx"),
     layout("components/layout/app-layout.tsx", [
         index("routes/home.tsx"),
         layout("routes/protected.tsx", [

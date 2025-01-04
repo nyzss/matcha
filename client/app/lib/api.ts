@@ -274,3 +274,19 @@ export const mutateConversation = async (
     //     users: filtered.length > 0 ? filtered : [data.users[0]],
     // };
 };
+
+export const verifyMail = async (code: string): Promise<boolean> => {
+    try {
+        const res = await fetcher("/auth/verify-email?code=" + code, {
+            method: "GET",
+        });
+
+        if (!res?.ok) {
+            throw new Error("Couldn't verify email");
+        }
+
+        return res.ok;
+    } catch (error) {
+        return false;
+    }
+};
