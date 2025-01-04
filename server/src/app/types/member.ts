@@ -34,6 +34,8 @@ export interface userSettings {
     oldPassword?: string;
 }
 
+
+
 export interface userProfileSettings {
     username?: string,
     gender?: TUserGender,
@@ -52,6 +54,7 @@ export interface userProfile {
     isOnline?: boolean;
     lastConnection?: Date;
     isConnected?: boolean;
+    fameRating?: number;
     age: number;
     gender: TUserGender | null;
     biography: string | null;
