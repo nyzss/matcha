@@ -1,14 +1,17 @@
 import {FastifyInstance, FastifyReply, FastifyRequest} from "fastify";
 import {UserService} from "../../services/userService";
 import {userProfileSettings} from "../../types/member";
+import {ChatService} from "../../services/chatService";
 
 export class ProfileController {
     private app: FastifyInstance;
     private userService: UserService;
+    private chatService: ChatService;
 
     constructor(app: FastifyInstance) {
         this.app = app;
         this.userService = new UserService(app);
+        this.chatService = new ChatService(app);
     }
 
     async getProfile(request: FastifyRequest, reply: FastifyReply) {
@@ -17,6 +20,7 @@ export class ProfileController {
                 user: request.user,
                 notifications: (await this.userService.getNotifications(request.user.id)).total,
                 views: (await this.userService.getViews(request.user.id)).total,
+                messages: (await this.chatService.getUnreadMessagesCount(request.user.id)),
             };
         try {
             const { username } = request.params as { username: string };
@@ -30,6 +34,7 @@ export class ProfileController {
 
             return {
                 user: user,
+
             };
         } catch (error) {
             return reply.status(404).send({ error: "User not found" });

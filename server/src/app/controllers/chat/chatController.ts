@@ -34,6 +34,18 @@ export class ChatController {
         }
     }
 
+    async readConversation(request: FastifyRequest, reply: FastifyReply) {
+        try {
+            const { id } = request.params as { id: number };
+            const meId = request.user.id;
+
+            await this.chatService.readConversation(id, meId);
+            return { success: true };
+        } catch (error: Error | any) {
+            return reply.status(500).send({ error: error?.message });
+        }
+    }
+
     async createMessage(request: FastifyRequest, reply: FastifyReply) {
         try {
             const { id } = request.params as { id: number };
@@ -43,6 +55,7 @@ export class ChatController {
             const message = await this.chatService.createMessage(id, meId, content);
             return message;
         } catch (error: Error | any) {
+            console.log(error)
             return reply.status(500).send({error: error?.message});
         }
     }

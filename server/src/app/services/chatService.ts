@@ -1,9 +1,10 @@
-import fastify, { FastifyInstance } from 'fastify';
-import { ORM } from '../types/orm';
-import {UserService} from "./userService";
-import {conversationSchema} from "../types/chat";
-import {userProfile} from "../types/member";
-import {SocketEvent} from "../types/socket";
+import fastify, { FastifyInstance } from "fastify";
+import { ORM } from "../types/orm";
+import { UserService } from "./userService";
+import { conversationSchema } from "../types/chat";
+import { userProfile } from "../types/member";
+import { SocketEvent } from "../types/socket";
+import { messageSchema } from "../schemas/orm/chatSchemas";
 
 export class ChatService {
     private orm: ORM;
@@ -18,13 +19,13 @@ export class ChatService {
 
     async getConversationId(id: number, meId: number) {
         const [conversation] = await this.orm.query(
-            `SELECT * FROM conversations 
+            `SELECT * FROM conversations
         WHERE id IN (
-            SELECT conversation_id FROM conversation_participants 
+            SELECT conversation_id FROM conversation_participants
             WHERE user_id = $1
-        ) 
+        )
         AND id IN (
-            SELECT conversation_id FROM conversation_participants 
+            SELECT conversation_id FROM conversation_participants
             WHERE user_id = $2
         )`,
             [id, meId]
@@ -39,7 +40,7 @@ export class ChatService {
         const users = await Promise.all([
             this.userService.getUserById(id),
             this.userService.getUserById(meId),
-        ])
+        ]);
 
         if (conversation) {
             return {
@@ -49,9 +50,8 @@ export class ChatService {
         }
 
         if (await this.userService.userConnectedTo(id, meId)) {
-            throw new Error('User is not connected');
+            throw new Error("User is not connected");
         }
-
 
         const result = await this.orm.query(
             `INSERT INTO conversations (created_at) VALUES (NOW()) RETURNING *`
@@ -70,11 +70,55 @@ export class ChatService {
         };
     }
 
-    async getMessages(conversationId: number, meId: number, limit: number | null = null) {
-        const conversation = await  this.getConversationId(conversationId, meId);
+    async getUnreadMessagesCount(meId: number) {
+        const conversations = await this.orm.query(
+            `SELECT * FROM conversations
+        WHERE id IN (
+            SELECT conversation_id FROM conversation_participants
+            WHERE user_id = $1
+        )`,
+            [meId]
+        );
 
+        if (!conversations) return 0;
+
+        let messages = (
+            await Promise.all(
+                conversations.map(
+                    async (conversation: { id: number }) =>
+                        await this.orm.query(
+                            `SELECT * FROM conversation_messages WHERE conversation_id = $1 AND sender_id != $2 AND read = FALSE`,
+                            [conversation.id, meId]
+                        )
+                )
+            )
+        ).flat();
+
+        return messages.length;
+    }
+
+    async readConversation(conversationId: number, meId: number) {
+        try {
+            await this.orm.query(
+                `UPDATE conversation_messages SET read = TRUE WHERE conversation_id = $1 AND sender_id != $2`,
+                [conversationId, meId]
+            );
+
+            return true;
+        } catch (error) {
+            throw new Error("Failed to read messages");
+        }
+    }
+
+    async getMessages(
+        conversationId: number,
+        meId: number,
+        limit: number | null = null
+    ) {
         const messages: any = await this.orm.query(
-            `SELECT * FROM conversation_messages WHERE conversation_id = $1 ORDER BY sent_at DESC ${limit ? `LIMIT ${limit}` : ''}`,
+            `SELECT * FROM conversation_messages WHERE conversation_id = $1 ORDER BY sent_at DESC ${
+                limit ? `LIMIT ${limit}` : ""
+            }`,
             [conversationId]
         );
 
@@ -82,14 +126,21 @@ export class ChatService {
             return {
                 total: 0,
                 messages: [],
-            }
+            };
 
-        const usersID = [...new Set(messages.map((message: {sender_id: number}) => message.sender_id))];
+        const usersID = [
+            ...new Set(
+                messages.map(
+                    (message: { sender_id: number }) => message.sender_id
+                )
+            ),
+        ];
 
         const users: userProfile[] = await Promise.all(
-            usersID.map(async (id) => await this.userService.getUserById(id as number))
+            usersID.map(
+                async (id) => await this.userService.getUserById(id as number)
+            )
         );
-
 
         return {
             total: messages.length,
@@ -98,16 +149,20 @@ export class ChatService {
                 conversationId: parseInt(message.conversation_id),
                 sender: users.find((user) => user.id === message.sender_id),
                 content: message.content,
+                read: message.read || message.sender_id === meId,
                 sentAt: message.sent_at,
             })),
         };
     }
 
-    async getConversation(id: number, meId: number): Promise<conversationSchema> {
+    async getConversation(
+        id: number,
+        meId: number
+    ): Promise<conversationSchema> {
         const [conversation] = await this.orm.query(
-            `SELECT * FROM conversations 
+            `SELECT * FROM conversations
         WHERE id IN (
-            SELECT conversation_id FROM conversation_participants 
+            SELECT conversation_id FROM conversation_participants
             WHERE user_id = $1
         )
         AND id = $2`,
@@ -115,7 +170,7 @@ export class ChatService {
         );
 
         if (!conversation) {
-            throw new Error('Conversation not found');
+            throw new Error("Conversation not found");
         }
 
         const participants = await this.orm.query(
@@ -126,7 +181,21 @@ export class ChatService {
         const users = await Promise.all(
             participants.map(
                 async (participant) =>
-                    await this.userService.getUserById(participant.user_id)
+                    await this.userService
+                        .getUserById(participant.user_id)
+                        .catch(() => ({
+                            id: participant.user_id,
+                            username: "Unknown",
+                            avatar: null,
+                            firstName: "Deleted",
+                            lastName: "User",
+                            age: 0,
+                            gender: null,
+                            biography: null,
+                            sexualOrientation: null,
+                            pictures: [],
+                            tags: [],
+                        }))
             )
         );
 
@@ -139,31 +208,47 @@ export class ChatService {
         };
     }
 
-    async createMessage(conversationId: number, userId: number, content: string) {
+    async createMessage(
+        conversationId: number,
+        userId: number,
+        content: string
+    ) {
         const conversation = await this.getConversation(conversationId, userId);
 
         if (!conversation) {
-            throw new Error('Conversation not found');
+            throw new Error("Conversation not found");
         }
 
-        if (await this.userService.userConnectedTo(conversation.users[0].id, conversation.users[1].id))
-            throw new Error('User is not connected');
+        if (
+            await this.userService.userConnectedTo(
+                conversation.users[0].id,
+                conversation.users[1].id
+            )
+        )
+            throw new Error("User is not connected");
 
         const result = await this.orm.query(
-            `INSERT INTO conversation_messages (conversation_id, sender_id, content, sent_at) VALUES ($1, $2, $3, NOW()) RETURNING *`,
+            `INSERT INTO conversation_messages (conversation_id, sender_id, content, sent_at, read) VALUES ($1, $2, $3, NOW(), false) RETURNING *`,
             [conversationId, userId, content]
         );
 
-        this.app.sendsSocket(conversation.users.map((user) => user.id.toString()), {
-            event: SocketEvent.messageCreate,
-            data: {
-                id: result[0].id,
-                conversationId: conversationId,
-                sender: conversation.users.find((user) => user.id === userId),
-                content: content,
-                sentAt: result[0].sent_at,
+        if (!result.length) throw new Error("Failed to send message");
+
+        this.app.sendsSocket(
+            conversation.users.map((user) => user.id.toString()),
+            {
+                event: SocketEvent.messageCreate,
+                data: {
+                    id: result[0].id,
+                    conversationId: conversationId,
+                    sender: conversation.users.find(
+                        (user) => user.id === userId
+                    ),
+                    content: content,
+                    sentAt: result[0].sent_at,
+                },
             }
-        });
+        );
 
         return {
             id: result[0].id,
