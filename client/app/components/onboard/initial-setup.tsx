@@ -37,10 +37,12 @@ export default function InitialSetup() {
     const [pinError, setPinError] = useState<boolean>();
 
     const next = () => {
+        if (step === 3) close();
         setStep((prev) => prev + 1);
     };
 
     const prev = () => {
+        if (step === 0) return;
         setStep((p) => p - 1);
     };
 
@@ -146,13 +148,13 @@ export default function InitialSetup() {
                                     placeholder="Woman"
                                     data={GENDERS}
                                     key={form.key("gender")}
-                                    size="xl"
+                                    size="lg"
                                     {...form.getInputProps("gender")}
                                 />
                                 <Select
                                     label="Sexual Preference"
                                     placeholder="Woman"
-                                    size="xl"
+                                    size="lg"
                                     data={SEXUAL_PREFERENCES}
                                     key={form.key("sexualOrientation")}
                                     {...form.getInputProps("sexualOrientation")}
@@ -169,14 +171,14 @@ export default function InitialSetup() {
                                 autosize
                                 minRows={4}
                                 maxRows={6}
-                                size="xl"
+                                size="lg"
                             />
                             <TagsInput
                                 label="Your interests"
                                 placeholder="Add your interests"
                                 maxTags={10}
                                 defaultValue={["reading"]}
-                                size="xl"
+                                size="lg"
                             />
                         </Flex>
                     </Stepper.Step>
@@ -241,6 +243,9 @@ export default function InitialSetup() {
                                     </div>
                                 </Group>
                             </Dropzone>
+                            <Button mt={"auto"} mx={"auto"}>
+                                Upload
+                            </Button>
                         </Flex>
                     </Stepper.Step>
                 </Stepper>
@@ -248,17 +253,7 @@ export default function InitialSetup() {
                 {true && (
                     <Group mt={"auto"}>
                         <Button onClick={prev}>Back</Button>
-                        <Button
-                            onClick={() => {
-                                if (step === 3) {
-                                    close();
-                                } else {
-                                    next();
-                                }
-                            }}
-                        >
-                            Next
-                        </Button>
+                        <Button onClick={next}>Next</Button>
                     </Group>
                 )}
             </Flex>
