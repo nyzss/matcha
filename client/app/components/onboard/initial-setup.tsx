@@ -12,6 +12,7 @@ import {
     Title,
     rem,
     Textarea,
+    TagsInput,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useEffect, useState } from "react";
@@ -31,7 +32,7 @@ import { useAuth } from "~/contexts/auth-provider";
 export default function InitialSetup() {
     const [opened, { open, close }] = useDisclosure(false);
     const [step, setStep] = useState(0);
-    const { logged } = useAuth();
+    const { logged, user } = useAuth();
     const [pinValue, setPinValue] = useState<string>();
     const [pinError, setPinError] = useState<boolean>();
 
@@ -82,6 +83,10 @@ export default function InitialSetup() {
         if (logged) {
             open();
         }
+
+        if (user?.verified) {
+            setStep(1);
+        }
     }, []);
 
     return (
@@ -112,10 +117,7 @@ export default function InitialSetup() {
                                 >
                                     <IconMail size={80} />
                                     <Title>Confirm your email address.</Title>
-                                    <Text>
-                                        To access Matcha we have to ensure your
-                                        email address is valid.
-                                    </Text>
+                                    <Text>We've sent you a mail</Text>
                                     <PinInput
                                         oneTimeCode
                                         size="lg"
@@ -138,17 +140,19 @@ export default function InitialSetup() {
                         description="Gender & Preferences"
                     >
                         <form onSubmit={form.onSubmit(handleSubmit)}>
-                            <Stack gap={"lg"} w={"100%"}>
+                            <Stack gap={"lg"} w={"100%"} p={"lg"}>
                                 <Select
                                     label="Gender"
                                     placeholder="Woman"
                                     data={GENDERS}
                                     key={form.key("gender")}
+                                    size="xl"
                                     {...form.getInputProps("gender")}
                                 />
                                 <Select
                                     label="Sexual Preference"
                                     placeholder="Woman"
+                                    size="xl"
                                     data={SEXUAL_PREFERENCES}
                                     key={form.key("sexualOrientation")}
                                     {...form.getInputProps("sexualOrientation")}
@@ -158,69 +162,86 @@ export default function InitialSetup() {
                     </Stepper.Step>
 
                     <Stepper.Step label="Third Step" description="About you">
-                        <Textarea
-                            label="Biography"
-                            placeholder="Tell us about yourself in 2 sentences."
-                            autosize
-                            minRows={4}
-                            maxRows={6}
-                            size="xl"
-                        />
+                        <Flex p={"lg"} direction={"column"} gap={"md"}>
+                            <Textarea
+                                label="Biography"
+                                placeholder="Tell us about yourself in 2 sentences."
+                                autosize
+                                minRows={4}
+                                maxRows={6}
+                                size="xl"
+                            />
+                            <TagsInput
+                                label="Your interests"
+                                placeholder="Add your interests"
+                                maxTags={10}
+                                defaultValue={["reading"]}
+                                size="xl"
+                            />
+                        </Flex>
                     </Stepper.Step>
 
                     <Stepper.Step label="Fourth Step" description="Pictures">
-                        <Dropzone
-                            onDrop={(files) => console.log(files)}
-                            onReject={(files) => console.log(files)}
-                            maxSize={MAX_FILE_SIZE}
-                            accept={ACCEPTED_IMAGE_TYPES}
-                        >
-                            <Group
-                                justify="center"
-                                gap="xl"
-                                mih={220}
-                                style={{ pointerEvents: "none" }}
+                        <Flex p={"lg"} direction={"column"} gap={"md"}>
+                            <Dropzone
+                                onDrop={(files) => console.log(files)}
+                                onReject={(files) => console.log(files)}
+                                maxSize={MAX_FILE_SIZE}
+                                accept={ACCEPTED_IMAGE_TYPES}
                             >
-                                <Dropzone.Accept>
-                                    <IconUpload
-                                        style={{
-                                            width: rem(52),
-                                            height: rem(52),
-                                        }}
-                                        stroke={1.5}
-                                    />
-                                </Dropzone.Accept>
-                                <Dropzone.Reject>
-                                    <IconX
-                                        stroke={1.5}
-                                        style={{
-                                            width: rem(52),
-                                            height: rem(52),
-                                        }}
-                                    ></IconX>
-                                </Dropzone.Reject>
-                                <Dropzone.Idle>
-                                    <IconPhoto
-                                        stroke={1.5}
-                                        style={{
-                                            width: rem(52),
-                                            height: rem(52),
-                                        }}
-                                    />
-                                </Dropzone.Idle>
+                                <Group
+                                    justify="center"
+                                    gap="xl"
+                                    mih={120}
+                                    style={{ pointerEvents: "none" }}
+                                >
+                                    <Dropzone.Accept>
+                                        <IconUpload
+                                            style={{
+                                                width: rem(52),
+                                                height: rem(52),
+                                            }}
+                                            stroke={1.5}
+                                        />
+                                    </Dropzone.Accept>
+                                    <Dropzone.Reject>
+                                        <IconX
+                                            stroke={1.5}
+                                            style={{
+                                                width: rem(52),
+                                                height: rem(52),
+                                            }}
+                                        ></IconX>
+                                    </Dropzone.Reject>
+                                    <Dropzone.Idle>
+                                        <IconPhoto
+                                            stroke={1.5}
+                                            style={{
+                                                width: rem(52),
+                                                height: rem(52),
+                                            }}
+                                        />
+                                    </Dropzone.Idle>
 
-                                <div>
-                                    <Text size="xl" inline>
-                                        Drag images here or click to select
-                                        files
-                                    </Text>
-                                    <Text size="sm" c="dimmed" inline mt={7}>
-                                        Attach a maximum of 5 images, the images
-                                        should not exceed 8MB in size.
-                                    </Text>
-                                </div>
-                            </Group>
-                        </Dropzone>
+                                    <div>
+                                        <Text size="xl" inline>
+                                            Drag images here or click to select
+                                            files
+                                        </Text>
+                                        <Text
+                                            size="sm"
+                                            c="dimmed"
+                                            inline
+                                            mt={7}
+                                        >
+                                            Attach a maximum of 5 images, the
+                                            images should not exceed 8MB in
+                                            size.
+                                        </Text>
+                                    </div>
+                                </Group>
+                            </Dropzone>
+                        </Flex>
                     </Stepper.Step>
                 </Stepper>
 

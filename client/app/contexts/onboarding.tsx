@@ -3,7 +3,7 @@ import { useAuth } from "./auth-provider";
 
 export default function Onboarding() {
     const { logged, user } = useAuth();
-    if (logged && !user?.verified) {
+    if (logged) {
         return <InitialSetup />;
     }
     return <></>;
