@@ -116,6 +116,24 @@ export class UserService {
         }
     }
 
+    async reportUser(id: number, reporterId: number): Promise<void> {
+        if (id === reporterId)
+            throw new Error("Cannot report yourself");
+
+        const existingReport = await this.orm.query(
+            `SELECT id FROM reports WHERE user_id = $1 AND reporter_id = $2`,
+            [id, reporterId]
+        );
+
+        if (existingReport.length > 0)
+            throw new Error("User is already reported");
+
+        await this.orm.query(
+            `INSERT INTO reports (user_id, reporter_id) VALUES ($1, $2)`,
+            [id, reporterId]
+        );
+    }
+
     async blockUser(id: number, blockerId: number): Promise<void> {
         if (id === blockerId)
             throw new Error("Cannot block yourself");
@@ -128,6 +146,8 @@ export class UserService {
 
         if (existingBlock.length > 0)
             throw new Error("User is already blocked");
+
+        await this.updateUserFameRating(id);
 
         await this.orm.query(
             `INSERT INTO blocks (user_id, blocker_id) VALUES ($1, $2)`,
@@ -146,6 +166,8 @@ export class UserService {
 
         if (result.length === 0)
             throw new Error("User is not blocked");
+
+        await this.updateUserFameRating(id);
 
         await this.orm.query(
             `DELETE FROM blocks WHERE user_id = $1 AND blocker_id = $2`,
@@ -366,6 +388,8 @@ export class UserService {
         else
             await this.notifyUser(id, likerId, NotificationType.like);
 
+        await this.updateUserFameRating(id);
+
         return {
             like: {
                 me: true,
@@ -399,6 +423,8 @@ export class UserService {
             `SELECT COUNT(id) FROM likes WHERE user_id = $1`,
             [id]
         );
+
+        await this.updateUserFameRating(id);
 
         return {
             like: {

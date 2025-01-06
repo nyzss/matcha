@@ -32,7 +32,6 @@ export class AuthMiddleware {
             const verify: JwtPayload = await this.authService.verifyToken(cookies.accessToken);
 
             const user = await this.userService.getUserById(verify.id);
-            await this.userService.updateUserFameRating(user.id);
 
             request.user = user;
         } catch (error) {
