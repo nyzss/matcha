@@ -11,6 +11,69 @@ export class UserService {
         this.app = fastify;
     }
 
+    private calculateFameRating(
+        likesReceived: number,
+        profileVisits: number,
+        reports: number,
+        blocks: number
+    ): number {
+        const weightLikes = 0.4;
+        const weightVisits = 0.3;
+        const weightLikesToVisitsRatio = 0.2;
+        const weightNegativeReports = 0.05;
+        const weightNegativeBlocks = 0.05;
+
+        const likesToVisitsRatio = likesReceived / (profileVisits + 1);
+
+        const fameRating = 10 * (
+            weightLikes * likesReceived +
+            weightVisits * profileVisits +
+            weightLikesToVisitsRatio * likesToVisitsRatio -
+            weightNegativeReports * reports -
+            weightNegativeBlocks * blocks
+        );
+
+        return Math.max(0, Math.min(100, fameRating));
+    }
+
+    private async getFameRating(id: number): Promise<number> {
+        const likes = await this.orm.query(
+            `SELECT COUNT(id) FROM likes WHERE user_id = $1`,
+            [id]
+        );
+
+        const views = await this.orm.query(
+            `SELECT COUNT(id) FROM views WHERE user_id = $1`,
+            [id]
+        );
+
+        const reports = await this.orm.query(
+            `SELECT COUNT(id) FROM reports WHERE user_id = $1`,
+            [id]
+        );
+
+        const blocks = await this.orm.query(
+            `SELECT COUNT(id) FROM blocks WHERE user_id = $1`,
+            [id]
+        );
+
+        return Math.round(this.calculateFameRating(
+            likes?.length || 0,
+            views?.length || 0,
+            reports?.length || 0,
+            blocks?.length || 0
+        ));
+    }
+
+    async updateUserFameRating(id: number): Promise<void> {
+        const fameRating = await this.getFameRating(id);
+
+        await this.orm.query(
+            `UPDATE profiles SET fame_rating = $1 WHERE user_id = $2`,
+            [fameRating, id]
+        );
+    }
+
     async notifyUser(id: number, meId: number, type: string): Promise<void> {
         await this.orm.query(
             `INSERT INTO notifications (user_id, sender_id, type, read) VALUES ($1, $2, $3, false)`,
@@ -38,8 +101,6 @@ export class UserService {
                 [id]
             );
         }
-
-
 
         const senders = await Promise.all(
             [...new Set(notifications.map((notification: { sender_id: number }) => notification.sender_id))].map(async (senderId: number) => await this.getUserById(senderId))
@@ -174,15 +235,14 @@ export class UserService {
                     p.sexual_orientation as "sexualOrientation",
                     p.pictures,
                     p.tags,
-                    p.last_connection as "lastConnection"
+                    p.last_connection as "lastConnection",
+                    p.fame_rating as "fameRating"
                 FROM profiles p
-                         JOIN users u ON p.user_id = u.id
+                JOIN users u ON p.user_id = u.id
                 WHERE p.username = $1
             `,
             [username]
         );
-
-        console.log(user)
 
         if (!user)
             throw new Error('User not found');
@@ -193,6 +253,7 @@ export class UserService {
             avatar: user.avatar || process.env.DEFAULT_AVATAR_URL as string,
             isOnline: this.app.userOnline(user.id.toString()),
             ...(meId ? { isConnected: await this.userConnectedTo(user.id, meId) } : {}),
+            fameRating: user.fameRating,
             firstName: user.firstName,
             lastName: user.lastName,
             age: new Date().getFullYear() - new Date(user.birthDate).getFullYear(),
@@ -354,8 +415,6 @@ export class UserService {
             this.getLike(id, meId),
             this.getLike(meId, id),
         ])
-
-        console.log(likes)
 
         return likes.every((like) => like.like.me);
     }

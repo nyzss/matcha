@@ -98,6 +98,10 @@ export const publicUserSchema: TableSchema = {
         type: 'date',
         nullable: true
     },
+    fame_rating: {
+        type: 'number',
+        nullable: true
+    },
     user_id: {
         type: 'number',
         nullable: true,
