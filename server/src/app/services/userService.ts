@@ -1,7 +1,12 @@
-import {FastifyInstance} from 'fastify';
-import {ORM, TableSchema} from '../types/orm';
-import {userProfile, userProfileLike, userProfileSettings, userProfileView} from "../types/member";
-import {NotificationType, SocketEvent} from "../types/socket";
+import { FastifyInstance } from "fastify";
+import { ORM, TableSchema } from "../types/orm";
+import {
+    userProfile,
+    userProfileLike,
+    userProfileSettings,
+    userProfileView,
+} from "../types/member";
+import { NotificationType, SocketEvent } from "../types/socket";
 
 export class UserService {
     private orm: ORM;
@@ -25,13 +30,13 @@ export class UserService {
 
         const likesToVisitsRatio = likesReceived / (profileVisits + 1);
 
-        const fameRating = 10 * (
-            weightLikes * likesReceived +
-            weightVisits * profileVisits +
-            weightLikesToVisitsRatio * likesToVisitsRatio -
-            weightNegativeReports * reports -
-            weightNegativeBlocks * blocks
-        );
+        const fameRating =
+            10 *
+            (weightLikes * likesReceived +
+                weightVisits * profileVisits +
+                weightLikesToVisitsRatio * likesToVisitsRatio -
+                weightNegativeReports * reports -
+                weightNegativeBlocks * blocks);
 
         return Math.max(0, Math.min(100, fameRating));
     }
@@ -57,12 +62,14 @@ export class UserService {
             [id]
         );
 
-        return Math.round(this.calculateFameRating(
-            likes?.length || 0,
-            views?.length || 0,
-            reports?.length || 0,
-            blocks?.length || 0
-        ));
+        return Math.round(
+            this.calculateFameRating(
+                likes?.length || 0,
+                views?.length || 0,
+                reports?.length || 0,
+                blocks?.length || 0
+            )
+        );
     }
 
     async updateUserFameRating(id: number): Promise<void> {
@@ -78,7 +85,7 @@ export class UserService {
         await this.orm.query(
             `INSERT INTO notifications (user_id, sender_id, type, read) VALUES ($1, $2, $3, false)`,
             [id, meId, type]
-        )
+        );
 
         this.app.sendSocket(id.toString(), {
             event: SocketEvent.notificationCreate,
@@ -103,23 +110,50 @@ export class UserService {
         }
 
         const senders = await Promise.all(
-            [...new Set(notifications.map((notification: { sender_id: number }) => notification.sender_id))].map(async (senderId: number) => await this.getUserById(senderId))
+            [
+                ...new Set(
+                    notifications.map(
+                        (notification: { sender_id: number }) =>
+                            notification.sender_id
+                    )
+                ),
+            ].map(async (senderId: number) => await this.getUserById(senderId))
         );
 
         return {
             total: notifications.length,
-            notifications: notifications.map((notification: { type: string }, index: number) => ({
-                type: notification.type,
-                sender: senders.find((sender: userProfile) => sender.id === notifications[index].sender_id),
-                read: notifications[index].read,
-            })),
-        }
+            notifications: notifications.map(
+                (notification: { type: string }, index: number) => ({
+                    type: notification.type,
+                    sender: senders.find(
+                        (sender: userProfile) =>
+                            sender.id === notifications[index].sender_id
+                    ),
+                    read: notifications[index].read,
+                })
+            ),
+        };
+    }
+
+    async reportUser(id: number, reporterId: number): Promise<void> {
+        if (id === reporterId) throw new Error("Cannot report yourself");
+
+        const existingReport = await this.orm.query(
+            `SELECT id FROM reports WHERE user_id = $1 AND reporter_id = $2`,
+            [id, reporterId]
+        );
+
+        if (existingReport.length > 0)
+            throw new Error("User is already reported");
+
+        await this.orm.query(
+            `INSERT INTO reports (user_id, reporter_id) VALUES ($1, $2)`,
+            [id, reporterId]
+        );
     }
 
     async blockUser(id: number, blockerId: number): Promise<void> {
-        if (id === blockerId)
-            throw new Error("Cannot block yourself");
-
+        if (id === blockerId) throw new Error("Cannot block yourself");
 
         const existingBlock = await this.orm.query(
             `SELECT id FROM blocks WHERE user_id = $1 AND blocker_id = $2`,
@@ -129,6 +163,8 @@ export class UserService {
         if (existingBlock.length > 0)
             throw new Error("User is already blocked");
 
+        await this.updateUserFameRating(id);
+
         await this.orm.query(
             `INSERT INTO blocks (user_id, blocker_id) VALUES ($1, $2)`,
             [id, blockerId]
@@ -136,16 +172,16 @@ export class UserService {
     }
 
     async unblockUser(id: number, blockerId: number): Promise<void> {
-        if (id === blockerId)
-            throw new Error("Cannot unblock yourself");
+        if (id === blockerId) throw new Error("Cannot unblock yourself");
 
         const result = await this.orm.query(
             `DELETE FROM blocks WHERE user_id = $1 AND blocker_id = $2 RETURNING id`,
             [id, blockerId]
         );
 
-        if (result.length === 0)
-            throw new Error("User is not blocked");
+        if (result.length === 0) throw new Error("User is not blocked");
+
+        await this.updateUserFameRating(id);
 
         await this.orm.query(
             `DELETE FROM blocks WHERE user_id = $1 AND blocker_id = $2`,
@@ -171,7 +207,10 @@ export class UserService {
         return {
             total: blocks.length,
             users: await Promise.all(
-                blocks.map(async (block: { blocker_id: number }) => await this.getUserById(block.blocker_id))
+                blocks.map(
+                    async (block: { blocker_id: number }) =>
+                        await this.getUserById(block.blocker_id)
+                )
             ),
         };
     }
@@ -181,7 +220,6 @@ export class UserService {
             `
                 SELECT
                     u.id,
-                    u.password,
                     u.verified,
                     p.username,
                     p.avatar,
@@ -200,16 +238,17 @@ export class UserService {
             [id]
         );
 
-        if (!user)
-            throw new Error('User not found');
+        if (!user) throw new Error("User not found");
 
         return {
             id: user.id,
             username: user.username,
-            avatar: user.avatar || process.env.DEFAULT_AVATAR_URL as string,
+            avatar: user.avatar || (process.env.DEFAULT_AVATAR_URL as string),
             firstName: user.firstName,
             lastName: user.lastName,
-            age: new Date().getFullYear() - new Date(user.birthDate).getFullYear(),
+            age:
+                new Date().getFullYear() -
+                new Date(user.birthDate).getFullYear(),
             gender: user.gender,
             biography: user.biography,
             sexualOrientation: user.sexualOrientation,
@@ -219,7 +258,10 @@ export class UserService {
         };
     }
 
-    async getUserByUsername(username: string, meId: number | null = null): Promise<userProfile> {
+    async getUserByUsername(
+        username: string,
+        meId: number | null = null
+    ): Promise<userProfile> {
         const [user] = await this.orm.query(
             `
                 SELECT
@@ -244,19 +286,22 @@ export class UserService {
             [username]
         );
 
-        if (!user)
-            throw new Error('User not found');
+        if (!user) throw new Error("User not found");
 
         return {
             id: user.id,
             username: user.username,
-            avatar: user.avatar || process.env.DEFAULT_AVATAR_URL as string,
+            avatar: user.avatar || (process.env.DEFAULT_AVATAR_URL as string),
             isOnline: this.app.userOnline(user.id.toString()),
-            ...(meId ? { isConnected: await this.userConnectedTo(user.id, meId) } : {}),
+            ...(meId
+                ? { isConnected: await this.userConnectedTo(user.id, meId) }
+                : {}),
             fameRating: user.fameRating,
             firstName: user.firstName,
             lastName: user.lastName,
-            age: new Date().getFullYear() - new Date(user.birthDate).getFullYear(),
+            age:
+                new Date().getFullYear() -
+                new Date(user.birthDate).getFullYear(),
             gender: user.gender,
             biography: user.biography,
             sexualOrientation: user.sexualOrientation,
@@ -266,16 +311,18 @@ export class UserService {
         };
     }
 
-    async updateProfile(id: number, form: userProfileSettings): Promise<userProfile> {
+    async updateProfile(
+        id: number,
+        form: userProfileSettings
+    ): Promise<userProfile> {
         const updates: string[] = [];
         const values: any[] = [];
         let index = 1;
 
         for (const [key, value] of Object.entries(form)) {
             if (value !== undefined) {
-                const dbKey = key === "sexualOrientation"
-                    ? "sexual_orientation"
-                    : key;
+                const dbKey =
+                    key === "sexualOrientation" ? "sexual_orientation" : key;
 
                 if (key === "username") {
                     const [existingUser] = await this.orm.query(
@@ -290,7 +337,6 @@ export class UserService {
                     if (existingUser)
                         throw new Error("Username is already taken");
                 }
-
 
                 updates.push(`${dbKey} = $${index++}`);
                 values.push(
@@ -309,7 +355,7 @@ export class UserService {
         UPDATE profiles
         SET ${updates.join(", ")}
         WHERE user_id = $${index}
-        RETURNING 
+        RETURNING
             username,
             avatar,
             birth_date AS "birthDate",
@@ -332,10 +378,14 @@ export class UserService {
         return {
             id,
             username: updatedProfile.username,
-            avatar: updatedProfile.avatar || process.env.DEFAULT_AVATAR_URL as string,
+            avatar:
+                updatedProfile.avatar ||
+                (process.env.DEFAULT_AVATAR_URL as string),
             firstName: updatedProfile.firstName,
             lastName: updatedProfile.lastName,
-            age: new Date().getFullYear() - new Date(updatedProfile.birthDate).getFullYear(),
+            age:
+                new Date().getFullYear() -
+                new Date(updatedProfile.birthDate).getFullYear(),
             gender: updatedProfile.gender,
             biography: updatedProfile.biography,
             sexualOrientation: updatedProfile.sexualOrientation,
@@ -350,8 +400,7 @@ export class UserService {
             [id, likerId]
         );
 
-        if (existingLike)
-            throw new Error("Like already exists");
+        if (existingLike) throw new Error("Like already exists");
 
         await this.orm.query(
             `INSERT INTO likes (user_id, liker_id) VALUES ($1, $2)`,
@@ -365,8 +414,9 @@ export class UserService {
 
         if (await this.userConnectedTo(id, likerId))
             await this.notifyUser(id, likerId, NotificationType.connected);
-        else
-            await this.notifyUser(id, likerId, NotificationType.like);
+        else await this.notifyUser(id, likerId, NotificationType.like);
+
+        await this.updateUserFameRating(id);
 
         return {
             like: {
@@ -377,20 +427,17 @@ export class UserService {
     }
 
     async deleteLike(id: number, likerId: number): Promise<userProfileLike> {
-
         const isConnected = await this.userConnectedTo(id, likerId);
         const result = await this.orm.query(
             `DELETE FROM likes WHERE user_id = $1 AND liker_id = $2 RETURNING id`,
             [id, likerId]
         );
 
-        if (result.length === 0)
-            throw new Error("Like not found");
+        if (result.length === 0) throw new Error("Like not found");
 
         if (isConnected)
             await this.notifyUser(id, likerId, NotificationType.unConnected);
-        else
-            await this.notifyUser(id, likerId, NotificationType.unLike);
+        else await this.notifyUser(id, likerId, NotificationType.unLike);
 
         await this.orm.query(
             `DELETE FROM likes WHERE user_id = $1 AND liker_id = $2`,
@@ -402,23 +449,24 @@ export class UserService {
             [id]
         );
 
+        await this.updateUserFameRating(id);
+
         return {
             like: {
                 me: false,
                 count: likesCount.length - 1,
             },
-        }
+        };
     }
 
     async userConnectedTo(id: number, meId: number): Promise<boolean> {
         const likes = await Promise.all([
             this.getLike(id, meId),
             this.getLike(meId, id),
-        ])
+        ]);
 
         return likes.every((like) => like.like.me);
     }
-
 
     async getLike(id: number, meId: number): Promise<userProfileLike> {
         const likes = await this.orm.query(
@@ -426,7 +474,9 @@ export class UserService {
             [id]
         );
 
-        const hasLiked = likes.some((like: { liker_id: number }) => like.liker_id === meId);
+        const hasLiked = likes.some(
+            (like: { liker_id: number }) => like.liker_id === meId
+        );
 
         return {
             like: {
@@ -442,15 +492,16 @@ export class UserService {
             [viewerId, userId]
         );
 
-
-        if (existingView.length > 0) await this.orm.query(
-            `UPDATE views SET viewed_at = CURRENT_TIMESTAMP WHERE viewer_id = $1 AND user_id = $2`,
-            [viewerId, userId]
-        );
-        else await this.orm.query(
-            `INSERT INTO views (user_id, viewer_id, viewed_at) VALUES ($1, $2, CURRENT_TIMESTAMP)`,
-            [userId, viewerId]
-        );
+        if (existingView.length > 0)
+            await this.orm.query(
+                `UPDATE views SET viewed_at = CURRENT_TIMESTAMP WHERE viewer_id = $1 AND user_id = $2`,
+                [viewerId, userId]
+            );
+        else
+            await this.orm.query(
+                `INSERT INTO views (user_id, viewer_id, viewed_at) VALUES ($1, $2, CURRENT_TIMESTAMP)`,
+                [userId, viewerId]
+            );
 
         await this.notifyUser(userId, viewerId, NotificationType.view);
     }
@@ -472,7 +523,9 @@ export class UserService {
                 avatar: view.avatar,
                 firstName: view.firstName,
                 lastName: view.lastName,
-                age: new Date().getFullYear() - new Date(view.birthDate).getFullYear(),
+                age:
+                    new Date().getFullYear() -
+                    new Date(view.birthDate).getFullYear(),
                 gender: view.gender,
                 biography: view.biography,
                 sexualOrientation: view.sexualOrientation,

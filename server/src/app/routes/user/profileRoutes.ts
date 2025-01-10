@@ -41,6 +41,14 @@ const authRoutes: FastifyPluginAsync = async (app) => {
         profileController.addBlockProfile.bind(profileController)
     );
 
+    app.put(
+        "/:username/report",
+        {
+            preHandler: [app.verifyAuth],
+        },
+        profileController.addReportProfile.bind(profileController)
+    );
+
     app.delete(
         "/:username/block",
         {

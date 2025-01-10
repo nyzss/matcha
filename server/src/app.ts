@@ -22,6 +22,7 @@ import {
     blockSchema,
     notificationSchema,
     emailVerificationSchema,
+    reportSchema,
 } from "./app/schemas/orm/userSchemas";
 import fastifyIO from "fastify-socket.io";
 
@@ -108,6 +109,7 @@ const buildApp = async (
     await app.orm.createTableWithRelations("views", viewSchema);
     await app.orm.createTableWithRelations("likes", likeSchema);
     await app.orm.createTableWithRelations("blocks", blockSchema);
+    await app.orm.createTableWithRelations("reports", reportSchema);
     await app.orm.createTableWithRelations("notifications", notificationSchema);
     await app.orm.createTableWithRelations("research", reSearchSchema);
 

@@ -82,6 +82,10 @@ export const publicUserSchema: TableSchema = {
         type: "string",
         nullable: true,
     },
+    location: {
+        type: 'json',
+        nullable: true
+    },
     pictures: {
         type: 'json',
         nullable: true
@@ -210,6 +214,41 @@ export const blockSchema: TableSchema = {
         },
     },
     blocked_at: {
+        type: 'date',
+        nullable: false,
+        defaultValue: 'CURRENT_TIMESTAMP',
+    },
+}
+
+
+export const reportSchema: TableSchema = {
+    id: {
+        type: 'number',
+        primary: true,
+        nullable: false,
+        autoIncrement: true,
+    },
+    user_id: {
+        type: 'number',
+        nullable: false,
+        relation: {
+            type: 'one-to-one',
+            table: 'userSchema',
+            field: 'id',
+            onDelete: 'CASCADE',
+        },
+    },
+    reporter_id: {
+        type: 'number',
+        nullable: false,
+        relation: {
+            type: 'one-to-one',
+            table: 'userSchema',
+            field: 'id',
+            onDelete: 'CASCADE',
+        },
+    },
+    created_at: {
         type: 'date',
         nullable: false,
         defaultValue: 'CURRENT_TIMESTAMP',
