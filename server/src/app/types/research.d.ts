@@ -1,9 +1,9 @@
 
 export interface ResearchOptions {
     ageMax: number | null;
-    ageMin: number | null;
+    ageMin: number;
     fameRatingMax: number | null;
-    fameRatingMin: number | null;
-    location: string | null;
+    fameRatingMin: number;
+    location: number;
     tags: string[];
 }

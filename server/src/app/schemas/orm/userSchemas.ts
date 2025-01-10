@@ -72,6 +72,10 @@ export const publicUserSchema: TableSchema = {
         type: "string",
         nullable: true,
     },
+    location: {
+        type: 'json',
+        nullable: true
+    },
     pictures: {
         type: 'json',
         nullable: true

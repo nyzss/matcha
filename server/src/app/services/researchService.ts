@@ -1,14 +1,20 @@
 import {FastifyInstance} from 'fastify';
 import {ORM, TableSchema} from '../types/orm';
 import {ResearchOptions} from "../types/research";
+import {LocalisationService} from "./localisationService";
+import {UserService} from "./userService";
 
 export class ResearchService {
     private orm: ORM;
+    private localisationService: LocalisationService;
+    private userService: UserService;
     private app: FastifyInstance;
 
     constructor(fastify: FastifyInstance) {
         this.orm = fastify.orm;
         this.app = fastify;
+        this.localisationService = new LocalisationService(fastify);
+        this.userService = new UserService(fastify);
     }
 
     async getUserResearch(userId: number): Promise<ResearchOptions> {
@@ -24,7 +30,7 @@ export class ResearchService {
                 ageMin: 18,
                 fameRatingMax: null,
                 fameRatingMin: 0,
-                location: null,
+                location: 10,
                 tags: []
             }
 
@@ -77,4 +83,49 @@ export class ResearchService {
         }
     }
 
+    async getSuggestions(userId: number) {
+        const profile = await this.userService.getUserById(userId);
+
+        if (!profile)
+            throw new Error("User not found");
+
+        const research: ResearchOptions = await this.getUserResearch(userId);
+        const userLocation: locate | null = await this.localisationService.getUserLocation(userId);
+
+
+        if (!userLocation)
+            return [];
+
+        const nearbyUsers = await this.localisationService.getNearbyLatAndLon(userLocation.lat, userLocation.lon, research.location);
+
+        if (!nearbyUsers)
+            return [];
+
+        const users = nearbyUsers.filter((user: any) => {
+            const isAgeMatch = user.age >= research.ageMin && user.age <= (research.ageMax || research.ageMin);
+            const isFameMatch = user.fameRating >= research.fameRatingMin && user.fameRating <= (research.fameRatingMax || research.fameRatingMin);
+            const areTagsMatch = !research.tags.length || research.tags.some(tag => user.tags && user.tags.includes(tag));
+
+            const isSexualOrientationMatch = !profile.sexualOrientation || user.sexualOrientation === profile.sexualOrientation;
+            const isGenderMatch = !profile.gender || user.gender === profile.gender;
+
+            return isAgeMatch && isFameMatch && areTagsMatch && isSexualOrientationMatch && isGenderMatch;
+        });
+
+
+        return users.map((user: any) => ({
+            id: user.id,
+            avatar: user.avatar,
+            username: user.username,
+            age: user.age,
+            fameRating: user.fameRating,
+            distance: user.distance,
+            city: user.location.city,
+            country: user.location.country,
+            tags: user.tags || [],
+        }));
+    }
+
 }
+
+

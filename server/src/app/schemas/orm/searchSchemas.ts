@@ -24,7 +24,7 @@ export const reSearchSchema: TableSchema = {
         nullable: true
     },
     location: {
-        type: 'string',
+        type: 'number',
         nullable: true
     },
     tags: {

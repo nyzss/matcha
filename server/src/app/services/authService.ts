@@ -40,7 +40,7 @@ export class AuthService {
                 `INSERT INTO profiles (username, first_name, last_name, fame_rating, birth_date, user_id) 
              VALUES ($1, $2, $3, $4, $5, $6) 
              RETURNING id, username, first_name, last_name, birth_date, user_id`,
-                [form.username, form.firstName, form.lastName, 0, form.birthDate, newUser.id] // 5 parameters here
+                [form.username, form.firstName, form.lastName, 0, form.birthDate, newUser.id]
             );
 
             // Update the user with the new profile id

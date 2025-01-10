@@ -203,7 +203,6 @@ export class UserService {
             `
                 SELECT
                     u.id,
-                    u.password,
                     p.username,
                     p.avatar,
                     p.birth_date as "birthDate",
