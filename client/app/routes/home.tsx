@@ -1,4 +1,5 @@
-import { Button, Flex, Paper, Text, Title } from "@mantine/core";
+import { Box, Button, Flex, Group, Paper, Text, Title } from "@mantine/core";
+import { useState } from "react";
 
 const profiles = [
     {
@@ -40,28 +41,40 @@ const profiles = [
 ];
 
 export default function Home() {
+    const [index, setIndex] = useState<number>(0);
+    const [profile, setProfile] = useState(profiles[index]);
+
+    const handleNext = () => {
+        setIndex((prevIndex) => prevIndex + 1);
+        setProfile(profiles[index + 1]);
+    };
+
+    const handleMatch = () => {
+        console.log("Matched with", profile.name);
+        handleNext();
+    };
+
+    const handlePass = () => {
+        console.log("Passed on", profile.name);
+        handleNext();
+    };
+
     return (
-        <Flex direction={"column"} gap={"lg"} px={60} pb={50}>
-            {profiles.map((profile, index) => (
-                <Paper
-                    shadow="md"
-                    p="xl"
-                    radius="md"
-                    style={{
-                        backgroundImage: `url(${profile.image})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                    }}
-                    key={index}
-                    h={"600px"}
-                    //   className={classes.card}
-                >
-                    <Flex
-                        gap={"md"}
-                        justify={"space-between"}
-                        align={"flex-end"}
-                        h={"100%"}
-                    >
+        <Box px={"xl"} h={"100%"}>
+            <Paper
+                shadow="md"
+                p="xl"
+                radius="md"
+                style={{
+                    backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0) 20%, rgba(0,0,0,1)), url(${profile.image})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                }}
+                key={index}
+                h={"100%"}
+            >
+                <Flex gap={"md"} align={"flex-end"} h={"100%"}>
+                    <Flex direction={"column"} gap={"md"}>
                         <div>
                             <Text size="lg" c={"white"}>
                                 {profile.fameRating}
@@ -70,12 +83,32 @@ export default function Home() {
                                 {profile.name}
                             </Title>
                         </div>
-                        <Button variant="white" color="dark">
-                            See more
-                        </Button>
+                        <Text c={"white"}>{profile.biography}</Text>
+                        <Flex gap={"sm"}>
+                            <Button
+                                variant="light"
+                                color="red"
+                                size="lg"
+                                c={"red"}
+                                onClick={handlePass}
+                                fullWidth
+                            >
+                                Pass
+                            </Button>
+                            <Button
+                                variant="light"
+                                color="green"
+                                size="lg"
+                                c={"green"}
+                                onClick={handleMatch}
+                                fullWidth
+                            >
+                                Match
+                            </Button>
+                        </Flex>
                     </Flex>
-                </Paper>
-            ))}
-        </Flex>
+                </Flex>
+            </Paper>
+        </Box>
     );
 }

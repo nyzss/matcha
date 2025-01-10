@@ -59,7 +59,10 @@ export class AuthService {
 
             await this.orm.query('COMMIT');
 
-            sendMail(newUser.email, emailVerification.value)
+            //TODO: to not hit the rate limiting of resend (email provider)
+            if (process.env.NODE_ENV === "production") {
+                sendMail(newUser.email, emailVerification.value);
+            }
 
             const accessToken = this.jwt.sign(
                 { id: newUser.id, email: newUser.email },
