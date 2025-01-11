@@ -26,6 +26,31 @@ const researchRoutes: FastifyPluginAsync = async (app) => {
         },
         researchController.updateResearch.bind(researchController)
     );
+
+    app.get(
+        "/suggestion",
+        {
+            preHandler: [app.verifyAuth],
+        },
+        researchController.getSuggestions.bind(researchController)
+    );
+
+    app.post(
+        "/suggestion/:id/accept",
+        {
+            preHandler: [app.verifyAuth],
+        },
+        researchController.acceptSuggestion.bind(researchController)
+    );
+
+    app.post(
+        "/suggestion/:id/decline",
+        {
+            preHandler: [app.verifyAuth],
+        },
+        researchController.declineSuggestions.bind(researchController)
+    );
+
 };
 
 export default researchRoutes;

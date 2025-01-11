@@ -198,6 +198,24 @@ export class UserService {
         };
     }
 
+    async getBlockedUsersId(id: number): Promise<any> {
+        const blocks = await this.orm.query(
+            `SELECT blocker_id FROM blocks WHERE user_id = $1`,
+            [id]
+        ) as { blocker_id: number }[];
+
+        return blocks.map((block: { blocker_id: number }) => block.blocker_id);
+    }
+
+    async getBlockedByUsersId(id: number): Promise<any> {
+        const blocks = await this.orm.query(
+            `SELECT user_id FROM blocks WHERE blocker_id = $1`,
+            [id]
+        ) as { user_id: number }[];
+
+        return blocks.map((block: { user_id: number }) => block.user_id);
+    }
+
     async getUserById(id: number): Promise<userProfile> {
         const [user] = await this.orm.query(
             `
