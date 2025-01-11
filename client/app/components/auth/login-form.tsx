@@ -1,5 +1,12 @@
 import { loginSchema } from "~/lib/validation";
-import { Box, Button, Flex, Modal, TextInput } from "@mantine/core";
+import {
+    Box,
+    Button,
+    Flex,
+    Modal,
+    PasswordInput,
+    TextInput,
+} from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { IconLock, IconUser } from "@tabler/icons-react";
@@ -69,10 +76,9 @@ export default function LoginComponent({ close }: { close?: () => void }) {
                         withAsterisk
                         {...form.getInputProps("username")}
                     />
-                    <TextInput
+                    <PasswordInput
                         label="Password"
                         placeholder="Password"
-                        type="password"
                         key={form.key("password")}
                         leftSection={<IconLock size={18} />}
                         leftSectionPointerEvents="none"
