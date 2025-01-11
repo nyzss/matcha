@@ -122,7 +122,7 @@ export default function Home() {
                         <Paper
                             shadow="md"
                             p="xl"
-                            radius="md"
+                            radius="xs"
                             style={{
                                 ...styles,
                                 backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0) 20%, rgba(0,0,0,1)), url(${profile.image})`,

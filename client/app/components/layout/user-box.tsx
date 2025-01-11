@@ -1,16 +1,24 @@
-import { useAuth } from "~/contexts/auth-provider";
-import { ActionIcon, Box, Flex, Menu, Text } from "@mantine/core";
-import { IconLogout, IconSettings } from "@tabler/icons-react";
+import {
+    ActionIcon,
+    Box,
+    Flex,
+    Menu,
+    Text,
+    useMantineColorScheme,
+} from "@mantine/core";
+import { IconColorSwatch, IconLogout, IconSettings } from "@tabler/icons-react";
 import { useNavigate } from "react-router";
+import { useAuth } from "~/contexts/auth-provider";
 
 export default function UserBox() {
     const { user, logout } = useAuth();
+    const { toggleColorScheme } = useMantineColorScheme();
 
     const navigate = useNavigate();
 
     return (
-        <Box style={{ marginTop: "auto" }}>
-            <Flex align="center" mt="xl">
+        <Box>
+            <Flex align="center">
                 <Box mr="xs">
                     <Text size="sm" fw={700}>
                         {user?.firstName} {user?.lastName}
@@ -27,9 +35,16 @@ export default function UserBox() {
                     </Menu.Target>
                     <Menu.Dropdown>
                         <Menu.Label>Profile</Menu.Label>
+                        <Menu.Item
+                            leftSection={<IconColorSwatch size={18} />}
+                            onClick={toggleColorScheme}
+                        >
+                            Toggle theme
+                        </Menu.Item>
                         <Menu.Item leftSection={<IconSettings size={18} />}>
                             Settings
                         </Menu.Item>
+
                         <Menu.Item
                             leftSection={<IconLogout />}
                             onClick={() => {
