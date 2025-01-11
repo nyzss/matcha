@@ -1,4 +1,14 @@
-import { Box, Button, Flex, Group, Paper, Text, Title } from "@mantine/core";
+import {
+    Box,
+    Button,
+    Flex,
+    Group,
+    Paper,
+    Text,
+    Title,
+    Transition,
+    type MantineTransition,
+} from "@mantine/core";
 import { useState } from "react";
 
 const profiles = [
@@ -43,72 +53,97 @@ const profiles = [
 export default function Home() {
     const [index, setIndex] = useState<number>(0);
     const [profile, setProfile] = useState(profiles[index]);
+    const [visible, setVisible] = useState<boolean>(true);
+    const [transition, setTransition] =
+        useState<MantineTransition>("rotate-left");
 
-    const handleNext = () => {
-        setIndex((prevIndex) => prevIndex + 1);
-        setProfile(profiles[index + 1]);
+    const handleNext = (matched: boolean = true) => {
+        if (index === profiles.length - 1) {
+            setIndex(0);
+            return;
+        }
+
+        setTransition(matched ? "fade-left" : "fade-right");
+        setVisible(false);
+        setTimeout(() => {
+            setTransition("pop");
+            setIndex((prevIndex) => prevIndex + 1);
+            setProfile(profiles[index + 1]);
+            setVisible(true);
+        }, 300);
     };
 
     const handleMatch = () => {
         console.log("Matched with", profile.name);
-        handleNext();
+        handleNext(true);
     };
 
     const handlePass = () => {
         console.log("Passed on", profile.name);
-        handleNext();
+        handleNext(false);
     };
 
     return (
         <Box px={"xl"} h={"100%"}>
-            <Paper
-                shadow="md"
-                p="xl"
-                radius="md"
-                style={{
-                    backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0) 20%, rgba(0,0,0,1)), url(${profile.image})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                }}
-                key={index}
-                h={"100%"}
+            <Transition
+                mounted={visible}
+                transition={transition}
+                // transition={"fade"}
+                duration={300}
+                timingFunction="ease"
             >
-                <Flex gap={"md"} align={"flex-end"} h={"100%"}>
-                    <Flex direction={"column"} gap={"md"}>
-                        <div>
-                            <Text size="lg" c={"white"}>
-                                {profile.fameRating}
-                            </Text>
-                            <Title order={3} c="white">
-                                {profile.name}
-                            </Title>
-                        </div>
-                        <Text c={"white"}>{profile.biography}</Text>
-                        <Flex gap={"sm"}>
-                            <Button
-                                variant="light"
-                                color="red"
-                                size="lg"
-                                c={"red"}
-                                onClick={handlePass}
-                                fullWidth
-                            >
-                                Pass
-                            </Button>
-                            <Button
-                                variant="light"
-                                color="green"
-                                size="lg"
-                                c={"green"}
-                                onClick={handleMatch}
-                                fullWidth
-                            >
-                                Match
-                            </Button>
+                {(styles) => (
+                    <Paper
+                        shadow="md"
+                        p="xl"
+                        radius="md"
+                        style={{
+                            ...styles,
+                            backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0) 20%, rgba(0,0,0,1)), url(${profile.image})`,
+                            backgroundSize: "cover",
+                            backgroundPosition: "center",
+                        }}
+                        key={index}
+                        h={"100%"}
+                    >
+                        <Flex gap={"md"} align={"flex-end"} h={"100%"}>
+                            <Flex direction={"column"} gap={"md"}>
+                                <div>
+                                    <Text size="lg" c={"white"}>
+                                        {profile.fameRating}
+                                    </Text>
+                                    <Title order={3} c="white">
+                                        {profile.name}
+                                    </Title>
+                                </div>
+                                <Text c={"white"}>{profile.biography}</Text>
+                                <Flex gap={"sm"}>
+                                    <Button
+                                        variant="light"
+                                        color="red"
+                                        size="lg"
+                                        c={"red"}
+                                        onClick={handlePass}
+                                        fullWidth
+                                    >
+                                        Pass
+                                    </Button>
+                                    <Button
+                                        variant="light"
+                                        color="green"
+                                        size="lg"
+                                        c={"green"}
+                                        onClick={handleMatch}
+                                        fullWidth
+                                    >
+                                        Match
+                                    </Button>
+                                </Flex>
+                            </Flex>
                         </Flex>
-                    </Flex>
-                </Flex>
-            </Paper>
+                    </Paper>
+                )}
+            </Transition>
         </Box>
     );
 }
