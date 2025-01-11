@@ -1,17 +1,21 @@
 import {
     Box,
     Button,
+    Drawer,
     Flex,
-    Group,
-    Modal,
+    NumberInput,
     Paper,
+    RangeSlider,
+    Slider,
+    TagsInput,
     Text,
     Title,
+    Tooltip,
     Transition,
     type MantineTransition,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconAdjustmentsHorizontal, IconFilter } from "@tabler/icons-react";
+import { IconAdjustmentsHorizontal, IconInfoCircle } from "@tabler/icons-react";
 import { useState } from "react";
 
 const profiles = [
@@ -98,9 +102,73 @@ export default function Home() {
             }}
             gap={"sm"}
         >
-            <Modal opened={opened} onClose={close} title="Filter" centered>
-                <Button>Apply filter</Button>
-            </Modal>
+            <Drawer
+                opened={opened}
+                onClose={close}
+                title="Filter"
+                position="right"
+                overlayProps={{
+                    backgroundOpacity: 0.3,
+                    blur: 1,
+                }}
+            >
+                <Flex direction={"column"} gap={"lg"} py={"lg"}>
+                    <div>
+                        <Text>Max distance</Text>
+                        <Slider
+                            min={0}
+                            max={100}
+                            label={(label) => `${label} km`}
+                            defaultValue={30}
+                            size="lg"
+                        />
+                    </div>
+
+                    <div>
+                        <Tooltip label="Fame rating is a measure of how popular a user is">
+                            <Text
+                                style={{
+                                    cursor: "default",
+                                }}
+                            >
+                                <Flex align={"center"} gap={3}>
+                                    Fame rating
+                                    <IconInfoCircle size={16} />
+                                </Flex>
+                            </Text>
+                        </Tooltip>
+                        <Flex gap={"md"}>
+                            <NumberInput
+                                label="Minimum"
+                                placeholder="5"
+                                w={"100%"}
+                                defaultValue={0}
+                            />
+                            <NumberInput
+                                label="Maximum"
+                                placeholder="20"
+                                w={"100%"}
+                                defaultValue={20}
+                            />
+                        </Flex>
+                    </div>
+                    <div>
+                        <Text>Age</Text>
+                        <RangeSlider
+                            min={18}
+                            max={70}
+                            defaultValue={[21, 25]}
+                            size="lg"
+                            minRange={2}
+                        />
+                    </div>
+                    <TagsInput
+                        label="Interests"
+                        placeholder="What would you like?"
+                    />
+                    <Button>Apply filter</Button>
+                </Flex>
+            </Drawer>
             <Button
                 variant="subtle"
                 leftSection={<IconAdjustmentsHorizontal />}
@@ -134,7 +202,7 @@ export default function Home() {
                         >
                             <Flex gap={"md"} align={"flex-end"} h={"100%"}>
                                 <Flex direction={"column"} gap={"md"}>
-                                    <div>
+                                    <div style={{ cursor: "default" }}>
                                         <Text size="lg" c={"white"}>
                                             {profile.fameRating}
                                         </Text>
@@ -142,7 +210,12 @@ export default function Home() {
                                             {profile.name}
                                         </Title>
                                     </div>
-                                    <Text c={"white"}>{profile.biography}</Text>
+                                    <Text
+                                        c={"white"}
+                                        style={{ cursor: "default" }}
+                                    >
+                                        {profile.biography}
+                                    </Text>
                                     <Flex gap={"sm"}>
                                         <Button
                                             variant="light"
