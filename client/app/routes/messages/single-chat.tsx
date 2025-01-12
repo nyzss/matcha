@@ -57,23 +57,6 @@ export default function SingleChat({
     const { user } = useAuth();
     const viewport = useRef<HTMLDivElement>(null);
 
-    const readConversation = async () => {
-        if (conversation) {
-            await updateReadConversation(conversation.id);
-            setMessageHistory((prev) => {
-                if (!prev) return prev;
-
-                return {
-                    ...prev,
-                    messages: prev.messages.map((msg) => ({
-                        ...msg,
-                        read: true,
-                    })),
-                };
-            });
-        }
-    };
-
     // helper func to add messages to the message history
     // we filter out the duplicates, sometimes the socket.io instance can be tricky and multiply
     // eg. when not cleaned up properly after useEffect()
@@ -109,6 +92,7 @@ export default function SingleChat({
             .then((data) => {
                 setMessageHistory(data);
                 scrollToBottom();
+                readConversation(); // mark conversation as read on my side
             })
             .catch(() => {
                 notifications.show({
@@ -117,6 +101,21 @@ export default function SingleChat({
                     color: "red",
                 });
             });
+
+        const updateWithMessage = (data: IMessage) => {
+            if (data.conversationId === chatId) {
+                readConversation();
+                addMessage(data);
+                scrollToBottom();
+            }
+        };
+
+        socket.on("MessageCreate", updateWithMessage);
+        socket.on("MessageRead", updateReadMessages);
+        return () => {
+            socket.removeAllListeners("MessageRead");
+            socket.removeAllListeners("MessageCreate");
+        };
     }, [chatId]);
 
     useEffect(() => {
@@ -127,21 +126,24 @@ export default function SingleChat({
         dayjs.tz.setDefault(dayjs.tz.guess());
     }, []);
 
-    useEffect(() => {
-        const updateWithMessage = (data: IMessage) => {
-            if (data.conversationId === chatId) {
-                addMessage(data);
-                scrollToBottom();
-            }
-        };
-        readConversation();
-        socket.on("MessageCreate", updateWithMessage);
-        socket.on("MessageRead", readConversation);
-        return () => {
-            socket.removeAllListeners("MessageCreate");
-            socket.removeAllListeners("MessageRead");
-        };
-    }, []);
+    const updateReadMessages = (data: { id: string }) => {
+        console.log("readConversation");
+        if (data && data.id !== chatId) return;
+        setMessageHistory((prev) => {
+            if (!prev) return prev;
+            return {
+                ...prev,
+                messages: prev.messages.map((msg) => ({
+                    ...msg,
+                    read: true,
+                })),
+            };
+        });
+    };
+
+    const readConversation = async () => {
+        await updateReadConversation(chatId);
+    };
 
     const handleMessageSend = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -153,9 +155,9 @@ export default function SingleChat({
         });
     };
 
-    const scrollToBottom = (behavior: ScrollBehavior = "instant") => {
+    const scrollToBottom = (behavior: ScrollBehavior = "smooth") => {
         viewport.current!.scrollTo({
-            top: viewport.current!.scrollHeight,
+            top: viewport.current!.scrollHeight + 1000,
             behavior,
         });
     };
@@ -195,7 +197,7 @@ export default function SingleChat({
                 viewportRef={viewport}
                 offsetScrollbars
             >
-                <Flex direction={"column"} gap={"md"} pb={100} pt={50}>
+                <Flex direction={"column"} gap={"md"} mb={100} mt={50}>
                     {messageHistory &&
                         messageHistory.messages.map((msg) => {
                             const isMe = msg.sender.id === user?.id;

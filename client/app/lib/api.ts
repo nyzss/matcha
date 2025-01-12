@@ -293,7 +293,7 @@ export const verifyMail = async (code: string): Promise<boolean> => {
     }
 };
 
-export const updateReadConversation = async (convId: number) => {
+export const updateReadConversation = async (convId: string) => {
     try {
         const res = await fetcher(`/conversation/${convId}/read`, {
             method: "PUT",
