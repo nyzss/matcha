@@ -3,6 +3,7 @@ import {
     fetchConversation,
     fetchMessageHistory,
     mutateMessage,
+    updateReadConversation,
 } from "~/lib/api";
 import {
     ActionIcon,
@@ -18,8 +19,10 @@ import {
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import {
+    IconCheck,
     IconChevronLeft,
     IconChevronRight,
+    IconEye,
     IconSend2,
 } from "@tabler/icons-react";
 import React, { useEffect, useRef, useState } from "react";
@@ -89,6 +92,7 @@ export default function SingleChat({
             .then((data) => {
                 setMessageHistory(data);
                 scrollToBottom();
+                readConversation(); // mark conversation as read on my side
             })
             .catch(() => {
                 notifications.show({
@@ -97,6 +101,21 @@ export default function SingleChat({
                     color: "red",
                 });
             });
+
+        const updateWithMessage = (data: IMessage) => {
+            if (data.conversationId === chatId) {
+                readConversation();
+                addMessage(data);
+                scrollToBottom();
+            }
+        };
+
+        socket.on("MessageCreate", updateWithMessage);
+        socket.on("MessageRead", updateReadMessages);
+        return () => {
+            socket.removeAllListeners("MessageRead");
+            socket.removeAllListeners("MessageCreate");
+        };
     }, [chatId]);
 
     useEffect(() => {
@@ -107,20 +126,24 @@ export default function SingleChat({
         dayjs.tz.setDefault(dayjs.tz.guess());
     }, []);
 
-    useEffect(() => {
-        const updateWithMessage = (data: IMessage) => {
-            if (data.conversationId === chatId) {
-                addMessage(data);
-                scrollToBottom();
-            }
-        };
+    const updateReadMessages = (data: { id: string }) => {
+        console.log("readConversation");
+        if (data && data.id !== chatId) return;
+        setMessageHistory((prev) => {
+            if (!prev) return prev;
+            return {
+                ...prev,
+                messages: prev.messages.map((msg) => ({
+                    ...msg,
+                    read: true,
+                })),
+            };
+        });
+    };
 
-        socket.on("MessageCreate", updateWithMessage);
-
-        return () => {
-            socket.removeAllListeners("MessageCreate");
-        };
-    }, []);
+    const readConversation = async () => {
+        await updateReadConversation(chatId);
+    };
 
     const handleMessageSend = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -132,38 +155,40 @@ export default function SingleChat({
         });
     };
 
-    const scrollToBottom = (behavior: ScrollBehavior = "instant") => {
+    const scrollToBottom = (behavior: ScrollBehavior = "smooth") => {
         viewport.current!.scrollTo({
-            top: viewport.current!.scrollHeight,
+            top: viewport.current!.scrollHeight + 1000,
             behavior,
         });
     };
 
     return (
         <Flex direction={"column"} gap={"xs"} h={"100%"}>
-            <Flex
-                direction={"row"}
-                align={"center"}
-                gap={"sm"}
-                component={Link}
-                to={"/profile/" + conversation?.users[0].username}
-                style={{ textDecoration: "none" }}
-                c="var(--mantine-color-dark)"
-            >
+            <Flex gap={"sm"} align={"center"}>
                 <ActionIcon
                     variant="transparent"
                     onClick={() => navigate("/messages")}
                 >
                     <IconChevronLeft />
                 </ActionIcon>
-                <Avatar
-                    color="initials"
-                    name={`${conversation?.users[0].firstName} ${conversation?.users[0].lastName}`}
-                    size={45}
-                />
-                <Title fz={"lg"}>
-                    {`${conversation?.users[0].firstName} ${conversation?.users[0].lastName} (@${conversation?.users[0].username})`}{" "}
-                </Title>
+                <Flex
+                    component={Link}
+                    to={"/profile/" + conversation?.users[0].username}
+                    style={{ textDecoration: "none" }}
+                    c="var(--mantine-color-dark)"
+                    align={"center"}
+                    gap={"sm"}
+                    w={"100%"}
+                >
+                    <Avatar
+                        color="initials"
+                        name={`${conversation?.users[0].firstName} ${conversation?.users[0].lastName}`}
+                        size={45}
+                    />
+                    <Title fz={"lg"}>
+                        {`${conversation?.users[0].firstName} ${conversation?.users[0].lastName} (@${conversation?.users[0].username})`}{" "}
+                    </Title>
+                </Flex>
             </Flex>
             <Divider size={"sm"} />
             <ScrollArea
@@ -172,7 +197,7 @@ export default function SingleChat({
                 viewportRef={viewport}
                 offsetScrollbars
             >
-                <Flex direction={"column"} gap={"md"} pb={100} pt={50}>
+                <Flex direction={"column"} gap={"md"} mb={100} mt={50}>
                     {messageHistory &&
                         messageHistory.messages.map((msg) => {
                             const isMe = msg.sender.id === user?.id;
@@ -220,9 +245,18 @@ export default function SingleChat({
                                             {msg.content}
                                         </Text>
                                     </Paper>
-                                    <Text size="xs" c={"gray"} fw={400}>
-                                        {formatDate(msg.sentAt)}
-                                    </Text>
+                                    <Flex align={"center"} gap={2}>
+                                        <Text size="xs" c={"gray"} fw={400}>
+                                            {formatDate(msg.sentAt)}
+                                        </Text>
+                                        <Text>
+                                            {msg.read ? (
+                                                <IconCheck size={14} />
+                                            ) : (
+                                                ""
+                                            )}
+                                        </Text>
+                                    </Flex>
                                 </Flex>
                             );
                         })}

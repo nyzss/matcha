@@ -20,6 +20,7 @@ interface IMessage {
     sender: IProfile;
     content: string;
     sentAt: Date;
+    read: boolean;
 }
 
 type TMessageHistory = {
