@@ -42,3 +42,41 @@ export const reSearchSchema: TableSchema = {
         }
     },
 };
+
+export const matcheSchema: TableSchema = {
+    id: {
+        type: 'number',
+        primary: true,
+        nullable: false,
+        autoIncrement: true
+    },
+    target_id: {
+        type: 'number',
+        nullable: false,
+        relation: {
+            type: 'one-to-one',
+            table: 'users',
+            field: 'id',
+            onDelete: 'CASCADE'
+        }
+    },
+    author_id: {
+        type: 'number',
+        nullable: false,
+        relation: {
+            type: 'one-to-one',
+            table: 'users',
+            field: 'id',
+            onDelete: 'CASCADE'
+        }
+    },
+    type: {
+        type: 'string',
+        nullable: false,
+    },
+    matched_at: {
+        type: 'date',
+        nullable: false,
+        defaultValue: 'CURRENT_TIMESTAMP',
+    },
+}

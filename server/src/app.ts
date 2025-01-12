@@ -24,9 +24,10 @@ import {
     emailVerificationSchema,
     reportSchema,
 } from "./app/schemas/orm/userSchemas";
+import { reSearchSchema, matcheSchema } from "./app/schemas/orm/searchSchemas";
+
 import fastifyIO from "fastify-socket.io";
 
-// a décalé dans un fichier
 import fastifyJwt from "@fastify/jwt";
 import fastifyCookie from "@fastify/cookie";
 import fastifyMultipart from "@fastify/multipart";
@@ -40,7 +41,6 @@ import {
 } from "./app/schemas/orm/chatSchemas";
 import cors from "@fastify/cors";
 import { PinoLoggerOptions } from "fastify/types/logger";
-import { reSearchSchema } from "./app/schemas/orm/searchSchemas";
 
 const buildApp = async (
     log: (FastifyLoggerOptions & PinoLoggerOptions) | boolean = true
@@ -112,6 +112,7 @@ const buildApp = async (
     await app.orm.createTableWithRelations("reports", reportSchema);
     await app.orm.createTableWithRelations("notifications", notificationSchema);
     await app.orm.createTableWithRelations("research", reSearchSchema);
+    await app.orm.createTableWithRelations("research_matches", matcheSchema);
 
     await app.orm.createTableWithRelations("conversations", conversationSchema);
     await app.orm.createTableWithRelations(

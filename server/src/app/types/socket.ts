@@ -15,6 +15,7 @@ export enum NotificationType {
     view = 'View',
     connected = 'Connected',
     unConnected = 'UnConnected',
+    requestMatch = 'RequestMatch',
 }
 
 export enum SocketEvent {
