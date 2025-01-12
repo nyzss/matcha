@@ -79,7 +79,6 @@ export default function SingleChat({
     // eg. when not cleaned up properly after useEffect()
     const addMessage = (msg: IMessage) => {
         setMessageHistory((prev) => {
-            readConversation();
             if (prev?.messages.some((el) => el.id === msg.id)) return prev;
             if (!prev) {
                 return {
@@ -129,7 +128,9 @@ export default function SingleChat({
     }, []);
 
     useEffect(() => {
+        readConversation();
         const updateWithMessage = (data: IMessage) => {
+            readConversation();
             if (data.conversationId === chatId) {
                 addMessage(data);
                 scrollToBottom();
@@ -243,16 +244,18 @@ export default function SingleChat({
                                             {msg.content}
                                         </Text>
                                     </Paper>
-                                    <Text size="xs" c={"gray"} fw={400}>
-                                        <Flex align={"center"} gap="xs">
+                                    <Flex align={"center"} gap={2}>
+                                        <Text size="xs" c={"gray"} fw={400}>
                                             {formatDate(msg.sentAt)}
+                                        </Text>
+                                        <Text>
                                             {msg.read ? (
                                                 <IconCheck size={14} />
                                             ) : (
                                                 ""
                                             )}
-                                        </Flex>
-                                    </Text>
+                                        </Text>
+                                    </Flex>
                                 </Flex>
                             );
                         })}

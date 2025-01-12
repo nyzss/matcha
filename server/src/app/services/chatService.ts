@@ -104,6 +104,26 @@ export class ChatService {
                 [conversationId, meId]
             );
 
+            const result: {
+                user_id: number;
+                conversation_id: number;
+                id: number;
+            }[] = await this.orm.query(
+                `SELECT * FROM conversation_participants WHERE conversation_id = $1`,
+                [conversationId]
+            );
+
+            const user = result
+                .map((conv) => conv.user_id)
+                .filter((user_id) => user_id !== meId)[0];
+
+            this.app.sendsSocket([user.toString()], {
+                event: SocketEvent.readMessage,
+                data: {
+                    id: conversationId,
+                },
+            });
+
             return true;
         } catch (error) {
             throw new Error("Failed to read messages");
