@@ -37,12 +37,14 @@ export interface userSettings {
 
 
 export interface userProfileSettings {
+    avatar?: string,
     username?: string,
     gender?: TUserGender,
     biography?: string,
     sexualOrientation?: TUserSexualOrientation,
     tags?: string[],
     pictures?: string[],
+    [key: string]: any;
 }
 
 export interface userProfile {

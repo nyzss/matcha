@@ -15,7 +15,6 @@ export const userProfileSettings = z
         biography: z.string(),
         sexualOrientation: SexualOrientationEnum,
         tags: z.array(z.string()),
-        pictures: z.array(z.string()),
     })
     .partial()
     .refine(

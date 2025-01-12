@@ -53,7 +53,6 @@ export class ChatService {
             throw new Error('User is not connected');
         }
 
-
         const result = await this.orm.query(
             `INSERT INTO conversations (created_at) VALUES (NOW()) RETURNING *`
         );
