@@ -136,6 +136,19 @@ export class ProfileController {
         }
     }
 
+    async addReportProfile(request: FastifyRequest, reply: FastifyReply) {
+        try {
+            const { username } = request.params as { username: string };
+            const user = await this.userService.getUserByUsername(username);
+
+            await this.userService.reportUser(user.id, request?.user?.id);
+
+            return {message: "User reported"};
+        } catch (error: Error | any) {
+            return reply.status(404).send({error: error.message});
+        }
+    }
+
     async removeBlockProfile(request: FastifyRequest, reply: FastifyReply) {
         try {
             const { username } = request.params as { username: string };

@@ -39,10 +39,10 @@ export class AuthService {
 
             // Corrected INSERT query for profiles table
             const [newProfile] = await this.orm.query(
-                `INSERT INTO profiles (username, first_name, last_name, birth_date, user_id) 
-             VALUES ($1, $2, $3, $4, $5) 
+                `INSERT INTO profiles (username, first_name, last_name, fame_rating, birth_date, user_id) 
+             VALUES ($1, $2, $3, $4, $5, $6) 
              RETURNING id, username, first_name, last_name, birth_date, user_id`,
-                [form.username, form.firstName, form.lastName, form.birthDate, newUser.id] // 5 parameters here
+                [form.username, form.firstName, form.lastName, 0, form.birthDate, newUser.id]
             );
 
             const [emailVerification] = await this.orm.query(
@@ -59,7 +59,10 @@ export class AuthService {
 
             await this.orm.query('COMMIT');
 
-            sendMail(newUser.email, emailVerification.value)
+            //TODO: to not hit the rate limiting of resend (email provider)
+            if (process.env.NODE_ENV === "production") {
+                sendMail(newUser.email, emailVerification.value);
+            }
 
             const accessToken = this.jwt.sign(
                 { id: newUser.id, email: newUser.email },

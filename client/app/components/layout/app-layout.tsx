@@ -1,3 +1,4 @@
+import type { AppShellResponsiveSize } from "@mantine/core";
 import {
     AppShell,
     Burger,
@@ -6,18 +7,17 @@ import {
     Group,
     Indicator,
     TextInput,
-    useMantineColorScheme,
 } from "@mantine/core";
-import type { AppShellResponsiveSize } from "@mantine/core";
 
 import { useDisclosure } from "@mantine/hooks";
-import { IconMoon, IconSearch, IconSun } from "@tabler/icons-react";
-import { routes } from "./routes";
-import { Link, Outlet } from "react-router";
-import UserBox from "./user-box";
+import { IconSearch } from "@tabler/icons-react";
 import { useMemo } from "react";
+import { Link, Outlet } from "react-router";
 import { useAuth } from "~/contexts/auth-provider";
 import Onboarding from "../onboard/onboarding";
+import { routes } from "./routes";
+import ToggleTheme from "./toggleTheme";
+import UserBox from "./user-box";
 
 export default function AppLayout() {
     const [opened, { toggle }] = useDisclosure();
@@ -28,7 +28,6 @@ export default function AppLayout() {
         lg: 300,
         xl: 550,
     };
-    const { colorScheme, toggleColorScheme } = useMantineColorScheme();
     const shown = useMemo(() => {
         return routes.filter(
             (route) => route.auth === undefined || route.auth === logged
@@ -102,33 +101,34 @@ export default function AppLayout() {
                                 </Button>
                             ))}
                         </Flex>
-                        {logged && <UserBox />}
-                        {!logged && (
-                            <Flex
-                                display={{
-                                    sm: "none",
-                                }}
-                                mt={"auto"}
-                                gap={"md"}
-                                w={"100%"}
-                            >
-                                <Button
-                                    component={Link}
-                                    to={"login"}
-                                    variant="light"
+                        <Flex mt={"auto"} gap={"sm"} direction={"column"}>
+                            {logged && <UserBox />}
+                            {!logged && (
+                                <Flex
+                                    display={{
+                                        sm: "none",
+                                    }}
+                                    gap={"md"}
                                     w={"100%"}
                                 >
-                                    Login
-                                </Button>
-                                <Button
-                                    component={Link}
-                                    w={"100%"}
-                                    to={"register"}
-                                >
-                                    Register
-                                </Button>
-                            </Flex>
-                        )}
+                                    <Button
+                                        component={Link}
+                                        to={"login"}
+                                        variant="light"
+                                        w={"100%"}
+                                    >
+                                        Login
+                                    </Button>
+                                    <Button
+                                        component={Link}
+                                        w={"100%"}
+                                        to={"register"}
+                                    >
+                                        Register
+                                    </Button>
+                                </Flex>
+                            )}
+                        </Flex>
                     </Flex>
                 </Flex>
             </AppShell.Navbar>
@@ -153,13 +153,7 @@ export default function AppLayout() {
                             width={"100%"}
                         />
 
-                        <Button onClick={toggleColorScheme} variant="outline">
-                            {colorScheme === "dark" ? (
-                                <IconMoon />
-                            ) : (
-                                <IconSun />
-                            )}
-                        </Button>
+                        <ToggleTheme />
 
                         {!logged && (
                             <Group
