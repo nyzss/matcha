@@ -128,19 +128,18 @@ export default function SingleChat({
     }, []);
 
     useEffect(() => {
-        readConversation();
         const updateWithMessage = (data: IMessage) => {
-            readConversation();
             if (data.conversationId === chatId) {
                 addMessage(data);
                 scrollToBottom();
             }
         };
-
+        readConversation();
         socket.on("MessageCreate", updateWithMessage);
-
+        socket.on("MessageRead", readConversation);
         return () => {
             socket.removeAllListeners("MessageCreate");
+            socket.removeAllListeners("MessageRead");
         };
     }, []);
 

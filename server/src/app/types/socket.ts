@@ -24,7 +24,7 @@ export enum SocketEvent {
     userConnected = 'UserConnected',
     notificationCreate = 'NotificationCreate',
     messageCreate = 'MessageCreate',
-    readMessage = 'ReadMessage',
+    messageRead = 'MessageRead',
 }
 
 export interface SocketData {

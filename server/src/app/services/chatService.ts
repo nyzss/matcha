@@ -118,7 +118,7 @@ export class ChatService {
                 .filter((user_id) => user_id !== meId)[0];
 
             this.app.sendsSocket([user.toString()], {
-                event: SocketEvent.readMessage,
+                event: SocketEvent.messageRead,
                 data: {
                     id: conversationId,
                 },
@@ -169,7 +169,7 @@ export class ChatService {
                 conversationId: parseInt(message.conversation_id),
                 sender: users.find((user) => user.id === message.sender_id),
                 content: message.content,
-                read: message.read || message.sender_id === meId,
+                read: message.read,
                 sentAt: message.sent_at,
             })),
         };
