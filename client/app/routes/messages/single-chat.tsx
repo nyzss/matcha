@@ -3,6 +3,7 @@ import {
     fetchConversation,
     fetchMessageHistory,
     mutateMessage,
+    updateReadConversation,
 } from "~/lib/api";
 import {
     ActionIcon,
@@ -18,8 +19,10 @@ import {
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import {
+    IconCheck,
     IconChevronLeft,
     IconChevronRight,
+    IconEye,
     IconSend2,
 } from "@tabler/icons-react";
 import React, { useEffect, useRef, useState } from "react";
@@ -54,11 +57,29 @@ export default function SingleChat({
     const { user } = useAuth();
     const viewport = useRef<HTMLDivElement>(null);
 
+    const readConversation = async () => {
+        if (conversation) {
+            await updateReadConversation(conversation.id);
+            setMessageHistory((prev) => {
+                if (!prev) return prev;
+
+                return {
+                    ...prev,
+                    messages: prev.messages.map((msg) => ({
+                        ...msg,
+                        read: true,
+                    })),
+                };
+            });
+        }
+    };
+
     // helper func to add messages to the message history
     // we filter out the duplicates, sometimes the socket.io instance can be tricky and multiply
     // eg. when not cleaned up properly after useEffect()
     const addMessage = (msg: IMessage) => {
         setMessageHistory((prev) => {
+            readConversation();
             if (prev?.messages.some((el) => el.id === msg.id)) return prev;
             if (!prev) {
                 return {
@@ -141,29 +162,31 @@ export default function SingleChat({
 
     return (
         <Flex direction={"column"} gap={"xs"} h={"100%"}>
-            <Flex
-                direction={"row"}
-                align={"center"}
-                gap={"sm"}
-                component={Link}
-                to={"/profile/" + conversation?.users[0].username}
-                style={{ textDecoration: "none" }}
-                c="var(--mantine-color-dark)"
-            >
+            <Flex gap={"sm"} align={"center"}>
                 <ActionIcon
                     variant="transparent"
                     onClick={() => navigate("/messages")}
                 >
                     <IconChevronLeft />
                 </ActionIcon>
-                <Avatar
-                    color="initials"
-                    name={`${conversation?.users[0].firstName} ${conversation?.users[0].lastName}`}
-                    size={45}
-                />
-                <Title fz={"lg"}>
-                    {`${conversation?.users[0].firstName} ${conversation?.users[0].lastName} (@${conversation?.users[0].username})`}{" "}
-                </Title>
+                <Flex
+                    component={Link}
+                    to={"/profile/" + conversation?.users[0].username}
+                    style={{ textDecoration: "none" }}
+                    c="var(--mantine-color-dark)"
+                    align={"center"}
+                    gap={"sm"}
+                    w={"100%"}
+                >
+                    <Avatar
+                        color="initials"
+                        name={`${conversation?.users[0].firstName} ${conversation?.users[0].lastName}`}
+                        size={45}
+                    />
+                    <Title fz={"lg"}>
+                        {`${conversation?.users[0].firstName} ${conversation?.users[0].lastName} (@${conversation?.users[0].username})`}{" "}
+                    </Title>
+                </Flex>
             </Flex>
             <Divider size={"sm"} />
             <ScrollArea
@@ -221,7 +244,14 @@ export default function SingleChat({
                                         </Text>
                                     </Paper>
                                     <Text size="xs" c={"gray"} fw={400}>
-                                        {formatDate(msg.sentAt)}
+                                        <Flex align={"center"} gap="xs">
+                                            {formatDate(msg.sentAt)}
+                                            {msg.read ? (
+                                                <IconCheck size={14} />
+                                            ) : (
+                                                ""
+                                            )}
+                                        </Flex>
                                     </Text>
                                 </Flex>
                             );

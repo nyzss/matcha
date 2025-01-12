@@ -1,3 +1,4 @@
+import { notifications } from "@mantine/notifications";
 import type { ILogin, IRegister, IUser } from "~/types/validation";
 
 export const BASE_URL =
@@ -9,11 +10,12 @@ export const fetcher = async (path: string, options?: RequestInit) => {
         path = path.slice(1);
     }
     const url = `${BASE_URL}${path}`;
+    const headers = {
+        "Content-Type": "application/json",
+    };
     try {
         const res = await fetch(url, {
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: options?.body ? headers : {},
             credentials: "include",
             ...options,
         });
@@ -288,5 +290,17 @@ export const verifyMail = async (code: string): Promise<boolean> => {
         return res.ok;
     } catch (error) {
         return false;
+    }
+};
+
+export const updateReadConversation = async (convId: number) => {
+    try {
+        const res = await fetcher(`/conversation/${convId}/read`, {
+            method: "PUT",
+        });
+
+        return await res?.json();
+    } catch (error) {
+        console.log("Couldn't update read status", error);
     }
 };
