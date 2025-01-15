@@ -14,7 +14,6 @@ import { IconSearch } from "@tabler/icons-react";
 import { useMemo } from "react";
 import { Link, Outlet } from "react-router";
 import { useAuth } from "~/contexts/auth-provider";
-import Onboarding from "../onboard/onboarding";
 import { routes } from "./routes";
 import ToggleTheme from "./toggleTheme";
 import UserBox from "./user-box";
@@ -134,7 +133,6 @@ export default function AppLayout() {
             </AppShell.Navbar>
             <AppShell.Main h={"100vh"}>
                 <Outlet />
-                {/* <Onboarding /> */}
             </AppShell.Main>
             <AppShell.Aside p="md">
                 <Flex h={"100%"} w="100%">

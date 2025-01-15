@@ -16,6 +16,7 @@ export default [
             route("messages/:chatId", "routes/messages/single-chat.tsx"),
         ]),
     ]),
+    route("onboarding", "routes/onboarding.tsx"),
     layout("components/layout/auth-layout.tsx", [
         route("login", "routes/[auth]/login.tsx"),
         route("register", "routes/[auth]/register.tsx"),

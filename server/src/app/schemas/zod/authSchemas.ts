@@ -26,12 +26,12 @@ export const registerSchema = z.object({
 
     firstName: z
         .string()
-        .min(3, { message: "First name must be at least 3 characters long" })
+        .min(2, { message: "First name must be at least 2 characters long" })
         .max(24, { message: "First name must be at most 24 characters long" }),
 
     lastName: z
         .string()
-        .min(3, { message: "Last name must be at least 3 characters long" })
+        .min(2, { message: "Last name must be at least 2 characters long" })
         .max(24, { message: "Last name must be at most 24 characters long" }),
 
     birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {

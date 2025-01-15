@@ -304,3 +304,17 @@ export const updateReadConversation = async (convId: string) => {
         console.log("Couldn't update read status", error);
     }
 };
+
+export const updateUserLocation = async (data: GeolocationPosition) => {
+    try {
+        const res = await fetcher(`/location`, {
+            method: "POST",
+            body: JSON.stringify({
+                latitude: data.coords.latitude,
+                longitude: data.coords.longitude,
+            }),
+        });
+    } catch (error) {
+        console.error("Couldn't update location", error);
+    }
+};
