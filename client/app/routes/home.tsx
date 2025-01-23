@@ -31,19 +31,16 @@ export default function Home() {
     });
     const [opened, { open, close }] = useDisclosure(false);
     const [index, setIndex] = useState<number>(0);
-    const [profile, setProfile] = useState(
-        data ? data.users[index] : undefined
-    );
     const [visible, setVisible] = useState<boolean>(true);
     const [transition, setTransition] =
         useState<MantineTransition>("rotate-left");
 
-    if (!data || !profile || isPending) {
+    if (isPending) {
         return <LoadingOverlay />;
     }
 
     const handleNext = (matched: boolean = true) => {
-        if (index === data.users.length - 1) {
+        if (data && index === data.users.length - 1) {
             setIndex(0);
             return;
         }
@@ -53,18 +50,17 @@ export default function Home() {
         setTimeout(() => {
             setTransition("pop");
             setIndex((prevIndex) => prevIndex + 1);
-            setProfile(data.users[index + 1]);
             setVisible(true);
         }, 300);
     };
 
     const handleMatch = () => {
-        console.log("Matched with", profile.firstName);
+        console.log("Matched with", data?.users[index].firstName);
         handleNext(true);
     };
 
     const handlePass = () => {
-        console.log("Passed on", profile.firstName);
+        console.log("Passed on", data?.users[index].firstName);
         handleNext(false);
     };
 
@@ -171,7 +167,7 @@ export default function Home() {
                             style={{
                                 ...styles,
                                 backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0) 20%, rgba(0,0,0,1)), url(${
-                                    profile.avatar ||
+                                    data?.users[index]?.avatar ||
                                     import.meta.env.VITE_DEFAULT_AVATAR_URL
                                 })`,
                                 backgroundSize: "cover",
@@ -189,19 +185,22 @@ export default function Home() {
                                     <div style={{ cursor: "default" }}>
                                         <Rating
                                             color={theme.primaryColor}
-                                            value={profile.fameRating}
+                                            value={
+                                                data?.users[index]?.fameRating
+                                            }
                                             readOnly
                                             fractions={10}
                                         />
                                         <Title order={3} c="white">
-                                            {`${profile.firstName} ${profile.lastName}, ${profile.age}`}
+                                            {`${data?.users[index]?.firstName} ${data?.users[index]?.lastName}, ${data?.users[index]?.age}`}
                                         </Title>
                                     </div>
                                     <Text
                                         c={"white"}
                                         style={{ cursor: "default" }}
                                     >
-                                        {profile.biography || "No biography"}
+                                        {data?.users[index]?.biography ||
+                                            "No biography"}
                                     </Text>
                                     <Flex gap={"sm"}>
                                         <Button
