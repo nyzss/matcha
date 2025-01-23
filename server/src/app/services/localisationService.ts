@@ -113,14 +113,12 @@ export class LocalisationService {
                                 ST_SetSRID(ST_MakePoint($1, $2), 4326),
                                 3857
                             )
-                    ) / 1000 AS distance -- Conversion en kilomètres
+                    ) / 1000 AS distance
             FROM profiles p
             JOIN users u ON p.user_id = u.id
             WHERE location IS NOT NULL
               AND (location->>'lon') IS NOT NULL
               AND (location->>'lat') IS NOT NULL
-              AND (location->>'lon')::float <> $1
-              AND (location->>'lat')::float <> $2
               AND ST_DWithin(
                     ST_Transform(
                             ST_SetSRID(ST_MakePoint(
@@ -133,7 +131,7 @@ export class LocalisationService {
                             ST_SetSRID(ST_MakePoint($1, $2), 4326),
                             3857
                         ),
-                    $3 * 1000 -- Conversion du rayon en mètres
+                    $3 * 1000
                 )
             ORDER BY distance ASC;
         `, [lon, lat, radius]);

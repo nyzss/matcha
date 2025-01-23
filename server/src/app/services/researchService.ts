@@ -4,6 +4,7 @@ import {FilterOptions, MatchStatus, ResearchOptions} from "../types/research";
 import {LocalisationService} from "./localisationService";
 import {UserService} from "./userService";
 import {NotificationType} from "../types/socket";
+import { userProfile } from '../types/member';
 
 export class ResearchService {
     private orm: ORM;
@@ -135,16 +136,18 @@ export class ResearchService {
         const matchedUsers = await this.getAlreadyMatchedUsersId(userId);
         const declinedUsers = await this.getUsersNotWantingToBeMatched(userId);
 
-        const users = nearbyUsers.filter((user: any) => {
-            const isAgeMatch = user.age >= research.ageMin && user.age <= (research.ageMax || research.ageMin);
-            const isFameMatch = user.fameRating >= research.fameRatingMin && user.fameRating <= (research.fameRatingMax || research.fameRatingMin);
-            const areTagsMatch = !research.tags.length || research.tags.some(tag => user.tags && user.tags.includes(tag));
+        const users = nearbyUsers
+            .filter((user: userProfile) => user.id !== userId)
+            .filter((user: any) => {
+                const isAgeMatch = user.age >= research.ageMin && user.age <= (research.ageMax || research.ageMin);
+                const isFameMatch = user.fameRating >= research.fameRatingMin && user.fameRating <= (research.fameRatingMax || research.fameRatingMin);
+                const areTagsMatch = !research.tags.length || research.tags.some(tag => user.tags && user.tags.includes(tag));
 
-            const isSexualOrientationMatch = !profile.sexualOrientation || user.sexualOrientation === profile.sexualOrientation;
-            const isGenderMatch = !profile.gender || user.gender === profile.gender;
+                const isSexualOrientationMatch = !profile.sexualOrientation || user.sexualOrientation === profile.sexualOrientation;
+                const isGenderMatch = !profile.gender || user.gender === profile.gender;
 
-            return isAgeMatch && isFameMatch && areTagsMatch && isSexualOrientationMatch && isGenderMatch;
-        }).filter((user: any) => !blockedUsers.includes(user.id) && !reportedUsers.includes(user.id) && !matchedUsers.includes(user.id) && !declinedUsers.includes(user.id));
+                return isAgeMatch && isFameMatch && areTagsMatch && isSexualOrientationMatch && isGenderMatch;
+            }).filter((user: any) => !blockedUsers.includes(user.id) && !reportedUsers.includes(user.id) && !matchedUsers.includes(user.id) && !declinedUsers.includes(user.id));
 
         const filteredUsers = users.filter((user: any) => {
             const matchesAge = filter?.age ? user.age === filter.age : true;
