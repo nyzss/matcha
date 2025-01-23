@@ -10,12 +10,13 @@ export const fetcher = async (path: string, options?: RequestInit) => {
         path = path.slice(1);
     }
     const url = `${BASE_URL}${path}`;
-    const headers = {
-        "Content-Type": "application/json",
-    };
+    const headers = new Headers(options?.headers);
+
+    if (options?.body) headers.append("Content-Type", "application/json");
+
     try {
         const res = await fetch(url, {
-            headers: options?.body ? headers : {},
+            headers,
             credentials: "include",
             ...options,
         });
@@ -268,13 +269,6 @@ export const mutateConversation = async (
     }
 
     return await res?.json();
-    // const data: IConversation = await res?.json();
-    // const filtered = data.users.filter((user) => user.id !== userId);
-
-    // return {
-    //     ...data,
-    //     users: filtered.length > 0 ? filtered : [data.users[0]],
-    // };
 };
 
 export const verifyMail = async (code: string): Promise<boolean> => {
@@ -317,4 +311,19 @@ export const updateUserLocation = async (data: GeolocationPosition) => {
     } catch (error) {
         console.error("Couldn't update location", error);
     }
+};
+
+export const getSuggestions = async () => {
+    const res = await fetcher("/research/suggestion", {
+        method: "GET",
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't fetch suggestions");
+    }
+
+    const data: { users: ISuggestionProfile[] } = await res?.json();
+    console.log(data);
+
+    return data;
 };

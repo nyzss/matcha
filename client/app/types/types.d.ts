@@ -27,3 +27,18 @@ type TMessageHistory = {
     total: number;
     messages: IMessage[];
 };
+
+interface ISuggestionProfile {
+    id: number;
+    username: string;
+    avatar: string | null;
+    biography: string | null;
+    city: string | null;
+    country: string;
+    distance: string;
+    fameRating: number;
+    tags: string[];
+    age: number;
+    firstName: string;
+    lastName: string;
+}
