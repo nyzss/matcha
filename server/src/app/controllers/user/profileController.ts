@@ -3,6 +3,12 @@ import {UserService} from "../../services/userService";
 import {userProfileSettings} from "../../types/member";
 import {ChatService} from "../../services/chatService";
 
+import fs from "fs";
+import pump from "pump";
+
+import { v4 as uuidv4 } from 'uuid';
+import {deleteFile, uploadFile} from "../../utils/mediaUtils";
+
 export class ProfileController {
     private app: FastifyInstance;
     private userService: UserService;
@@ -48,14 +54,73 @@ export class ProfileController {
             return reply.status(401).send({ error: "Unauthorized" });
 
         try {
-            const form = request.body as userProfileSettings;
+            const files = await request.parts();
+            const form = {} as userProfileSettings;
 
-            // error if the username is the same as the one sent, we just remove it from the object
-            if (form.username === request.user.username) {
+            for await (const part of files) { // iterate the async generator
+                const fieldsType = [
+                    "avatar",
+                    "username",
+                    "gender",
+                    "biography",
+                    "sexualOrientation",
+                    "tags",
+                    "pictures",
+                ]
+
+                if (!fieldsType.includes(part.fieldname))
+                    return reply.status(400).send({ error: "Invalid fieldname" });
+
+                switch (part.type) {
+                    case "field": {
+                        form[part.fieldname] = part.value;
+                        break;
+                    }
+                    case "file": {
+                        switch (part.fieldname) {
+                            case "avatar": {
+                                if (!part.mimetype.startsWith("image/"))
+                                    return reply.status(400).send({ error: "Invalid file type" });
+                                if (form?.avatar) {
+                                    await deleteFile(form.avatar);
+                                    throw new Error("Max avatar reached");
+                                }
+
+                                form[part.fieldname] = await uploadFile(part.file);
+                                break;
+                            }
+                            case "pictures": {
+                                if (!part.mimetype.startsWith("image/"))
+                                    return reply.status(400).send({ error: "Invalid file type" });
+                                const pictures = form[part.fieldname] || [];
+                                const picture = await uploadFile(part.file);
+                                pictures.push(picture);
+
+                                if (pictures.length > 5) {
+                                    if (form?.avatar)
+                                        await deleteFile(form.avatar);
+                                    pictures.forEach((picture) => {
+                                        deleteFile(picture);
+                                    });
+                                    return reply.status(400).send({error: "Max pictures reached"});
+                                }
+
+                                form[part.fieldname] = pictures;
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+
+            if (form?.username && form?.username === request.user.username) {
                 delete form.username;
             }
 
             const user = await this.userService.updateProfile(userID, {
+                avatar: form?.avatar,
+                pictures: form?.pictures,
                 username: form?.username,
                 gender: form?.gender,
                 biography: form?.biography,
@@ -68,6 +133,7 @@ export class ProfileController {
             };
 
         } catch (error: Error | any) {
+            console.log(error)
             return reply.status(500).send({ error: error?.message });
         }
     }

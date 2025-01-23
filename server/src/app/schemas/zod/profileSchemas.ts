@@ -29,9 +29,6 @@ export const userProfileSettings = z
         tags: z.array(z.string()).max(10, {
             message: "You can only have up to 10 tags",
         }),
-        pictures: z.array(z.string()).max(5, {
-            message: "You can only have up to 5 pictures",
-        }),
     })
     .partial()
     .refine(

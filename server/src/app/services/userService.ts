@@ -7,6 +7,7 @@ import {
     userProfileView,
 } from "../types/member";
 import { NotificationType, SocketEvent } from "../types/socket";
+import { deleteFile } from "../utils/mediaUtils";
 
 export class UserService {
     private orm: ORM;
@@ -216,19 +217,19 @@ export class UserService {
     }
 
     async getBlockedUsersId(id: number): Promise<any> {
-        const blocks = await this.orm.query(
+        const blocks = (await this.orm.query(
             `SELECT blocker_id FROM blocks WHERE user_id = $1`,
             [id]
-        ) as { blocker_id: number }[];
+        )) as { blocker_id: number }[];
 
         return blocks.map((block: { blocker_id: number }) => block.blocker_id);
     }
 
     async getBlockedByUsersId(id: number): Promise<any> {
-        const blocks = await this.orm.query(
+        const blocks = (await this.orm.query(
             `SELECT user_id FROM blocks WHERE blocker_id = $1`,
             [id]
-        ) as { user_id: number }[];
+        )) as { user_id: number }[];
 
         return blocks.map((block: { user_id: number }) => block.user_id);
     }
@@ -336,6 +337,22 @@ export class UserService {
         const updates: string[] = [];
         const values: any[] = [];
         let index = 1;
+
+        if (form?.pictures || form?.avatar) {
+            const [existingPictures] = await this.orm.query(
+                `SELECT avatar, pictures FROM profiles WHERE user_id = $1`,
+                [id]
+            );
+
+            const pictures = existingPictures.pictures || [];
+            if (form.avatar) {
+                await deleteFile(existingPictures.avatar);
+            }
+
+            for (const picture of pictures) {
+                await deleteFile(picture);
+            }
+        }
 
         for (const [key, value] of Object.entries(form)) {
             if (value !== undefined) {
@@ -551,5 +568,47 @@ export class UserService {
                 tags: view.tags || [],
             })),
         };
+    }
+
+    async deleteProfileMedia(
+        id: number,
+        picture: string
+    ): Promise<userProfile> {
+        const profile = await this.getUserById(id);
+
+        try {
+            if (profile.avatar === picture) {
+                if (!(await deleteFile(picture)))
+                    throw new Error("Failed to delete avatar");
+                await this.orm.query(
+                    `UPDATE profiles SET avatar = $2 WHERE user_id = $1`,
+                    [id, process.env.DEFAULT_AVATAR_URL as string]
+                );
+            } else if (profile.pictures.includes(picture)) {
+                if (!(await deleteFile(picture)))
+                    throw new Error("Failed to delete avatar");
+                profile.pictures = profile.pictures.filter(
+                    (p) => p !== picture
+                );
+
+                if (profile.pictures.length) {
+                    await this.orm.query(
+                        `UPDATE profiles SET pictures = $2 WHERE user_id = $1`,
+                        [id, JSON.stringify(profile.pictures)]
+                    );
+                } else {
+                    await this.orm.query(
+                        `UPDATE profiles SET pictures = NULL WHERE user_id = $1`,
+                        [id]
+                    );
+                }
+            } else {
+                throw new Error("Media not found or is not yours");
+            }
+        } catch (error) {
+            throw new Error("Media not found or is not yours");
+        }
+
+        return await this.getUserById(id);
     }
 }

@@ -18,6 +18,7 @@ export class ChatController {
             const conversation = await this.chatService.createConversation(userId, meId);
             return conversation;
         } catch (error: Error | any) {
+            console.log(error)
             return reply.status(500).send({ error: error?.message });
         }
     }
