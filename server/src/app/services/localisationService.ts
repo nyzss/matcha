@@ -101,6 +101,7 @@ export class LocalisationService {
                 sexual_orientation as "sexualOrientation",
                 tags,
                 location,
+                biography,
                 ST_Distance(
                         ST_Transform(
                                 ST_SetSRID(ST_MakePoint(

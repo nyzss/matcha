@@ -189,6 +189,7 @@ export class ResearchService {
                 city: user.location.city,
                 country: user.location.country,
                 tags: user.tags || [],
+                biography: user.biography
             })),
             total: sortedUsers.length
         };
