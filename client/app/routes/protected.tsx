@@ -8,7 +8,7 @@ export default function Protected() {
 
     useEffect(() => {
         if (!logged) {
-            navigate("/");
+            navigate("/login");
         }
     }, []);
 
