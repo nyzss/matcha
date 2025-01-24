@@ -5,4 +5,5 @@ interface IAuthContext {
     logout: () => Promise<void>;
     logged: boolean;
     update: (data: Partial<IUser>) => Promise<boolean>;
+    metadata: IMetadata | null;
 }

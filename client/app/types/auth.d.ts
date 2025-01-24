@@ -15,3 +15,13 @@ interface IProfile {
     verified?: boolean;
     age: number;
 }
+
+interface IMetadata {
+    notifications: number;
+    views: number;
+    messages: number;
+}
+
+type IAuth = IMetadata & {
+    user: IProfile;
+};

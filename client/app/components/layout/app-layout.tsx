@@ -20,7 +20,7 @@ import UserBox from "./user-box";
 
 export default function AppLayout() {
     const [opened, { toggle }] = useDisclosure();
-    const { logged } = useAuth();
+    const { logged, metadata } = useAuth();
     const navbarAsideWidth: AppShellResponsiveSize = {
         base: 300,
         md: 300,
@@ -79,10 +79,12 @@ export default function AppLayout() {
                                     variant="subtle"
                                     size="xl"
                                     leftSection={
-                                        route.indicator ? (
+                                        route.indicator &&
+                                        metadata &&
+                                        metadata?.notifications > 0 ? (
                                             <Indicator
                                                 inline
-                                                label="16"
+                                                label={metadata?.notifications}
                                                 size={16}
                                             >
                                                 {route.icon}

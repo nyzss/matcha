@@ -17,6 +17,7 @@ export const AuthContext = createContext<IAuthContext | null>(null);
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useAtom(userAtom);
     const [loading, setLoading] = useState<boolean>(true);
+    const [metadata, setMetadata] = useState<IMetadata | null>(null);
 
     const login = async (data: ILogin): Promise<Partial<IProfile> | null> => {
         const result = await authLogin(data);
@@ -69,8 +70,10 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const data = await checkAuth();
             if (!data) {
                 setUser(null);
+                setMetadata(null);
             } else {
-                setUser(data);
+                setUser(data.user);
+                setMetadata({ ...data });
             }
             setLoading(false);
         };
@@ -90,7 +93,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     return (
         <AuthContext.Provider
-            value={{ user, logged, login, logout, register, update }}
+            value={{ user, logged, login, logout, register, update, metadata }}
         >
             {children}
         </AuthContext.Provider>

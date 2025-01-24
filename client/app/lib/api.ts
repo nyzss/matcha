@@ -136,14 +136,14 @@ export const authLogout = async (): Promise<boolean> => {
     }
 };
 
-export const checkAuth = async (): Promise<IProfile | false> => {
+export const checkAuth = async (): Promise<IAuth | false> => {
     try {
         const res = await fetcher("/profile/@me");
-        const data = await res?.json();
+        const data: IAuth = await res?.json();
         if (!res?.ok) {
             throw new Error();
         }
-        return data.user;
+        return data;
     } catch {
         return false;
     }
