@@ -42,3 +42,14 @@ interface ISuggestionProfile {
     firstName: string;
     lastName: string;
 }
+
+type INotification = {
+    type: string;
+    sender: IProfile;
+    read: boolean;
+};
+
+interface INotificationsList {
+    total: number;
+    notifications: INotification[];
+}

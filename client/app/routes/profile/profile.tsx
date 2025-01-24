@@ -23,31 +23,31 @@ import {
     IconChevronLeft,
 } from "@tabler/icons-react";
 import { useNavigate } from "react-router";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Profile({
     params: { userId: username },
 }: Route.ComponentProps) {
-    const [currentUser, setCurrentUser] = useState<IProfile | null>(null);
-    const [isMe, setIsMe] = useState<boolean>(false);
+    const { data, isPending, isError } = useQuery({
+        queryKey: ["profile", username],
+        queryFn: async () => {
+            return getUser(username);
+        },
+        retry: false,
+    });
+    const [isMe, setIsMe] = useState(false);
     const navigate = useNavigate();
 
     const { user } = useAuth();
 
     useEffect(() => {
         const checkIsMe = username === "@me";
-        setIsMe(checkIsMe);
-        if (checkIsMe) {
-            setCurrentUser(user);
-        } else {
-            getUser(username)
-                .then((data) => setCurrentUser(data))
-                .catch(() => {
-                    setCurrentUser(null);
-                });
+        if (checkIsMe && user) {
+            setIsMe(true);
         }
-    }, [username, user]);
+    }, [username]);
 
-    if (!currentUser) {
+    if (isError) {
         return (
             <Box h={"100vh"}>
                 <Button variant="subtle" onClick={() => navigate("/")}>
@@ -68,13 +68,13 @@ export default function Profile({
         "https://api.dicebear.com/9.x/glass/svg?seed=zxcvb1234",
     ];
     return (
-        <Box h={"100vh"}>
-            <LoadingOverlay visible={!currentUser} />
+        <Box h={"100vh"} pos={"relative"}>
+            <LoadingOverlay visible={isPending} />
             <Card h={"100%"}>
                 <Flex direction={"column"} py={16}>
                     <Avatar
                         color="initials"
-                        name={`${currentUser?.firstName} ${currentUser?.lastName}`}
+                        name={`${data?.firstName} ${data?.lastName}`}
                         size={100}
                         mt={8}
                     />
@@ -85,20 +85,18 @@ export default function Profile({
                         }}
                     >
                         <Text size="xl" fw={"bold"} mt={4}>
-                            {currentUser?.firstName} {currentUser?.lastName} (@
-                            {currentUser?.username})
+                            {data?.firstName} {data?.lastName} (@
+                            {data?.username})
                         </Text>
                         {isMe && <EditProfile />}
                     </Flex>
-                    <Text mt={8}>
-                        {currentUser?.biography || "No biography set"}
-                    </Text>
+                    <Text mt={8}>{data?.biography || "No biography set"}</Text>
                     <Text fw={"bold"} size="md" mt={8} mb={4}>
                         Interests
                     </Text>
                     <Flex gap={"md"} wrap={"wrap"}>
-                        {currentUser?.tags && currentUser?.tags.length > 0 ? (
-                            currentUser?.tags?.map((tag) => (
+                        {data?.tags && data?.tags.length > 0 ? (
+                            data?.tags?.map((tag) => (
                                 <Badge key={tag} size="lg">
                                     {tag}
                                 </Badge>

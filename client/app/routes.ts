@@ -14,6 +14,7 @@ export default [
             route("profile/:userId", "routes/profile/profile.tsx"),
             route("messages", "routes/messages/chats.tsx"),
             route("messages/:chatId", "routes/messages/single-chat.tsx"),
+            route("notifications", "routes/notifications.tsx"),
         ]),
         route("onboarding", "routes/onboarding.tsx"),
     ]),

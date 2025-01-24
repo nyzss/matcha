@@ -380,3 +380,16 @@ export const matchUser = async (userId: string, matched: boolean) => {
         console.error("Couldn't match user", error);
     }
 };
+
+export const getNotifications = async () => {
+    const res = await fetcher("/profile/@me/notification", {
+        method: "GET",
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't fetch notifications");
+    }
+
+    const data: INotificationsList = await res.json();
+    return data;
+};

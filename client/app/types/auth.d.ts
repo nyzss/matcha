@@ -13,4 +13,5 @@ interface IProfile {
     pictures: string[] | null;
     tags: string[] | null;
     verified?: boolean;
+    age: number;
 }
