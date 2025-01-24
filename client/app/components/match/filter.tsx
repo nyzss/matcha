@@ -14,12 +14,13 @@ import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconAdjustmentsHorizontal, IconInfoCircle } from "@tabler/icons-react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getFilter, updateFilter } from "~/lib/api";
 import type { IFilter } from "~/types/validation";
 
 export default function Filter() {
     const [opened, { open, close }] = useDisclosure(false);
+    const queryClient = useQueryClient();
 
     useQuery<IFilter>({
         queryKey: ["filter"],
@@ -45,6 +46,11 @@ export default function Filter() {
             });
 
             return updated;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["suggestions"],
+            });
         },
     });
 
@@ -100,7 +106,7 @@ export default function Filter() {
                         <div>
                             <Text>Max distance</Text>
                             <Slider
-                                min={0}
+                                min={10}
                                 max={100}
                                 label={(label) => `${label} km`}
                                 defaultValue={30}
