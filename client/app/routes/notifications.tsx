@@ -22,7 +22,11 @@ export default function Notifications() {
         <Flex direction={"column"} h={"100%"} gap={"sm"}>
             {isSuccess &&
                 data.notifications.map((notification, index) => (
-                    <Card key={index} withBorder>
+                    <Card
+                        key={index}
+                        withBorder
+                        opacity={notification.read ? 0.5 : 1}
+                    >
                         <Flex direction={"row"} gap={"sm"}>
                             <IconBell size={38} />
                             <Flex direction={"column"}>
