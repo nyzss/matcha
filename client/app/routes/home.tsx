@@ -13,32 +13,29 @@ import {
     useMantineTheme,
     type MantineTransition,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { IconGhost2 } from "@tabler/icons-react";
+import { IconGhost2, IconRefresh } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import Filter from "~/components/match/filter";
-import { getSuggestions } from "~/lib/api";
+import { getSuggestions, matchUser } from "~/lib/api";
 
 export default function Home() {
     const theme = useMantineTheme();
-    const { data, isPending, isFetching } = useQuery({
+    const { data, isPending, isFetching, refetch } = useQuery({
         queryKey: ["suggestions"],
         queryFn: getSuggestions,
     });
-    const [opened, { open, close }] = useDisclosure(false);
+
     const [index, setIndex] = useState<number>(0);
     const [visible, setVisible] = useState<boolean>(true);
     const [transition, setTransition] =
         useState<MantineTransition>("rotate-left");
 
-    if (isPending) {
-        return <LoadingOverlay />;
-    }
-
     const handleNext = (matched: boolean = true) => {
         if (data && index === data.users.length - 1) {
             setIndex(0);
+
+            refetch();
             return;
         }
 
@@ -51,13 +48,15 @@ export default function Home() {
         }, 300);
     };
 
-    const handleMatch = () => {
-        console.log("Matched with", data?.users[index].firstName);
+    const handleMatch = async () => {
+        const res = await matchUser(data!.users[index].id.toString(), true);
+
         handleNext(true);
     };
 
-    const handlePass = () => {
-        console.log("Passed on", data?.users[index].firstName);
+    const handlePass = async () => {
+        const res = await matchUser(data!.users[index].id.toString(), true);
+
         handleNext(false);
     };
 
@@ -76,8 +75,12 @@ export default function Home() {
 
             <Box pos={"relative"} h={"100%"}>
                 <LoadingOverlay
-                    visible={isFetching}
+                    visible={isPending || isFetching}
                     overlayProps={{ radius: "sm", blur: 2 }}
+                    transitionProps={{
+                        duration: 500,
+                        transition: "fade",
+                    }}
                 />
 
                 {data && data?.users.length > 0 ? (
@@ -170,6 +173,7 @@ export default function Home() {
                     <Card
                         h={"100%"}
                         style={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
+                        px={50}
                     >
                         <Flex
                             direction={"column"}
@@ -190,6 +194,14 @@ export default function Home() {
                                 Try changing your filter settings or come back
                                 later!
                             </Text>
+                            <Button
+                                onClick={() => refetch()}
+                                variant="transparent"
+                                leftSection={<IconRefresh />}
+                                loading={isFetching}
+                            >
+                                Retry
+                            </Button>
                         </Flex>
                     </Card>
                 )}

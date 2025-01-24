@@ -1,4 +1,3 @@
-import { notifications } from "@mantine/notifications";
 import type { IFilter, ILogin, IRegister, IUser } from "~/types/validation";
 
 export const BASE_URL =
@@ -20,6 +19,11 @@ export const fetcher = async (path: string, options?: RequestInit) => {
             credentials: "include",
             ...options,
         });
+
+        if (res.status === 401) {
+            // store.set(userAtom, null);
+            console.log("delogged");
+        }
 
         return res;
     } catch (error) {
@@ -354,4 +358,25 @@ export const updateFilter = async (filter: IFilter) => {
     const data: IFilter = await res?.json();
 
     return data;
+};
+
+export const matchUser = async (userId: string, matched: boolean) => {
+    try {
+        const res = await fetcher(
+            `/research/suggestion/${userId}/${matched ? "accept" : "decline"}`,
+            {
+                method: "POST",
+            }
+        );
+
+        if (!res?.ok) {
+            throw new Error("Couldn't match user");
+        }
+
+        const data = await res.json();
+        console.log(data);
+        return data;
+    } catch (error) {
+        console.error("Couldn't match user", error);
+    }
 };

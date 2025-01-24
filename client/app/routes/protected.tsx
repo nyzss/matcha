@@ -10,7 +10,7 @@ export default function Protected() {
         if (!logged) {
             navigate("/login");
         }
-    }, []);
+    }, [logged]);
 
     return <Outlet />;
 }
