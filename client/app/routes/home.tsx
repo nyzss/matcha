@@ -55,7 +55,7 @@ export default function Home() {
     };
 
     const handlePass = async () => {
-        const res = await matchUser(data!.users[index].id.toString(), true);
+        const res = await matchUser(data!.users[index].id.toString(), false);
 
         handleNext(false);
     };
