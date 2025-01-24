@@ -21,6 +21,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { IconAdjustmentsHorizontal, IconInfoCircle } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import Filter from "~/components/match/filter";
 import { getSuggestions } from "~/lib/api";
 
 export default function Home() {
@@ -75,83 +76,7 @@ export default function Home() {
             }}
             gap={"sm"}
         >
-            <Drawer
-                opened={opened}
-                onClose={close}
-                title="Filter"
-                position="right"
-                overlayProps={{
-                    backgroundOpacity: 0.3,
-                    blur: 1,
-                }}
-            >
-                <Flex direction={"column"} gap={"lg"} py={"lg"}>
-                    <div>
-                        <Text>Max distance</Text>
-                        <Slider
-                            min={0}
-                            max={100}
-                            label={(label) => `${label} km`}
-                            defaultValue={30}
-                            size="lg"
-                        />
-                    </div>
-
-                    <div>
-                        <Tooltip label="Fame rating is a measure of how popular a user is">
-                            <Flex align={"center"} gap={3}>
-                                <Text
-                                    style={{
-                                        cursor: "default",
-                                    }}
-                                >
-                                    Fame rating
-                                </Text>
-                                <IconInfoCircle size={16} />
-                            </Flex>
-                        </Tooltip>
-                        <Flex gap={"md"}>
-                            <NumberInput
-                                label="Minimum"
-                                placeholder="5"
-                                w={"100%"}
-                                defaultValue={0}
-                            />
-                            <NumberInput
-                                label="Maximum"
-                                placeholder="20"
-                                w={"100%"}
-                                defaultValue={20}
-                            />
-                        </Flex>
-                    </div>
-                    <div>
-                        <Text>Age</Text>
-                        <RangeSlider
-                            min={18}
-                            max={70}
-                            defaultValue={[21, 25]}
-                            size="lg"
-                            minRange={2}
-                        />
-                    </div>
-                    <TagsInput
-                        label="Interests"
-                        placeholder="What would you like?"
-                    />
-                    <Button>Apply filter</Button>
-                </Flex>
-            </Drawer>
-            <Button
-                variant="subtle"
-                leftSection={<IconAdjustmentsHorizontal />}
-                onClick={open}
-                style={{
-                    alignSelf: "flex-end",
-                }}
-            >
-                Filters
-            </Button>
+            <Filter />
             <Box h={"100%"}>
                 <Transition
                     mounted={visible}

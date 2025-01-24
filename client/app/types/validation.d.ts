@@ -19,3 +19,5 @@ type IRegister = z.infer<typeof registerSchema>;
 
 type IUser = z.infer<typeof userSchema>;
 type IPreferences = z.infer<typeof preferencesSchema>;
+
+type IFilter = z.infer<typeof filterSchema>;

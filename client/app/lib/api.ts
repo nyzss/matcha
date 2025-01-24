@@ -1,5 +1,5 @@
 import { notifications } from "@mantine/notifications";
-import type { ILogin, IRegister, IUser } from "~/types/validation";
+import type { IFilter, ILogin, IRegister, IUser } from "~/types/validation";
 
 export const BASE_URL =
     `${import.meta.env.VITE_BACKEND_API_URL}/api/` ||
@@ -323,7 +323,35 @@ export const getSuggestions = async () => {
     }
 
     const data: { users: ISuggestionProfile[] } = await res?.json();
-    console.log(data);
+
+    return data;
+};
+
+export const getFilter = async (): IFilter => {
+    const res = await fetcher("/research", {
+        method: "GET",
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't fetch filter");
+    }
+
+    const data: IFilter = await res?.json();
+
+    return data;
+};
+
+export const updateFilter = async (filter: IFilter) => {
+    const res = await fetcher("/research", {
+        method: "PUT",
+        body: JSON.stringify(filter),
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't update filter");
+    }
+
+    const data: IFilter = await res?.json();
 
     return data;
 };
