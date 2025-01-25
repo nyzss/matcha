@@ -13,7 +13,7 @@ import {
 } from "@mantine/core";
 import { useEffect, useState } from "react";
 import EditProfile from "~/components/profile/edit-profile";
-import { getUser } from "~/lib/api";
+import { getImage, getUser } from "~/lib/api";
 import { Carousel } from "@mantine/carousel";
 import { useAuth } from "~/contexts/auth-provider";
 
@@ -77,6 +77,7 @@ export default function Profile({
                         name={`${data?.firstName} ${data?.lastName}`}
                         size={100}
                         mt={8}
+                        src={getImage(data?.avatar)}
                     />
                     <Flex
                         direction={{
@@ -107,10 +108,10 @@ export default function Profile({
                     </Flex>
                 </Flex>
                 <Carousel withIndicators>
-                    {images.map((image, index) => (
+                    {data?.pictures?.map((image, index) => (
                         <Carousel.Slide key={index}>
                             <Image
-                                src={image}
+                                src={getImage(image)}
                                 alt="profile background"
                                 w={"100%"}
                                 h={"100%"}

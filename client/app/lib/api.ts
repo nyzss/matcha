@@ -1,8 +1,16 @@
 import type { IFilter, ILogin, IRegister, IUser } from "~/types/validation";
 
 export const BASE_URL =
-    `${import.meta.env.VITE_BACKEND_API_URL}/api/` ||
-    "https://matcha.localhost/api/";
+    `${import.meta.env.VITE_BACKEND_API_URL}/api/` || "https://localhost/api/";
+
+export const IMAGE_URL =
+    `${import.meta.env.VITE_BACKEND_API_URL}/api/image` ||
+    "https://localhost/api/image";
+
+export const getImage = (path: string | null | undefined) => {
+    if (!path) return;
+    return `${IMAGE_URL}/${path}`;
+};
 
 export const fetcher = async (path: string, options?: RequestInit) => {
     if (path.startsWith("/")) {
