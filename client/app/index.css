@@ -1,0 +1,8 @@
+:root[data-mantine-color-scheme="light"] {
+    --mantine-color-body: var(--mantine-color-gray-1) !important;
+}
+
+:root[data-mantine-color-scheme="dark"] {
+    --mantine-color-body: rgb(30, 30, 30) !important;
+    --mantine-color-dark-6: rgb(36, 36, 36) !important;
+}

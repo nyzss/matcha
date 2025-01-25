@@ -12,6 +12,7 @@ import "@mantine/dropzone/styles.css";
 import "@mantine/notifications/styles.css";
 import "@mantine/dates/styles.css";
 import "@mantine/carousel/styles.css";
+import "./index.css";
 
 import { ColorSchemeScript } from "@mantine/core";
 
@@ -47,6 +48,22 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     name="viewport"
                     content="width=device-width, initial-scale=1"
                 />
+                <script
+                    defer
+                    src="https://umami.drafted.dev/script.js"
+                    data-website-id="d17615e1-117a-4439-8aa2-7633417134cf"
+                ></script>
+                <link rel="preconnect" href="https://fonts.googleapis.com" />
+                <link
+                    rel="preconnect"
+                    href="https://fonts.gstatic.com"
+                    crossOrigin="anonymous"
+                />
+                <link
+                    href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap"
+                    rel="stylesheet"
+                ></link>
+
                 <Meta />
                 <Links />
                 <ColorSchemeScript />

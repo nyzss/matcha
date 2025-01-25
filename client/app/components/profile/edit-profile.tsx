@@ -129,7 +129,6 @@ export default function EditProfile() {
                             form.setFieldValue("avatar", files[0])
                         }
                         {...form.getInputProps("avatar")}
-                        radius={999}
                     >
                         <Flex align={"center"} justify={"center"} gap={"sm"}>
                             <IconUser size={35} />
@@ -204,7 +203,6 @@ export default function EditProfile() {
                             ])
                         }
                         {...form.getInputProps("pictures")}
-                        radius={999}
                     >
                         <Flex align={"center"} justify={"center"} gap={"sm"}>
                             <IconPhoto size={45} />
