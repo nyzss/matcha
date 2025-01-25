@@ -122,7 +122,7 @@ export default function Profile({
                     </Flex>
                 </Flex>
                 {data?.pictures && data?.pictures.length > 0 ? (
-                    <Carousel withIndicators h={"100%"}>
+                    <Carousel withIndicators h={"100%"} loop>
                         {data?.pictures.map((image, index) => (
                             <Carousel.Slide key={index} h={"100%"}>
                                 <Image
