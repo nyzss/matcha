@@ -15,8 +15,11 @@ import { useDisclosure } from "@mantine/hooks";
 import { IconUser } from "@tabler/icons-react";
 import { useState } from "react";
 import type { IUser } from "~/types/validation";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function EditProfile() {
+    const queryClient = useQueryClient();
+
     const [opened, { open, close }] = useDisclosure();
     const { user, update } = useAuth();
     const [length, setLength] = useState<number>(user?.biography?.length || 0);
@@ -42,6 +45,9 @@ export default function EditProfile() {
     const handleSubmit = async (values: IUser) => {
         const success = await update(values);
         if (success) {
+            queryClient.invalidateQueries({
+                queryKey: ["profile", "@me"],
+            });
             close();
         }
     };
