@@ -183,7 +183,7 @@ export default function Home() {
                             gap={"xs"}
                         >
                             <ThemeIcon
-                                variant="outline"
+                                variant="transparent"
                                 size={200}
                                 radius={999}
                             >
