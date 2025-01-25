@@ -1,20 +1,22 @@
 import {
     Avatar,
     Button,
-    FileInput,
+    Card,
+    Divider,
     Flex,
+    Image,
     Select,
     TagsInput,
     Text,
     Textarea,
     TextInput,
 } from "@mantine/core";
-import { IMAGE_MIME_TYPE } from "@mantine/dropzone";
+import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { useForm, zodResolver } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { IconPlus, IconUser } from "@tabler/icons-react";
+import { IconPlus, IconUser, IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "~/contexts/auth-provider";
 import { getImage } from "~/lib/api";
 import { GENDERS, userSchema } from "~/lib/validation";
@@ -27,9 +29,6 @@ export default function EditProfile() {
     const [avatarSrc, setAvatarSrc] = useState<string>(
         getImage(user?.avatar) || ""
     );
-    const [picturesSrc, setPicturesSrc] = useState<string[]>(
-        user?.pictures?.map((pic) => getImage(pic) || "") || []
-    );
 
     const [length, setLength] = useState<number>(user?.biography?.length || 0);
 
@@ -41,9 +40,7 @@ export default function EditProfile() {
             gender: user?.gender || "",
             tags: user?.tags || [],
             sexualOrientation: user?.sexualOrientation || "",
-            // avatar: ,
             pictures: [],
-            //add values easily here and in the form based on IUser
         },
 
         validate: zodResolver(userSchema),
@@ -54,22 +51,22 @@ export default function EditProfile() {
             if (values.avatar) {
                 setAvatarSrc(URL.createObjectURL(values.avatar));
             }
-
-            if (values.pictures) {
-                values.pictures.forEach((pic) => {
-                    setPicturesSrc((prev) => [
-                        ...prev,
-                        URL.createObjectURL(pic),
-                    ]);
-                });
-            }
         },
     });
 
     form.watch("biography", (bio) => setLength(bio.value?.length || 0));
 
-    const handleSubmit = async (values: IUser) => {
-        console.log("SUBMITED", values);
+    useEffect(() => {
+        if (Object.entries(form.errors).length > 0) {
+            notifications.show({
+                title: "Couldn't update profile",
+                message: form.errors?.[0]?.toString(),
+                color: "red",
+            });
+        }
+    }, [form.errors]);
+
+    const handleSubmit = form.onSubmit(async (values: IUser) => {
         const success = await update(values);
         if (success) {
             queryClient.invalidateQueries({
@@ -78,18 +75,44 @@ export default function EditProfile() {
             notifications.show({
                 title: "Profile updated",
                 message: "Your profile has been successfully updated",
-                color: "green",
+                color: "teal",
             });
+
+            form.resetDirty();
         }
-    };
+    });
 
     const handleCancel = () => {
         form.reset();
         // close();
     };
 
+    useEffect(() => {
+        Promise.all(
+            user?.pictures?.map(async (pic) => {
+                const res = await fetch(getImage(pic) || "");
+                if (res.ok) {
+                    return await res.blob();
+                }
+                return undefined;
+            }) || []
+        ).then((blobs) => {
+            form.setFieldValue(
+                "pictures",
+                blobs
+                    .filter((blob) => blob !== undefined)
+                    .map(
+                        (blob, index) =>
+                            new File([blob], "pic" + index, {
+                                type: blob.type,
+                            })
+                    )
+            );
+        });
+    }, []);
+
     return (
-        <form onSubmit={form.onSubmit(handleSubmit)}>
+        <form onSubmit={handleSubmit}>
             <Flex
                 gap={"md"}
                 direction={"column"}
@@ -99,24 +122,30 @@ export default function EditProfile() {
                 }}
             >
                 <Flex align={"center"} justify={"space-between"}>
-                    <Avatar
-                        color="initials"
-                        name={`${user?.firstName} ${user?.lastName}`}
-                        size={100}
-                        mt={8}
-                        src={avatarSrc}
-                    />
-                    <FileInput
+                    <Dropzone
+                        accept={IMAGE_MIME_TYPE}
                         multiple={false}
-                        leftSection={<IconPlus size={40} />}
-                        leftSectionWidth={50}
-                        radius={"xl"}
-                        placeholder="Avatar"
-                        size="xl"
-                        leftSectionPointerEvents="none"
-                        accept={IMAGE_MIME_TYPE.join(",")}
+                        onDrop={(files) =>
+                            form.setFieldValue("avatar", files[0])
+                        }
                         {...form.getInputProps("avatar")}
-                    />
+                        radius={999}
+                    >
+                        <Flex align={"center"} justify={"center"} gap={"sm"}>
+                            <IconPlus size={45} />
+                            <Text>Upload Avatar</Text>
+                        </Flex>
+                    </Dropzone>
+                    <Flex align={"center"} gap={"sm"}>
+                        <Text c={"dimmed"}>Preview</Text>
+                        <Avatar
+                            color="initials"
+                            name={`${user?.firstName} ${user?.lastName}`}
+                            size={100}
+                            mt={8}
+                            src={avatarSrc}
+                        />
+                    </Flex>
                 </Flex>
 
                 <TextInput
@@ -164,6 +193,68 @@ export default function EditProfile() {
                     size="md"
                     {...form.getInputProps("tags")}
                 />
+                <Divider label="Pictures" my={"md"} />
+                <Flex gap={"sm"} direction={"column"}>
+                    <Dropzone
+                        accept={IMAGE_MIME_TYPE}
+                        onDrop={(files) =>
+                            form.setFieldValue("pictures", [
+                                ...(form.getValues().pictures || []),
+                                ...files,
+                            ])
+                        }
+                        {...form.getInputProps("pictures")}
+                        radius={999}
+                    >
+                        <Flex align={"center"} justify={"center"} gap={"sm"}>
+                            <IconPlus size={45} />
+                            <Text>Upload Pictures</Text>
+                        </Flex>
+                    </Dropzone>
+                    <Card>
+                        <Flex direction={"row"} gap={"sm"} wrap={"wrap"}>
+                            {form
+                                .getValues()
+                                .pictures?.map((pic) =>
+                                    URL.createObjectURL(pic)
+                                )
+                                .map((src, index) => (
+                                    <Flex
+                                        direction={"column"}
+                                        key={index}
+                                        gap={"sm"}
+                                        // h={"100%"}
+                                    >
+                                        <Image
+                                            src={src}
+                                            w={"100%"}
+                                            h={"300"}
+                                            fit="cover"
+                                        />
+                                        <Button
+                                            color="red"
+                                            leftSection={<IconX />}
+                                            variant="light"
+                                            onClick={() => {
+                                                form.setFieldValue(
+                                                    "pictures",
+                                                    form
+                                                        .getValues()
+                                                        .pictures?.filter(
+                                                            (_, i) =>
+                                                                i !== index
+                                                        )
+                                                );
+                                            }}
+                                        >
+                                            Delete
+                                        </Button>
+                                    </Flex>
+                                ))}
+                        </Flex>
+                    </Card>
+                </Flex>
+
                 <Flex gap={"sm"}>
                     <Button size="md" type="submit" disabled={!form.isDirty()}>
                         Save Changes

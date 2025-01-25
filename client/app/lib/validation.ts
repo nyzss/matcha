@@ -72,9 +72,8 @@ export const preferencesSchema = z.object({
     pictures: z
         .array(z.custom<File>())
         .max(5)
-        .min(1)
         .refine(
-            (files) => files.every((file) => file instanceof File),
+            (files) => files.every((file) => file instanceof Blob || File),
             "Expected file"
         )
         .refine(
