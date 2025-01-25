@@ -48,11 +48,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     name="viewport"
                     content="width=device-width, initial-scale=1"
                 />
-                <script
-                    defer
-                    src="https://umami.drafted.dev/script.js"
-                    data-website-id="d17615e1-117a-4439-8aa2-7633417134cf"
-                ></script>
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link
                     rel="preconnect"
