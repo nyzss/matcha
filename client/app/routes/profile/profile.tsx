@@ -21,6 +21,7 @@ import type { Route } from "./+types/profile";
 import {
     IconAlertSquareRoundedFilled,
     IconChevronLeft,
+    IconMoodSadSquint,
 } from "@tabler/icons-react";
 import { useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -68,9 +69,9 @@ export default function Profile({
         "https://api.dicebear.com/9.x/glass/svg?seed=zxcvb1234",
     ];
     return (
-        <Box h={"100vh"} pos={"relative"}>
+        <Box h={"100%"} pos={"relative"}>
             <LoadingOverlay visible={isPending} />
-            <Card h={"100%"}>
+            <Card>
                 <Flex direction={"column"} py={16}>
                     <Avatar
                         color="initials"
@@ -107,20 +108,33 @@ export default function Profile({
                         )}
                     </Flex>
                 </Flex>
-                <Carousel withIndicators>
-                    {data?.pictures?.map((image, index) => (
-                        <Carousel.Slide key={index}>
-                            <Image
-                                src={getImage(image)}
-                                alt="profile background"
-                                w={"100%"}
-                                h={"100%"}
-                                fit="cover"
-                                radius={"md"}
-                            />
-                        </Carousel.Slide>
-                    ))}
-                </Carousel>
+                {data?.pictures && data?.pictures.length > 0 ? (
+                    <Carousel withIndicators h={"100%"}>
+                        {data?.pictures.map((image, index) => (
+                            <Carousel.Slide key={index} h={"100%"}>
+                                <Image
+                                    src={getImage(image)}
+                                    alt="profile background"
+                                    w={"100%"}
+                                    h={800}
+                                    fit="cover"
+                                    radius={"md"}
+                                />
+                            </Carousel.Slide>
+                        ))}
+                    </Carousel>
+                ) : (
+                    <Flex
+                        align={"center"}
+                        justify={"center"}
+                        direction={"column"}
+                        gap={"sm"}
+                    >
+                        <IconMoodSadSquint size={150} />
+                        <Title>No pictures found</Title>
+                        <Text>This person must be shy. Maybe</Text>
+                    </Flex>
+                )}
             </Card>
         </Box>
     );
