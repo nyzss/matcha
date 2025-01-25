@@ -1,5 +1,4 @@
-import { notifications } from "@mantine/notifications";
-import type { ILogin, IRegister, IUser } from "~/types/validation";
+import type { IFilter, ILogin, IRegister, IUser } from "~/types/validation";
 
 export const BASE_URL =
     `${import.meta.env.VITE_BACKEND_API_URL}/api/` ||
@@ -10,15 +9,21 @@ export const fetcher = async (path: string, options?: RequestInit) => {
         path = path.slice(1);
     }
     const url = `${BASE_URL}${path}`;
-    const headers = {
-        "Content-Type": "application/json",
-    };
+    const headers = new Headers(options?.headers);
+
+    if (options?.body) headers.append("Content-Type", "application/json");
+
     try {
         const res = await fetch(url, {
-            headers: options?.body ? headers : {},
+            headers,
             credentials: "include",
             ...options,
         });
+
+        if (res.status === 401) {
+            // store.set(userAtom, null);
+            console.log("delogged");
+        }
 
         return res;
     } catch (error) {
@@ -131,14 +136,14 @@ export const authLogout = async (): Promise<boolean> => {
     }
 };
 
-export const checkAuth = async (): Promise<IProfile | false> => {
+export const checkAuth = async (): Promise<IAuth | false> => {
     try {
         const res = await fetcher("/profile/@me");
-        const data = await res?.json();
+        const data: IAuth = await res?.json();
         if (!res?.ok) {
             throw new Error();
         }
-        return data.user;
+        return data;
     } catch {
         return false;
     }
@@ -268,13 +273,6 @@ export const mutateConversation = async (
     }
 
     return await res?.json();
-    // const data: IConversation = await res?.json();
-    // const filtered = data.users.filter((user) => user.id !== userId);
-
-    // return {
-    //     ...data,
-    //     users: filtered.length > 0 ? filtered : [data.users[0]],
-    // };
 };
 
 export const verifyMail = async (code: string): Promise<boolean> => {
@@ -303,4 +301,95 @@ export const updateReadConversation = async (convId: string) => {
     } catch (error) {
         console.log("Couldn't update read status", error);
     }
+};
+
+export const updateUserLocation = async (data: GeolocationPosition) => {
+    try {
+        const res = await fetcher(`/location`, {
+            method: "POST",
+            body: JSON.stringify({
+                latitude: data.coords.latitude,
+                longitude: data.coords.longitude,
+            }),
+        });
+    } catch (error) {
+        console.error("Couldn't update location", error);
+    }
+};
+
+export const getSuggestions = async () => {
+    const res = await fetcher("/research/suggestion", {
+        method: "GET",
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't fetch suggestions");
+    }
+
+    const data: { users: ISuggestionProfile[] } = await res?.json();
+
+    return data;
+};
+
+export const getFilter = async (): IFilter => {
+    const res = await fetcher("/research", {
+        method: "GET",
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't fetch filter");
+    }
+
+    const data: IFilter = await res?.json();
+
+    return data;
+};
+
+export const updateFilter = async (filter: IFilter) => {
+    const res = await fetcher("/research", {
+        method: "PUT",
+        body: JSON.stringify(filter),
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't update filter");
+    }
+
+    const data: IFilter = await res?.json();
+
+    return data;
+};
+
+export const matchUser = async (userId: string, matched: boolean) => {
+    try {
+        const res = await fetcher(
+            `/research/suggestion/${userId}/${matched ? "accept" : "decline"}`,
+            {
+                method: "POST",
+            }
+        );
+
+        if (!res?.ok) {
+            throw new Error("Couldn't match user");
+        }
+
+        const data = await res.json();
+        console.log(data);
+        return data;
+    } catch (error) {
+        console.error("Couldn't match user", error);
+    }
+};
+
+export const getNotifications = async () => {
+    const res = await fetcher("/profile/@me/notification", {
+        method: "GET",
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't fetch notifications");
+    }
+
+    const data: INotificationsList = await res.json();
+    return data;
 };

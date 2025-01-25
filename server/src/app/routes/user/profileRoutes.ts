@@ -81,13 +81,10 @@ const authRoutes: FastifyPluginAsync = async (app) => {
         profileController.getBlockedProfile.bind(profileController)
     );
 
-    app.withTypeProvider<ZodTypeProvider>().put(
+    app.put(
         "/@me",
         {
             preHandler: [app.verifyAuth],
-            schema: {
-                body: userProfileSettings,
-            },
         },
         profileController.updateProfile.bind(profileController)
     );

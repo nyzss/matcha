@@ -133,3 +133,12 @@ export const registerSchema = z
 export const userSchema = userSchemaPartial.merge(preferencesSchema).partial();
 
 export const chatMessageSchema = z.string().max(1000);
+
+export const filterSchema = z.object({
+    ageMax: z.number().min(18).max(100),
+    ageMin: z.number().min(18).max(100),
+    fameRatingMax: z.number().min(0).max(50),
+    fameRatingMin: z.number().min(0).max(50),
+    location: z.number().min(10).max(100),
+    tags: z.array(z.string().max(32)).max(10),
+});

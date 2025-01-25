@@ -14,14 +14,13 @@ import { IconSearch } from "@tabler/icons-react";
 import { useMemo } from "react";
 import { Link, Outlet } from "react-router";
 import { useAuth } from "~/contexts/auth-provider";
-import Onboarding from "../onboard/onboarding";
 import { routes } from "./routes";
 import ToggleTheme from "./toggleTheme";
 import UserBox from "./user-box";
 
 export default function AppLayout() {
     const [opened, { toggle }] = useDisclosure();
-    const { logged } = useAuth();
+    const { logged, metadata } = useAuth();
     const navbarAsideWidth: AppShellResponsiveSize = {
         base: 300,
         md: 300,
@@ -80,10 +79,12 @@ export default function AppLayout() {
                                     variant="subtle"
                                     size="xl"
                                     leftSection={
-                                        route.indicator ? (
+                                        route.indicator &&
+                                        metadata &&
+                                        metadata?.notifications > 0 ? (
                                             <Indicator
                                                 inline
-                                                label="16"
+                                                label={metadata?.notifications}
                                                 size={16}
                                             >
                                                 {route.icon}
@@ -134,7 +135,6 @@ export default function AppLayout() {
             </AppShell.Navbar>
             <AppShell.Main h={"100vh"}>
                 <Outlet />
-                {/* <Onboarding /> */}
             </AppShell.Main>
             <AppShell.Aside p="md">
                 <Flex h={"100%"} w="100%">
