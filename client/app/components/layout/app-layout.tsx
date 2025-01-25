@@ -6,13 +6,15 @@ import {
     Flex,
     Group,
     Indicator,
+    NavLink as MantineNavLink,
+    Text,
     TextInput,
 } from "@mantine/core";
 
 import { useDisclosure } from "@mantine/hooks";
 import { IconSearch } from "@tabler/icons-react";
 import { useMemo } from "react";
-import { Link, Outlet } from "react-router";
+import { Link, NavLink, Outlet } from "react-router";
 import { useAuth } from "~/contexts/auth-provider";
 import { routes } from "./routes";
 import ToggleTheme from "./toggleTheme";
@@ -75,31 +77,47 @@ export default function AppLayout() {
                     >
                         <Flex direction={"column"} gap={"xs"}>
                             {shown.map((route) => (
-                                <Button
-                                    variant="subtle"
-                                    size="xl"
-                                    leftSection={
-                                        route.indicator &&
-                                        metadata &&
-                                        metadata?.notifications > 0 ? (
-                                            <Indicator
-                                                inline
-                                                label={metadata?.notifications}
-                                                size={16}
-                                            >
-                                                {route.icon}
-                                            </Indicator>
-                                        ) : (
-                                            route.icon
-                                        )
-                                    }
-                                    component={Link}
+                                <NavLink
                                     to={route.link}
                                     key={route.name}
-                                    justify="flex-start"
+                                    style={{
+                                        textDecoration: "inherit",
+                                        color: "inherit",
+                                    }}
                                 >
-                                    {route.name}
-                                </Button>
+                                    {({ isActive }) => (
+                                        <MantineNavLink
+                                            px={"md"}
+                                            active={isActive}
+                                            leftSection={
+                                                route.indicator &&
+                                                metadata &&
+                                                metadata.notifications > 0 ? (
+                                                    <Indicator
+                                                        inline
+                                                        label={
+                                                            metadata.notifications
+                                                        }
+                                                        size={16}
+                                                    >
+                                                        {route.icon}
+                                                    </Indicator>
+                                                ) : (
+                                                    route.icon
+                                                )
+                                            }
+                                            label={
+                                                <Text
+                                                    fz={"md"}
+                                                    fw={"bold"}
+                                                    tt={"capitalize"}
+                                                >
+                                                    {route.name}
+                                                </Text>
+                                            }
+                                        />
+                                    )}
+                                </NavLink>
                             ))}
                         </Flex>
                         <Flex mt={"auto"} gap={"sm"} direction={"column"}>
