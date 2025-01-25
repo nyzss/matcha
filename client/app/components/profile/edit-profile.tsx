@@ -14,7 +14,7 @@ import {
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { useForm, zodResolver } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { IconPlus, IconUser, IconX } from "@tabler/icons-react";
+import { IconPhoto, IconUser, IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useAuth } from "~/contexts/auth-provider";
@@ -132,8 +132,8 @@ export default function EditProfile() {
                         radius={999}
                     >
                         <Flex align={"center"} justify={"center"} gap={"sm"}>
-                            <IconPlus size={45} />
-                            <Text>Upload Avatar</Text>
+                            <IconUser size={35} />
+                            <Text fw={"bold"}>Upload Avatar</Text>
                         </Flex>
                     </Dropzone>
                     <Flex align={"center"} gap={"sm"}>
@@ -207,8 +207,13 @@ export default function EditProfile() {
                         radius={999}
                     >
                         <Flex align={"center"} justify={"center"} gap={"sm"}>
-                            <IconPlus size={45} />
-                            <Text>Upload Pictures</Text>
+                            <IconPhoto size={45} />
+                            <Flex direction={"column"}>
+                                <Text fw={"bold"}>Upload Pictures</Text>
+                                <Text size="xs" c={"dimmed"}>
+                                    You can upload up to 5 pictures
+                                </Text>
+                            </Flex>
                         </Flex>
                     </Dropzone>
                     <Card>
