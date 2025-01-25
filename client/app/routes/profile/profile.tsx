@@ -22,8 +22,9 @@ import {
     IconAlertSquareRoundedFilled,
     IconChevronLeft,
     IconMoodSadSquint,
+    IconSettings,
 } from "@tabler/icons-react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 
 export default function Profile({
@@ -90,7 +91,19 @@ export default function Profile({
                             {data?.firstName} {data?.lastName} (@
                             {data?.username})
                         </Text>
-                        {isMe && <EditProfile />}
+                        {isMe && (
+                            <Button
+                                ml={{
+                                    sm: "auto",
+                                }}
+                                variant="light"
+                                component={Link}
+                                to={"/settings"}
+                                leftSection={<IconSettings />}
+                            >
+                                Edit Profile
+                            </Button>
+                        )}
                     </Flex>
                     <Text mt={8}>{data?.biography || "No biography set"}</Text>
                     <Text fw={"bold"} size="md" mt={8} mb={4}>

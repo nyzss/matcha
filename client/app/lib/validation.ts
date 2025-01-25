@@ -56,6 +56,19 @@ export const preferencesSchema = z.object({
     sexualOrientation: z.union([z.enum(SEXUAL_PREFERENCES), z.literal("")]),
     biography: z.string().max(255, messages.biography.max),
     tags: z.array(z.string().max(32)).max(10),
+
+    avatar: z
+        .custom<File>()
+        .refine((file) => file instanceof File, "Expected file")
+        .refine(
+            (file) => file.size <= MAX_FILE_SIZE,
+            "File size should be less than 8MB"
+        )
+        .refine(
+            (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
+            "Invalid file type, only .jpeg, .jpg, .png, .webp files are allowed"
+        ),
+
     pictures: z
         .array(z.custom<File>())
         .max(5)
