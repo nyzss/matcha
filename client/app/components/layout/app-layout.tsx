@@ -87,7 +87,7 @@ export default function AppLayout() {
                                 >
                                     {({ isActive }) => (
                                         <MantineNavLink
-                                            px={"md"}
+                                            pr={"xl"}
                                             active={isActive}
                                             leftSection={
                                                 route.indicator &&
@@ -110,7 +110,7 @@ export default function AppLayout() {
                                                 <Text
                                                     fz={"md"}
                                                     fw={"bold"}
-                                                    tt={"capitalize"}
+                                                    // tt={"capitalize"}
                                                 >
                                                     {route.name}
                                                 </Text>

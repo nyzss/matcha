@@ -117,19 +117,24 @@ export default function MessagesPage() {
                                         size={60}
                                     />
                                     <Flex direction={"column"}>
-                                        <Text size="lg" fw={"bold"}>
+                                        <Text
+                                            size="lg"
+                                            fw={"bold"}
+                                            c={"bright"}
+                                        >
                                             {conv.users[0].firstName}{" "}
                                             {conv.users[0].lastName}
                                         </Text>
                                         <Text size="md" c={"gray"}>
                                             {`@${conv.users
                                                 .map((user) => user.username)
-                                                .join(", ")}`}
+                                                .join(", @")}`}
                                         </Text>
                                         <Text
                                             size="sm"
                                             fw={"lighter"}
                                             truncate="end"
+                                            c={"bright"}
                                             w={{
                                                 base: 150,
                                                 sm: 200,
