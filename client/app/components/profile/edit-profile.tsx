@@ -113,14 +113,7 @@ export default function EditProfile() {
 
     return (
         <form onSubmit={handleSubmit}>
-            <Flex
-                gap={"md"}
-                direction={"column"}
-                mt={"sm"}
-                p={{
-                    sm: "lg",
-                }}
-            >
+            <Flex gap={"md"} direction={"column"} mt={"sm"}>
                 <Flex align={"center"} justify={"space-between"}>
                     <Dropzone
                         accept={IMAGE_MIME_TYPE}
