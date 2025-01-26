@@ -1,16 +1,16 @@
-import {
-    Container,
-    Flex,
-    Stepper,
-    Text,
-    Title,
-    useMantineTheme,
-} from "@mantine/core";
-import InitialSetup from "~/components/onboard/initial-setup";
+import { Container, Flex, Text, Title, useMantineTheme } from "@mantine/core";
+import { useNavigate } from "react-router";
 import EditProfile from "~/components/profile/edit-profile";
+import { useAuth } from "~/contexts/auth-provider";
 
 export default function Onboarding() {
     const { primaryColor } = useMantineTheme();
+    const navigate = useNavigate();
+
+    const callback = () => {
+        navigate("/");
+    };
+
     return (
         <Container h={"100%"} mt={65} size={"md"}>
             <Flex direction={"column"} gap={"sm"}>
@@ -30,7 +30,7 @@ export default function Onboarding() {
                         Let's get you set up with your profile so you can start
                         matching with other users!
                     </Text>
-                    <EditProfile />
+                    <EditProfile callback={callback} onboarding />
                 </Container>
             </Flex>
         </Container>

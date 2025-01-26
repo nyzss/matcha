@@ -89,6 +89,7 @@ export default function AppLayout() {
                                         <MantineNavLink
                                             pr={"xl"}
                                             active={isActive}
+                                            component="div"
                                             leftSection={
                                                 route.indicator &&
                                                 metadata &&

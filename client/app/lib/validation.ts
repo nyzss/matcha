@@ -71,7 +71,7 @@ export const preferencesSchema = z.object({
 
     pictures: z
         .array(z.custom<File>())
-        .max(5)
+        .max(5, "You can only upload up to 5 pictures")
         .refine(
             (files) => files.every((file) => file instanceof Blob || File),
             "Expected file"

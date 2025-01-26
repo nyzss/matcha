@@ -22,7 +22,13 @@ import { getImage } from "~/lib/api";
 import { GENDERS, userSchema } from "~/lib/validation";
 import type { IUser } from "~/types/validation";
 
-export default function EditProfile() {
+export default function EditProfile({
+    callback,
+    onboarding,
+}: {
+    callback?: () => void;
+    onboarding?: boolean;
+}) {
     const queryClient = useQueryClient();
 
     const { user, update } = useAuth();
@@ -58,9 +64,10 @@ export default function EditProfile() {
 
     useEffect(() => {
         if (Object.entries(form.errors).length > 0) {
+            const message = Object.values(form.errors).join(", ");
             notifications.show({
                 title: "Couldn't update profile",
-                message: form.errors?.[0]?.toString(),
+                message: message,
                 color: "red",
             });
         }
@@ -79,6 +86,9 @@ export default function EditProfile() {
             });
 
             form.resetDirty();
+            if (callback) {
+                callback();
+            }
         }
     });
 
@@ -251,12 +261,19 @@ export default function EditProfile() {
                     </Card>
                 </Flex>
 
-                <Flex gap={"sm"}>
+                <Flex gap={"sm"} justify={"flex-end"}>
+                    {!onboarding && (
+                        <Button
+                            variant="subtle"
+                            size="md"
+                            onClick={handleCancel}
+                        >
+                            Cancel
+                        </Button>
+                    )}
+
                     <Button size="md" type="submit" disabled={!form.isDirty()}>
-                        Save Changes
-                    </Button>
-                    <Button variant="subtle" size="md" onClick={handleCancel}>
-                        Cancel
+                        {onboarding ? "Proceed" : "Save changes"}
                     </Button>
                 </Flex>
             </Flex>

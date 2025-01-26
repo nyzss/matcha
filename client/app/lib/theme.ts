@@ -10,6 +10,7 @@ import {
     Notification,
     NumberInput,
     Paper,
+    Pill,
     Select,
     TagsInput,
     Textarea,
@@ -17,9 +18,11 @@ import {
 } from "@mantine/core";
 import { Dropzone } from "@mantine/dropzone";
 
+const primaryColor = "grape";
+
 export const theme = createTheme({
     fontFamily: "Geist, serif",
-    primaryColor: "grape",
+    primaryColor: primaryColor,
     components: {
         Button: Button.extend({
             defaultProps: {
@@ -64,6 +67,7 @@ export const theme = createTheme({
         TagsInput: TagsInput.extend({
             defaultProps: {
                 radius: "lg",
+                color: "grape",
             },
         }),
         Image: Image.extend({
@@ -97,6 +101,11 @@ export const theme = createTheme({
         Menu: Menu.extend({
             defaultProps: {
                 radius: "md",
+            },
+        }),
+        Pill: Pill.extend({
+            defaultProps: {
+                bg: primaryColor,
             },
         }),
     },
