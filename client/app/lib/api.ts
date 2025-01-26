@@ -1,8 +1,16 @@
 import type { IFilter, ILogin, IRegister, IUser } from "~/types/validation";
 
 export const BASE_URL =
-    `${import.meta.env.VITE_BACKEND_API_URL}/api/` ||
-    "https://matcha.localhost/api/";
+    `${import.meta.env.VITE_BACKEND_API_URL}/api/` || "https://localhost/api/";
+
+export const IMAGE_URL =
+    `${import.meta.env.VITE_BACKEND_API_URL}/api/image` ||
+    "https://localhost/api/image";
+
+export const getImage = (path: string | null | undefined) => {
+    if (!path) return;
+    return `${IMAGE_URL}/${path}`;
+};
 
 export const fetcher = async (path: string, options?: RequestInit) => {
     if (path.startsWith("/")) {
@@ -11,7 +19,8 @@ export const fetcher = async (path: string, options?: RequestInit) => {
     const url = `${BASE_URL}${path}`;
     const headers = new Headers(options?.headers);
 
-    if (options?.body) headers.append("Content-Type", "application/json");
+    if (options?.body && !(options.body instanceof FormData))
+        headers.append("Content-Type", "application/json");
 
     try {
         const res = await fetch(url, {
@@ -163,9 +172,24 @@ export const updateUser = async (
     user: Partial<IUser>
 ): Promise<FetchResult<IProfile, Partial<IUser>>> => {
     try {
+        const form = new FormData();
+
+        for (const key in user) {
+            if (key === "tags") {
+                form.append(key, JSON.stringify(user[key]));
+            } else if (key === "pictures") {
+                if (!user[key]) continue;
+                for (const picture of user[key]) {
+                    form.append(key, picture);
+                }
+            } else {
+                form.append(key, user[key as keyof IUser] as string);
+            }
+        }
+
         const res = await fetcher("/profile/@me", {
             method: "PUT",
-            body: JSON.stringify(user),
+            body: form,
         });
 
         const json = await res?.json();

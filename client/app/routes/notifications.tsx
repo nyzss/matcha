@@ -1,5 +1,5 @@
-import { Box, Card, Flex, Group, Text } from "@mantine/core";
-import { IconBell } from "@tabler/icons-react";
+import { Box, Card, Flex, Group, Text, Title } from "@mantine/core";
+import { IconBell, IconMoodSmileBeam } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { getNotifications } from "~/lib/api";
 
@@ -20,7 +20,8 @@ export default function Notifications() {
 
     return (
         <Flex direction={"column"} h={"100%"} gap={"sm"}>
-            {isSuccess &&
+            {(isSuccess &&
+                data.notifications.length > 0 &&
                 data.notifications.map((notification, index) => (
                     <Card
                         key={index}
@@ -38,7 +39,20 @@ export default function Notifications() {
                             </Flex>
                         </Flex>
                     </Card>
-                ))}
+                ))) || (
+                <Flex
+                    direction={"column"}
+                    h={"100%"}
+                    align={"center"}
+                    justify={"center"}
+                >
+                    <IconMoodSmileBeam size={150} />
+                    <Title>No notifications</Title>
+                    <Text c={"dimmed"} mt={4}>
+                        Don't worry about it, you're not missing out on anything
+                    </Text>
+                </Flex>
+            )}
         </Flex>
     );
 }

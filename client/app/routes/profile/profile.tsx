@@ -13,7 +13,7 @@ import {
 } from "@mantine/core";
 import { useEffect, useState } from "react";
 import EditProfile from "~/components/profile/edit-profile";
-import { getUser } from "~/lib/api";
+import { getImage, getUser } from "~/lib/api";
 import { Carousel } from "@mantine/carousel";
 import { useAuth } from "~/contexts/auth-provider";
 
@@ -21,8 +21,10 @@ import type { Route } from "./+types/profile";
 import {
     IconAlertSquareRoundedFilled,
     IconChevronLeft,
+    IconMoodSadSquint,
+    IconSettings,
 } from "@tabler/icons-react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 
 export default function Profile({
@@ -68,15 +70,16 @@ export default function Profile({
         "https://api.dicebear.com/9.x/glass/svg?seed=zxcvb1234",
     ];
     return (
-        <Box h={"100vh"} pos={"relative"}>
+        <Box h={"100%"} pos={"relative"}>
             <LoadingOverlay visible={isPending} />
-            <Card h={"100%"}>
+            <Card>
                 <Flex direction={"column"} py={16}>
                     <Avatar
                         color="initials"
                         name={`${data?.firstName} ${data?.lastName}`}
                         size={100}
                         mt={8}
+                        src={getImage(data?.avatar)}
                     />
                     <Flex
                         direction={{
@@ -88,7 +91,19 @@ export default function Profile({
                             {data?.firstName} {data?.lastName} (@
                             {data?.username})
                         </Text>
-                        {isMe && <EditProfile />}
+                        {isMe && (
+                            <Button
+                                ml={{
+                                    sm: "auto",
+                                }}
+                                variant="light"
+                                component={Link}
+                                to={"/settings"}
+                                leftSection={<IconSettings />}
+                            >
+                                Edit Profile
+                            </Button>
+                        )}
                     </Flex>
                     <Text mt={8}>{data?.biography || "No biography set"}</Text>
                     <Text fw={"bold"} size="md" mt={8} mb={4}>
@@ -106,20 +121,33 @@ export default function Profile({
                         )}
                     </Flex>
                 </Flex>
-                <Carousel withIndicators>
-                    {images.map((image, index) => (
-                        <Carousel.Slide key={index}>
-                            <Image
-                                src={image}
-                                alt="profile background"
-                                w={"100%"}
-                                h={"100%"}
-                                fit="cover"
-                                radius={"md"}
-                            />
-                        </Carousel.Slide>
-                    ))}
-                </Carousel>
+                {data?.pictures && data?.pictures.length > 0 ? (
+                    <Carousel withIndicators h={"100%"} loop>
+                        {data?.pictures.map((image, index) => (
+                            <Carousel.Slide key={index} h={"100%"}>
+                                <Image
+                                    src={getImage(image)}
+                                    alt="profile background"
+                                    w={"100%"}
+                                    h={800}
+                                    fit="cover"
+                                    radius={"md"}
+                                />
+                            </Carousel.Slide>
+                        ))}
+                    </Carousel>
+                ) : (
+                    <Flex
+                        align={"center"}
+                        justify={"center"}
+                        direction={"column"}
+                        gap={"sm"}
+                    >
+                        <IconMoodSadSquint size={150} />
+                        <Title>No pictures found</Title>
+                        <Text>This person must be shy. Maybe</Text>
+                    </Flex>
+                )}
             </Card>
         </Box>
     );

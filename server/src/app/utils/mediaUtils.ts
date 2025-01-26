@@ -27,9 +27,9 @@ export const getImage = async (filename: string) => {
     try {
         const image = fs.readFileSync(`${path}/${filename}`);
 
-        console.log(image)
         if (!image)
             throw new Error("File not found");
+        return image
     } catch (error) {
         throw new Error("File not found");
     }

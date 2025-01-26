@@ -1,24 +1,35 @@
-import { useAuth } from "~/contexts/auth-provider";
-import { GENDERS, userSchema } from "~/lib/validation";
 import {
+    Avatar,
     Button,
+    Card,
+    Divider,
     Flex,
-    Modal,
+    Image,
     Select,
     TagsInput,
     Text,
     Textarea,
     TextInput,
 } from "@mantine/core";
+import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { useForm, zodResolver } from "@mantine/form";
-import { useDisclosure } from "@mantine/hooks";
-import { IconUser } from "@tabler/icons-react";
-import { useState } from "react";
+import { notifications } from "@mantine/notifications";
+import { IconPhoto, IconUser, IconX } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useAuth } from "~/contexts/auth-provider";
+import { getImage } from "~/lib/api";
+import { GENDERS, userSchema } from "~/lib/validation";
 import type { IUser } from "~/types/validation";
 
 export default function EditProfile() {
-    const [opened, { open, close }] = useDisclosure();
+    const queryClient = useQueryClient();
+
     const { user, update } = useAuth();
+    const [avatarSrc, setAvatarSrc] = useState<string>(
+        getImage(user?.avatar) || ""
+    );
+
     const [length, setLength] = useState<number>(user?.biography?.length || 0);
 
     const form = useForm<Partial<IUser>>({
@@ -29,125 +40,235 @@ export default function EditProfile() {
             gender: user?.gender || "",
             tags: user?.tags || [],
             sexualOrientation: user?.sexualOrientation || "",
-            //add values easily here and in the form based on IUser
+            pictures: [],
         },
 
         validate: zodResolver(userSchema),
 
         validateInputOnChange: ["biography"],
+
+        onValuesChange(values) {
+            if (values.avatar) {
+                setAvatarSrc(URL.createObjectURL(values.avatar));
+            }
+        },
     });
 
     form.watch("biography", (bio) => setLength(bio.value?.length || 0));
 
-    const handleSubmit = async (values: IUser) => {
+    useEffect(() => {
+        if (Object.entries(form.errors).length > 0) {
+            notifications.show({
+                title: "Couldn't update profile",
+                message: form.errors?.[0]?.toString(),
+                color: "red",
+            });
+        }
+    }, [form.errors]);
+
+    const handleSubmit = form.onSubmit(async (values: IUser) => {
         const success = await update(values);
         if (success) {
-            close();
+            queryClient.invalidateQueries({
+                queryKey: ["profile", "@me"],
+            });
+            notifications.show({
+                title: "Profile updated",
+                message: "Your profile has been successfully updated",
+                color: "teal",
+            });
+
+            form.resetDirty();
         }
-    };
+    });
 
     const handleCancel = () => {
         form.reset();
-        close();
+        // close();
     };
 
+    useEffect(() => {
+        Promise.all(
+            user?.pictures?.map(async (pic) => {
+                const res = await fetch(getImage(pic) || "");
+                if (res.ok) {
+                    return await res.blob();
+                }
+                return undefined;
+            }) || []
+        ).then((blobs) => {
+            form.setFieldValue(
+                "pictures",
+                blobs
+                    .filter((blob) => blob !== undefined)
+                    .map(
+                        (blob, index) =>
+                            new File([blob], "pic" + index, {
+                                type: blob.type,
+                            })
+                    )
+            );
+        });
+    }, []);
+
     return (
-        <>
-            <Modal
-                opened={opened}
-                onClose={close}
-                title="Edit Profile"
-                size={"xl"}
-                centered
-            >
-                <form onSubmit={form.onSubmit(handleSubmit)}>
-                    <Flex
-                        gap={"md"}
-                        direction={"column"}
-                        mt={"sm"}
-                        p={{
-                            sm: "lg",
-                        }}
-                    >
-                        <TextInput
-                            label="Username (this will change your login)"
-                            placeholder="Username"
-                            key={form.key("username")}
-                            leftSection={<IconUser size={18} />}
-                            size="lg"
-                            leftSectionPointerEvents="none"
-                            {...form.getInputProps("username")}
-                        />
-                        <Flex direction={"column"} gap={"2"} mb={0}>
-                            <Textarea
-                                label="Biography"
-                                placeholder="Write something about yourself"
-                                key={form.key("biography")}
-                                size="lg"
-                                maxLength={255}
-                                {...form.getInputProps("biography")}
-                            />
-                            <Text size="sm" ml={"auto"}>
-                                {length} / 255
-                            </Text>
-                        </Flex>
-                        <Select
-                            label="Gender"
-                            placeholder="Select your gender"
-                            size="lg"
-                            key={form.key("gender")}
-                            data={GENDERS}
-                            {...form.getInputProps("gender")}
-                        />
-                        <Select
-                            label="Sexual Preferences"
-                            placeholder="Select your sexual preferences"
-                            size="lg"
-                            key={form.key("sexualOrientation")}
-                            data={GENDERS}
-                            {...form.getInputProps("sexualOrientation")}
-                        />
-                        <TagsInput
-                            label="Keywords of your interests"
-                            placeholder="Skiing, reading..."
-                            key={form.key("tags")}
-                            size="lg"
-                            {...form.getInputProps("tags")}
-                        ></TagsInput>
-                        <Flex direction={"column"} gap={"sm"}>
-                            <Button size="lg" type="submit">
-                                Save Changes
-                            </Button>
-                            <Button
-                                variant="subtle"
-                                size="lg"
-                                onClick={handleCancel}
-                            >
-                                Cancel
-                            </Button>
-                        </Flex>
-                    </Flex>
-                </form>
-            </Modal>
-            <Button
-                ml={{
-                    sm: "auto",
+        <form onSubmit={handleSubmit}>
+            <Flex
+                gap={"md"}
+                direction={"column"}
+                mt={"sm"}
+                p={{
+                    sm: "lg",
                 }}
-                variant="light"
-                onClick={open}
             >
-                Edit Profile
-            </Button>
-        </>
+                <Flex align={"center"} justify={"space-between"}>
+                    <Dropzone
+                        accept={IMAGE_MIME_TYPE}
+                        multiple={false}
+                        onDrop={(files) =>
+                            form.setFieldValue("avatar", files[0])
+                        }
+                        {...form.getInputProps("avatar")}
+                        radius={999}
+                    >
+                        <Flex align={"center"} justify={"center"} gap={"sm"}>
+                            <IconUser size={35} />
+                            <Text fw={"bold"}>Upload Avatar</Text>
+                        </Flex>
+                    </Dropzone>
+                    <Flex align={"center"} gap={"sm"}>
+                        <Text c={"dimmed"}>Preview</Text>
+                        <Avatar
+                            color="initials"
+                            name={`${user?.firstName} ${user?.lastName}`}
+                            size={100}
+                            mt={8}
+                            src={avatarSrc}
+                        />
+                    </Flex>
+                </Flex>
+
+                <TextInput
+                    label="Username (this will change your login)"
+                    placeholder="Username"
+                    key={form.key("username")}
+                    leftSection={<IconUser size={18} />}
+                    size="md"
+                    leftSectionPointerEvents="none"
+                    {...form.getInputProps("username")}
+                />
+                <Flex direction={"column"} gap={"2"}>
+                    <Textarea
+                        label="Biography"
+                        placeholder="Write something about yourself"
+                        key={form.key("biography")}
+                        size="md"
+                        maxLength={255}
+                        {...form.getInputProps("biography")}
+                    />
+                    <Text size="sm" ml={"auto"}>
+                        {length} / 255
+                    </Text>
+                </Flex>
+                <Select
+                    label="Gender"
+                    placeholder="Select your gender"
+                    size="md"
+                    key={form.key("gender")}
+                    data={GENDERS}
+                    {...form.getInputProps("gender")}
+                />
+                <Select
+                    label="Sexual Preferences"
+                    placeholder="Select your sexual preferences"
+                    size="md"
+                    key={form.key("sexualOrientation")}
+                    data={GENDERS}
+                    {...form.getInputProps("sexualOrientation")}
+                />
+                <TagsInput
+                    label="Keywords of your interests"
+                    placeholder="Skiing, reading..."
+                    key={form.key("tags")}
+                    size="md"
+                    {...form.getInputProps("tags")}
+                />
+                <Divider label="Pictures" my={"md"} />
+                <Flex gap={"sm"} direction={"column"}>
+                    <Dropzone
+                        accept={IMAGE_MIME_TYPE}
+                        onDrop={(files) =>
+                            form.setFieldValue("pictures", [
+                                ...(form.getValues().pictures || []),
+                                ...files,
+                            ])
+                        }
+                        {...form.getInputProps("pictures")}
+                        radius={999}
+                    >
+                        <Flex align={"center"} justify={"center"} gap={"sm"}>
+                            <IconPhoto size={45} />
+                            <Flex direction={"column"}>
+                                <Text fw={"bold"}>Upload Pictures</Text>
+                                <Text size="xs" c={"dimmed"}>
+                                    You can upload up to 5 pictures
+                                </Text>
+                            </Flex>
+                        </Flex>
+                    </Dropzone>
+                    <Card>
+                        <Flex direction={"row"} gap={"sm"} wrap={"wrap"}>
+                            {form
+                                .getValues()
+                                .pictures?.map((pic) =>
+                                    URL.createObjectURL(pic)
+                                )
+                                .map((src, index) => (
+                                    <Flex
+                                        direction={"column"}
+                                        key={index}
+                                        gap={"sm"}
+                                        // h={"100%"}
+                                    >
+                                        <Image
+                                            src={src}
+                                            w={"100%"}
+                                            h={"300"}
+                                            fit="cover"
+                                        />
+                                        <Button
+                                            color="red"
+                                            leftSection={<IconX />}
+                                            variant="light"
+                                            onClick={() => {
+                                                form.setFieldValue(
+                                                    "pictures",
+                                                    form
+                                                        .getValues()
+                                                        .pictures?.filter(
+                                                            (_, i) =>
+                                                                i !== index
+                                                        )
+                                                );
+                                            }}
+                                        >
+                                            Delete
+                                        </Button>
+                                    </Flex>
+                                ))}
+                        </Flex>
+                    </Card>
+                </Flex>
+
+                <Flex gap={"sm"}>
+                    <Button size="md" type="submit" disabled={!form.isDirty()}>
+                        Save Changes
+                    </Button>
+                    <Button variant="subtle" size="md" onClick={handleCancel}>
+                        Cancel
+                    </Button>
+                </Flex>
+            </Flex>
+        </form>
     );
 }
-
-// {
-//     //avatar: "Pas encore fait"
-//     "username": "helloworld",
-//     "gender": "Man",
-//     "biography": "haha lmao",
-//     "sexualOrientation": "Woman",
-//     //picture: "Pas encore fait"
-//     "tags": ["reading", "climbing"]
-// }

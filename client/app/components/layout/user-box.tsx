@@ -7,7 +7,7 @@ import {
     useMantineColorScheme,
 } from "@mantine/core";
 import { IconColorSwatch, IconLogout, IconSettings } from "@tabler/icons-react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useAuth } from "~/contexts/auth-provider";
 
 export default function UserBox() {
@@ -41,7 +41,11 @@ export default function UserBox() {
                         >
                             Toggle theme
                         </Menu.Item>
-                        <Menu.Item leftSection={<IconSettings size={18} />}>
+                        <Menu.Item
+                            leftSection={<IconSettings size={18} />}
+                            component={Link}
+                            to={"/settings"}
+                        >
                             Settings
                         </Menu.Item>
 

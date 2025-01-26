@@ -10,6 +10,7 @@ import {
     NumberInput,
     Text,
     TextInput,
+    Title,
 } from "@mantine/core";
 import { IconPlus, IconSearch } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
@@ -53,7 +54,7 @@ export default function MessagesPage() {
     };
 
     return (
-        <Flex direction={"column"} gap={"xs"}>
+        <Flex direction={"column"} gap={"xs"} h={"100%"}>
             <Modal
                 opened={opened}
                 onClose={close}
@@ -88,7 +89,8 @@ export default function MessagesPage() {
                     New chat
                 </Button>
             </Group>
-            {conversations &&
+            {(conversations &&
+                conversations.length > 0 &&
                 conversations.map((conv) => (
                     <Box key={conv.id}>
                         <Link
@@ -146,7 +148,21 @@ export default function MessagesPage() {
                             </Button>
                         </Link>
                     </Box>
-                ))}
+                ))) || (
+                <Flex
+                    justify={"center"}
+                    align={"center"}
+                    h={"100%"}
+                    direction={"column"}
+                    gap={"sm"}
+                >
+                    <Title>No conversations</Title>
+                    <Text c={"dimmed"}>
+                        Start a new conversation by clicking on the "New chat"
+                        button
+                    </Text>
+                </Flex>
+            )}
         </Flex>
     );
 }
