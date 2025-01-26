@@ -19,7 +19,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useAuth } from "~/contexts/auth-provider";
 import { getImage } from "~/lib/api";
-import { GENDERS, userSchema } from "~/lib/validation";
+import { GENDERS, SEXUAL_PREFERENCES, userSchema } from "~/lib/validation";
 import type { IUser } from "~/types/validation";
 
 export default function EditProfile({
@@ -183,7 +183,7 @@ export default function EditProfile({
                     placeholder="Select your sexual preferences"
                     size="md"
                     key={form.key("sexualOrientation")}
-                    data={GENDERS}
+                    data={SEXUAL_PREFERENCES}
                     {...form.getInputProps("sexualOrientation")}
                 />
                 <TagsInput
