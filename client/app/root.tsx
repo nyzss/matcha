@@ -58,7 +58,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap"
                     rel="stylesheet"
                 ></link>
-
+                <script
+                    defer
+                    src="https://umami.drafted.dev/script.js"
+                    data-website-id="d17615e1-117a-4439-8aa2-7633417134cf"
+                ></script>
                 <Meta />
                 <Links />
                 <ColorSchemeScript />

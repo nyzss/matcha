@@ -9,7 +9,6 @@
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
-    "@amplitude/analytics-browser": "^2.11.11",
     "@mantine/carousel": "^7.15.2",
     "@mantine/core": "^7.15.2",
     "@mantine/dates": "^7.15.2",
