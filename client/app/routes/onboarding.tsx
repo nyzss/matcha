@@ -10,7 +10,7 @@ import {
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconMail } from "@tabler/icons-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import EditProfile from "~/components/profile/edit-profile";
@@ -37,10 +37,19 @@ export default function Onboarding() {
             });
             return await checkUser();
         },
+        onError: () => {
+            notifications.show({
+                title: "Invalid code",
+                message: "The code you entered is invalid. Please try again.",
+                color: "red",
+            });
+        },
     });
 
     const callback = () => {
-        navigate("/");
+        navigate("/", {
+            replace: true,
+        });
     };
 
     const handleEmailVerification = async (
@@ -58,6 +67,12 @@ export default function Onboarding() {
             setPinError(true);
         }
     };
+
+    // useEffect(() => {
+    //     if (!shouldOnboard) {
+    //         navigate("/");
+    //     }
+    // }, [shouldOnboard]);
 
     return (
         <Container h={"100%"} mt={65} size={"md"}>

@@ -16,6 +16,7 @@ import {
     Textarea,
     TextInput,
 } from "@mantine/core";
+import { DatePickerInput } from "@mantine/dates";
 import { Dropzone } from "@mantine/dropzone";
 
 const primaryColor = "grape";
@@ -106,6 +107,11 @@ export const theme = createTheme({
         Pill: Pill.extend({
             defaultProps: {
                 bg: primaryColor,
+            },
+        }),
+        DatePickerInput: DatePickerInput.extend({
+            defaultProps: {
+                radius: "lg",
             },
         }),
     },

@@ -79,16 +79,18 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return data;
     };
 
+    const shouldOnboard =
+        !!user &&
+        !user.verified &&
+        !user.biography &&
+        !user.gender &&
+        !user.sexualOrientation &&
+        user.pictures?.length === 0;
+
     useEffect(() => {
         checkUser().then((data) => {
             if (data) {
-                if (
-                    !data.user.verified &&
-                    !data.user.biography &&
-                    !data.user.gender &&
-                    !data.user.sexualOrientation &&
-                    data.user.pictures?.length === 0
-                ) {
+                if (shouldOnboard) {
                     navigate("/onboarding");
                 }
             }
@@ -116,6 +118,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 update,
                 metadata,
                 checkUser,
+                shouldOnboard,
             }}
         >
             {children}

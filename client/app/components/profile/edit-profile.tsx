@@ -52,15 +52,13 @@ export default function EditProfile({
         validate: zodResolver(userSchema),
 
         validateInputOnChange: ["biography"],
-
-        onValuesChange(values) {
-            if (values.avatar) {
-                setAvatarSrc(URL.createObjectURL(values.avatar));
-            }
-        },
     });
 
     form.watch("biography", (bio) => setLength(bio.value?.length || 0));
+    form.watch(
+        "avatar",
+        ({ value }) => value && setAvatarSrc(URL.createObjectURL(value))
+    );
 
     useEffect(() => {
         if (Object.entries(form.errors).length > 0) {

@@ -50,7 +50,9 @@ export default function RegisterComponent({ close }: { close?: () => void }) {
             if (close) {
                 close();
             } else {
-                navigate("/onboarding");
+                navigate("/onboarding", {
+                    replace: true,
+                });
                 notifications.show({
                     title: "Confirm your email",
                     message: "We sent you an email to confirm your account",
