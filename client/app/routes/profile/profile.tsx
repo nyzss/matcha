@@ -1,5 +1,5 @@
+import { Carousel } from "@mantine/carousel";
 import {
-    ActionIcon,
     Avatar,
     Badge,
     Box,
@@ -11,21 +11,18 @@ import {
     Text,
     Title,
 } from "@mantine/core";
-import { useEffect, useState } from "react";
-import EditProfile from "~/components/profile/edit-profile";
-import { getImage, getUser } from "~/lib/api";
-import { Carousel } from "@mantine/carousel";
 import { useAuth } from "~/contexts/auth-provider";
+import { getImage, getUser } from "~/lib/api";
 
-import type { Route } from "./+types/profile";
 import {
     IconAlertSquareRoundedFilled,
     IconChevronLeft,
     IconMoodSadSquint,
     IconSettings,
 } from "@tabler/icons-react";
-import { Link, useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
+import { Link, useNavigate } from "react-router";
+import type { Route } from "./+types/profile";
 
 export default function Profile({
     params: { userId: username },
@@ -111,14 +108,14 @@ export default function Profile({
                     </Flex>
                 </Flex>
                 {data?.pictures && data?.pictures.length > 0 ? (
-                    <Carousel withIndicators h={"100%"} loop>
+                    <Carousel withIndicators loop>
                         {data?.pictures.map((image, index) => (
                             <Carousel.Slide key={index} h={"100%"}>
                                 <Image
                                     src={getImage(image)}
                                     alt="profile background"
                                     w={"100%"}
-                                    h={800}
+                                    h={640}
                                     fit="cover"
                                     radius={"md"}
                                 />
@@ -131,6 +128,8 @@ export default function Profile({
                         justify={"center"}
                         direction={"column"}
                         gap={"sm"}
+                        h={"100%"}
+                        py={"lg"}
                     >
                         <IconMoodSadSquint size={150} />
                         <Title>No pictures found</Title>

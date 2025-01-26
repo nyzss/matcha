@@ -19,7 +19,7 @@ export default function Notifications() {
     };
 
     return (
-        <Flex direction={"column"} h={"100%"} gap={"sm"}>
+        <Flex direction={"column"} gap={"sm"}>
             {(isSuccess &&
                 data.notifications.length > 0 &&
                 data.notifications.map((notification, index) => (
