@@ -27,8 +27,11 @@ export default function Filter() {
         queryFn: getFilter,
         select: (data: IFilter) => {
             form.setValues({
-                ...data,
-                age: [data.ageMin, data.ageMax],
+                age: [data.ageMin || 18, data.ageMax || 70],
+                fameRatingMin: data.fameRatingMin || 0,
+                fameRatingMax: data.fameRatingMax || 50,
+                tags: data.tags || [],
+                location: data.location || 10,
             });
             form.resetDirty();
         },

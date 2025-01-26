@@ -58,7 +58,9 @@ export default function LoginComponent({ close }: { close?: () => void }) {
                     title: "Logged in.",
                     message: "You have successfully logged in!",
                 });
-                navigate("/");
+                navigate("/", {
+                    replace: true,
+                });
             }
         }
     };

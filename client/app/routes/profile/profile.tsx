@@ -37,17 +37,9 @@ export default function Profile({
         },
         retry: false,
     });
-    const [isMe, setIsMe] = useState(false);
-    const navigate = useNavigate();
 
     const { user } = useAuth();
-
-    useEffect(() => {
-        const checkIsMe = username === "@me";
-        if (checkIsMe && user) {
-            setIsMe(true);
-        }
-    }, [username]);
+    const navigate = useNavigate();
 
     if (isError) {
         return (
@@ -64,15 +56,12 @@ export default function Profile({
         );
     }
 
-    const images = [
-        "https://api.dicebear.com/9.x/glass/svg?seed=qwertyui",
-        "https://api.dicebear.com/9.x/glass/svg?seed=1234567",
-        "https://api.dicebear.com/9.x/glass/svg?seed=zxcvb1234",
-    ];
+    const isMe = username === "@me" || username === user?.username;
+
     return (
         <Box h={"100%"} pos={"relative"}>
             <LoadingOverlay visible={isPending} />
-            <Card>
+            <Card mih={"100%"}>
                 <Flex direction={"column"} py={16}>
                     <Avatar
                         color="initials"

@@ -11,6 +11,7 @@ import { userAtom } from "~/lib/store";
 import { LoadingOverlay } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import type { ILogin, IRegister, IUser } from "~/types/validation";
+import { useNavigate } from "react-router";
 
 export const AuthContext = createContext<IAuthContext | null>(null);
 
@@ -18,6 +19,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useAtom(userAtom);
     const [loading, setLoading] = useState<boolean>(true);
     const [metadata, setMetadata] = useState<IMetadata | null>(null);
+    const navigate = useNavigate();
 
     const login = async (data: ILogin): Promise<Partial<IProfile> | null> => {
         const result = await authLogin(data);
@@ -64,22 +66,36 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
         return false;
     };
+    const checkUser = async () => {
+        const data = await checkAuth();
+        if (!data) {
+            setUser(null);
+            setMetadata(null);
+        } else {
+            setUser(data.user);
+            setMetadata({ ...data });
+        }
+        setLoading(false);
+        return data;
+    };
+
+    const shouldOnboard =
+        !!user &&
+        !user.verified &&
+        !user.biography &&
+        !user.gender &&
+        !user.sexualOrientation &&
+        user.pictures?.length === 0;
 
     useEffect(() => {
-        const checkUser = async () => {
-            const data = await checkAuth();
-            if (!data) {
-                setUser(null);
-                setMetadata(null);
-            } else {
-                setUser(data.user);
-                setMetadata({ ...data });
+        checkUser().then((data) => {
+            if (data) {
+                if (shouldOnboard) {
+                    navigate("/onboarding");
+                }
             }
-            setLoading(false);
-        };
-
-        checkUser();
-    }, [setUser]);
+        });
+    }, []);
 
     const logged = !!user;
 
@@ -93,7 +109,17 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     return (
         <AuthContext.Provider
-            value={{ user, logged, login, logout, register, update, metadata }}
+            value={{
+                user,
+                logged,
+                login,
+                logout,
+                register,
+                update,
+                metadata,
+                checkUser,
+                shouldOnboard,
+            }}
         >
             {children}
         </AuthContext.Provider>

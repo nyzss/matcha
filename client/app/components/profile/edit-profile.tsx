@@ -19,10 +19,16 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useAuth } from "~/contexts/auth-provider";
 import { getImage } from "~/lib/api";
-import { GENDERS, userSchema } from "~/lib/validation";
+import { GENDERS, SEXUAL_PREFERENCES, userSchema } from "~/lib/validation";
 import type { IUser } from "~/types/validation";
 
-export default function EditProfile() {
+export default function EditProfile({
+    callback,
+    onboarding,
+}: {
+    callback?: () => void;
+    onboarding?: boolean;
+}) {
     const queryClient = useQueryClient();
 
     const { user, update } = useAuth();
@@ -46,21 +52,20 @@ export default function EditProfile() {
         validate: zodResolver(userSchema),
 
         validateInputOnChange: ["biography"],
-
-        onValuesChange(values) {
-            if (values.avatar) {
-                setAvatarSrc(URL.createObjectURL(values.avatar));
-            }
-        },
     });
 
     form.watch("biography", (bio) => setLength(bio.value?.length || 0));
+    form.watch(
+        "avatar",
+        ({ value }) => value && setAvatarSrc(URL.createObjectURL(value))
+    );
 
     useEffect(() => {
         if (Object.entries(form.errors).length > 0) {
+            const message = Object.values(form.errors).join(", ");
             notifications.show({
                 title: "Couldn't update profile",
-                message: form.errors?.[0]?.toString(),
+                message: message,
                 color: "red",
             });
         }
@@ -79,6 +84,9 @@ export default function EditProfile() {
             });
 
             form.resetDirty();
+            if (callback) {
+                callback();
+            }
         }
     });
 
@@ -113,14 +121,7 @@ export default function EditProfile() {
 
     return (
         <form onSubmit={handleSubmit}>
-            <Flex
-                gap={"md"}
-                direction={"column"}
-                mt={"sm"}
-                p={{
-                    sm: "lg",
-                }}
-            >
+            <Flex gap={"md"} direction={"column"} mt={"sm"}>
                 <Flex align={"center"} justify={"space-between"}>
                     <Dropzone
                         accept={IMAGE_MIME_TYPE}
@@ -129,7 +130,6 @@ export default function EditProfile() {
                             form.setFieldValue("avatar", files[0])
                         }
                         {...form.getInputProps("avatar")}
-                        radius={999}
                     >
                         <Flex align={"center"} justify={"center"} gap={"sm"}>
                             <IconUser size={35} />
@@ -183,7 +183,7 @@ export default function EditProfile() {
                     placeholder="Select your sexual preferences"
                     size="md"
                     key={form.key("sexualOrientation")}
-                    data={GENDERS}
+                    data={SEXUAL_PREFERENCES}
                     {...form.getInputProps("sexualOrientation")}
                 />
                 <TagsInput
@@ -204,7 +204,6 @@ export default function EditProfile() {
                             ])
                         }
                         {...form.getInputProps("pictures")}
-                        radius={999}
                     >
                         <Flex align={"center"} justify={"center"} gap={"sm"}>
                             <IconPhoto size={45} />
@@ -260,12 +259,19 @@ export default function EditProfile() {
                     </Card>
                 </Flex>
 
-                <Flex gap={"sm"}>
+                <Flex gap={"sm"} justify={"flex-end"}>
+                    {!onboarding && (
+                        <Button
+                            variant="subtle"
+                            size="md"
+                            onClick={handleCancel}
+                        >
+                            Cancel
+                        </Button>
+                    )}
+
                     <Button size="md" type="submit" disabled={!form.isDirty()}>
-                        Save Changes
-                    </Button>
-                    <Button variant="subtle" size="md" onClick={handleCancel}>
-                        Cancel
+                        {onboarding ? "Proceed" : "Save changes"}
                     </Button>
                 </Flex>
             </Flex>

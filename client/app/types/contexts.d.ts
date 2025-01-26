@@ -6,4 +6,6 @@ interface IAuthContext {
     logged: boolean;
     update: (data: Partial<IUser>) => Promise<boolean>;
     metadata: IMetadata | null;
+    checkUser: () => Promise<IUser>;
+    shouldOnboard: boolean;
 }
