@@ -1,5 +1,6 @@
 import {
     ActionIcon,
+    Anchor,
     Box,
     Flex,
     Menu,
@@ -20,12 +21,21 @@ export default function UserBox() {
         <Box>
             <Flex align="center">
                 <Box mr="xs">
-                    <Text size="sm" fw={700}>
-                        {user?.firstName} {user?.lastName}
-                    </Text>
-                    <Text size="xs" c="dimmed">
-                        @{user?.username}
-                    </Text>
+                    <Box
+                        component={Link}
+                        to={"/profile/@me"}
+                        style={{
+                            textDecoration: "inherit",
+                            color: "inherit",
+                        }}
+                    >
+                        <Text size="sm" fw={700}>
+                            {user?.firstName} {user?.lastName}
+                        </Text>
+                        <Text size="xs" c="dimmed">
+                            @{user?.username}
+                        </Text>
+                    </Box>
                 </Box>
                 <Menu shadow="md" width={200}>
                     <Menu.Target>

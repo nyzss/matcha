@@ -1,4 +1,5 @@
 import {
+    Anchor,
     Box,
     Button,
     Card,
@@ -16,8 +17,9 @@ import {
 import { IconGhost2, IconRefresh } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { Link } from "react-router";
 import Filter from "~/components/match/filter";
-import { getSuggestions, matchUser } from "~/lib/api";
+import { getImage, getSuggestions, matchUser } from "~/lib/api";
 
 export default function Home() {
     const theme = useMantineTheme();
@@ -99,7 +101,9 @@ export default function Home() {
                                     style={{
                                         ...styles,
                                         backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0) 20%, rgba(0,0,0,1)), url(${
-                                            data?.users[index]?.avatar ||
+                                            getImage(
+                                                data?.users[index].avatar
+                                            ) ||
                                             import.meta.env
                                                 .VITE_DEFAULT_AVATAR_URL
                                         })`,
@@ -129,9 +133,19 @@ export default function Home() {
                                                     readOnly
                                                     fractions={10}
                                                 />
-                                                <Title order={3} c="white">
+                                                <Anchor
+                                                    c="white"
+                                                    component={Link}
+                                                    size="xl"
+                                                    fw={"bold"}
+                                                    to={
+                                                        "/profile/" +
+                                                        data?.users[index]
+                                                            .username
+                                                    }
+                                                >
                                                     {`${data?.users[index]?.firstName} ${data?.users[index]?.lastName}, ${data?.users[index]?.age}`}
-                                                </Title>
+                                                </Anchor>
                                             </div>
                                             <Text
                                                 c={"white"}
