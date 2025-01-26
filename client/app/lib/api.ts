@@ -299,20 +299,16 @@ export const mutateConversation = async (
     return await res?.json();
 };
 
-export const verifyMail = async (code: string): Promise<boolean> => {
-    try {
-        const res = await fetcher("/auth/verify-email?code=" + code, {
-            method: "GET",
-        });
+export const verifyEmail = async (code: string): Promise<boolean> => {
+    const res = await fetcher("/auth/verify-email?code=" + code, {
+        method: "GET",
+    });
 
-        if (!res?.ok) {
-            throw new Error("Couldn't verify email");
-        }
-
-        return res.ok;
-    } catch (error) {
-        return false;
+    if (!res?.ok) {
+        throw new Error("Couldn't verify email");
     }
+
+    return res.ok;
 };
 
 export const updateReadConversation = async (convId: string) => {

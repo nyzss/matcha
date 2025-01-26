@@ -8,19 +8,36 @@ import {
     Title,
     useMantineTheme,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import { IconMail } from "@tabler/icons-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import EditProfile from "~/components/profile/edit-profile";
 import { useAuth } from "~/contexts/auth-provider";
+import { verifyEmail } from "~/lib/api";
 
 export default function Onboarding() {
     const [pinValue, setPinValue] = useState<string>();
     const [pinError, setPinError] = useState<boolean>();
 
+    const { user, checkUser } = useAuth();
     const navigate = useNavigate();
     const { primaryColor } = useMantineTheme();
-    const { user } = useAuth();
+
+    const mutateEmail = useMutation({
+        mutationFn: async (code: string) => {
+            return await verifyEmail(code);
+        },
+        onSuccess: async () => {
+            notifications.show({
+                title: "Email verified",
+                message: "Your email has been successfully verified.",
+                color: "green",
+            });
+            return await checkUser();
+        },
+    });
 
     const callback = () => {
         navigate("/");
@@ -31,10 +48,11 @@ export default function Onboarding() {
     ) => {
         e.preventDefault();
         try {
-            console.log("Verifying email with PIN: ", pinValue);
-            setTimeout(() => {
-                console.log("Email verified.");
-            }, 1000);
+            if (!pinValue) {
+                setPinError(true);
+                return;
+            }
+            mutateEmail.mutate(pinValue);
         } catch {
             console.error("Failed to verify email.");
             setPinError(true);

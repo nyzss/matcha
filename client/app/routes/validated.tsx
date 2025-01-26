@@ -15,7 +15,7 @@ import {
 } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router";
-import { verifyMail } from "~/lib/api";
+import { verifyEmail } from "~/lib/api";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
     return (
@@ -48,7 +48,7 @@ export default function EmailValidated() {
             return;
         }
 
-        verifyMail(code)
+        verifyEmail(code)
             .then((val) => {
                 console.log("EMAIL VALIDATED", val);
                 setSuccess(val);
