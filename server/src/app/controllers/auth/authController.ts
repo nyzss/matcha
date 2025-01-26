@@ -1,14 +1,17 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { AuthService } from "../../services/authService";
 import { RegisterForm, AuthResult, LoginForm } from "../../types/auth";
+import { LocalisationService } from "../../services/localisationService";
 
 export class AuthController {
     private app: FastifyInstance;
     private authService: AuthService;
+    private localisationService: LocalisationService
 
     constructor(app: FastifyInstance) {
         this.app = app;
         this.authService = new AuthService(app);
+        this.localisationService = new LocalisationService(app);
     }
 
     async login(request: FastifyRequest, reply: FastifyReply) {
@@ -96,6 +99,25 @@ export class AuthController {
             return await reply
                 .status(400)
                 .send({ error: "Couldn't verify email." });
+        }
+    }
+    async updateLocation(
+        request: FastifyRequest,
+        reply: FastifyReply
+    ) {
+        try {
+            const { lat, lon } = request.body as { lat: number, lon: number };
+
+            await this.localisationService.updateUserLocation(request.user.id, request.ip, lat, lon)
+
+            return await reply.send({
+                status: "ok",
+                message: "Updated location",
+            });
+        } catch (error) {
+            return await reply
+                .status(400)
+                .send({ error: "Couldn't update location." });
         }
     }
 }

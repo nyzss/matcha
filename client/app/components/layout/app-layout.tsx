@@ -13,27 +13,35 @@ import {
 
 import { useDisclosure } from "@mantine/hooks";
 import { IconSearch } from "@tabler/icons-react";
-import { useMemo } from "react";
-import { Link, NavLink, Outlet } from "react-router";
+import { useEffect, useMemo } from "react";
+import { Link, NavLink, Outlet, useLocation } from "react-router";
 import { useAuth } from "~/contexts/auth-provider";
 import { routes } from "./routes";
 import ToggleTheme from "./toggleTheme";
 import UserBox from "./user-box";
 
 export default function AppLayout() {
-    const [opened, { toggle }] = useDisclosure();
+    const [opened, { toggle, close }] = useDisclosure();
     const { logged, metadata } = useAuth();
+    const location = useLocation();
     const navbarAsideWidth: AppShellResponsiveSize = {
-        base: 300,
+        base: 200,
         md: 300,
         lg: 300,
-        xl: 550,
+        xl: 480,
     };
+
     const shown = useMemo(() => {
         return routes.filter(
             (route) => route.auth === undefined || route.auth === logged
         );
     }, [logged]);
+
+    useEffect(() => {
+        if (opened) {
+            close();
+        }
+    }, [location]);
 
     return (
         <AppShell

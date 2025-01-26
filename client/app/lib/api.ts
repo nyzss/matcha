@@ -325,13 +325,17 @@ export const updateReadConversation = async (convId: string) => {
 
 export const updateUserLocation = async (data: GeolocationPosition) => {
     try {
-        const res = await fetcher(`/location`, {
+        const res = await fetcher(`/auth/location`, {
             method: "POST",
             body: JSON.stringify({
-                latitude: data.coords.latitude,
-                longitude: data.coords.longitude,
+                lat: data.coords.latitude,
+                long: data.coords.longitude,
             }),
         });
+
+        if (!res?.ok) {
+            throw new Error("Couldn't update location");
+        }
     } catch (error) {
         console.error("Couldn't update location", error);
     }

@@ -3,6 +3,7 @@ import {
     Box,
     Button,
     Card,
+    Container,
     Flex,
     LoadingOverlay,
     Paper,
@@ -63,163 +64,169 @@ export default function Home() {
     };
 
     return (
-        <Flex
+        <Container
             h={"100%"}
-            direction={"column"}
-            px={{
-                xs: 70,
-                md: "xl",
-                xl: 40,
+            p={{
+                base: "0",
             }}
-            gap={"sm"}
         >
-            <Filter />
+            <Flex h={"100%"} direction={"column"} gap={"sm"}>
+                <Filter />
 
-            <Box pos={"relative"} h={"100%"}>
-                <LoadingOverlay
-                    visible={isPending || isFetching}
-                    overlayProps={{ radius: "sm", blur: 2 }}
-                    transitionProps={{
-                        duration: 500,
-                        transition: "fade",
-                    }}
-                />
+                <Box pos={"relative"} h={"100%"}>
+                    <LoadingOverlay
+                        visible={isPending || isFetching}
+                        overlayProps={{ radius: "sm", blur: 2 }}
+                        transitionProps={{
+                            duration: 500,
+                            transition: "fade",
+                        }}
+                    />
 
-                {data && data?.users.length > 0 ? (
-                    <Box h={"100%"}>
-                        <Transition
-                            mounted={visible}
-                            transition={transition}
-                            duration={300}
-                            timingFunction="ease"
-                        >
-                            {(styles) => (
-                                <Paper
-                                    shadow="md"
-                                    p="xl"
-                                    radius="xs"
-                                    style={{
-                                        ...styles,
-                                        backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0) 20%, rgba(0,0,0,1)), url(${
-                                            getImage(
-                                                data?.users[index].avatar
-                                            ) ||
-                                            import.meta.env
-                                                .VITE_DEFAULT_AVATAR_URL
-                                        })`,
-                                        backgroundSize: "cover",
-                                        backgroundPosition: "center",
-                                    }}
-                                    key={index}
-                                    h={"100%"}
-                                >
-                                    <Flex
-                                        gap={"md"}
-                                        align={"flex-end"}
+                    {data && data?.users.length > 0 ? (
+                        <Box h={"100%"}>
+                            <Transition
+                                mounted={visible}
+                                transition={transition}
+                                duration={300}
+                                timingFunction="ease"
+                            >
+                                {(styles) => (
+                                    <Paper
+                                        shadow="md"
+                                        p="xl"
+                                        style={{
+                                            ...styles,
+                                            backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0) 20%, rgba(0,0,0,1)), url(${
+                                                getImage(
+                                                    data?.users[index].avatar
+                                                ) ||
+                                                import.meta.env
+                                                    .VITE_DEFAULT_AVATAR_URL
+                                            })`,
+                                            backgroundSize: "cover",
+                                            backgroundPosition: "center",
+                                        }}
+                                        radius={"lg"}
+                                        key={index}
                                         h={"100%"}
                                     >
                                         <Flex
-                                            direction={"column"}
                                             gap={"md"}
-                                            w={"100%"}
+                                            align={"flex-end"}
+                                            h={"100%"}
                                         >
-                                            <div style={{ cursor: "default" }}>
-                                                <Rating
-                                                    color={theme.primaryColor}
-                                                    value={
-                                                        data?.users[index]
-                                                            ?.fameRating
-                                                    }
-                                                    readOnly
-                                                    fractions={10}
-                                                />
-                                                <Anchor
-                                                    c="white"
-                                                    component={Link}
-                                                    size="xl"
-                                                    fw={"bold"}
-                                                    to={
-                                                        "/profile/" +
-                                                        data?.users[index]
-                                                            .username
-                                                    }
-                                                >
-                                                    {`${data?.users[index]?.firstName} ${data?.users[index]?.lastName}, ${data?.users[index]?.age}`}
-                                                </Anchor>
-                                            </div>
-                                            <Text
-                                                c={"white"}
-                                                style={{ cursor: "default" }}
+                                            <Flex
+                                                direction={"column"}
+                                                gap={"md"}
+                                                w={"100%"}
                                             >
-                                                {data?.users[index]
-                                                    ?.biography ||
-                                                    "No biography"}
-                                            </Text>
-                                            <Flex gap={"sm"}>
-                                                <Button
-                                                    variant="light"
-                                                    color="red"
-                                                    size="lg"
-                                                    c={"red"}
-                                                    onClick={handlePass}
-                                                    fullWidth
+                                                <div
+                                                    style={{
+                                                        cursor: "default",
+                                                    }}
                                                 >
-                                                    Pass
-                                                </Button>
-                                                <Button
-                                                    variant="light"
-                                                    color="green"
-                                                    size="lg"
-                                                    c={"green"}
-                                                    onClick={handleMatch}
-                                                    fullWidth
+                                                    <Rating
+                                                        color={
+                                                            theme.primaryColor
+                                                        }
+                                                        value={
+                                                            data?.users[index]
+                                                                ?.fameRating
+                                                        }
+                                                        readOnly
+                                                        fractions={10}
+                                                    />
+                                                    <Anchor
+                                                        c="white"
+                                                        component={Link}
+                                                        size="xl"
+                                                        fw={"bold"}
+                                                        to={
+                                                            "/profile/" +
+                                                            data?.users[index]
+                                                                .username
+                                                        }
+                                                    >
+                                                        {`${data?.users[index]?.firstName} ${data?.users[index]?.lastName}, ${data?.users[index]?.age}`}
+                                                    </Anchor>
+                                                </div>
+                                                <Text
+                                                    c={"white"}
+                                                    style={{
+                                                        cursor: "default",
+                                                    }}
                                                 >
-                                                    Match
-                                                </Button>
+                                                    {data?.users[index]
+                                                        ?.biography ||
+                                                        "No biography"}
+                                                </Text>
+                                                <Flex gap={"sm"}>
+                                                    <Button
+                                                        variant="light"
+                                                        color="red"
+                                                        size="lg"
+                                                        c={"red"}
+                                                        onClick={handlePass}
+                                                        fullWidth
+                                                    >
+                                                        Pass
+                                                    </Button>
+                                                    <Button
+                                                        variant="light"
+                                                        color="green"
+                                                        size="lg"
+                                                        c={"green"}
+                                                        onClick={handleMatch}
+                                                        fullWidth
+                                                    >
+                                                        Match
+                                                    </Button>
+                                                </Flex>
                                             </Flex>
                                         </Flex>
-                                    </Flex>
-                                </Paper>
-                            )}
-                        </Transition>
-                    </Box>
-                ) : (
-                    <Card
-                        h={"100%"}
-                        style={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
-                        px={50}
-                    >
-                        <Flex
-                            direction={"column"}
-                            align={"center"}
-                            justify={"center"}
+                                    </Paper>
+                                )}
+                            </Transition>
+                        </Box>
+                    ) : (
+                        <Card
                             h={"100%"}
-                            gap={"xs"}
+                            style={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
+                            px={50}
                         >
-                            <ThemeIcon
-                                variant="transparent"
-                                size={200}
-                                radius={999}
+                            <Flex
+                                direction={"column"}
+                                align={"center"}
+                                justify={"center"}
+                                h={"100%"}
+                                gap={"xs"}
                             >
-                                <IconGhost2 size={150} />
-                            </ThemeIcon>
-                            <Title>No matches found</Title>
-                            <Text>
-                                Try changing your filter settings or come back
-                                later!
-                            </Text>
-                            <Button
-                                onClick={() => refetch()}
-                                variant="transparent"
-                                leftSection={<IconRefresh />}
-                                loading={isFetching}
-                            >
-                                Retry
-                            </Button>
-                        </Flex>
-                    </Card>
-                )}
-            </Box>
-        </Flex>
+                                <ThemeIcon
+                                    variant="transparent"
+                                    size={200}
+                                    radius={999}
+                                >
+                                    <IconGhost2 size={150} />
+                                </ThemeIcon>
+                                <Title>No matches found</Title>
+                                <Text>
+                                    Try changing your filter settings or come
+                                    back later!
+                                </Text>
+                                <Button
+                                    onClick={() => refetch()}
+                                    variant="transparent"
+                                    leftSection={<IconRefresh />}
+                                    loading={isFetching}
+                                >
+                                    Retry
+                                </Button>
+                            </Flex>
+                        </Card>
+                    )}
+                </Box>
+            </Flex>
+        </Container>
     );
 }
