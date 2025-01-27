@@ -38,7 +38,8 @@ export interface userSettings {
 
 export interface userProfileSettings {
     avatar?: string,
-    username?: string,
+    firstName?: string,
+    lastName?: string,
     gender?: TUserGender,
     biography?: string,
     sexualOrientation?: TUserSexualOrientation,

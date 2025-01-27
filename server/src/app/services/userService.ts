@@ -356,21 +356,16 @@ export class UserService {
 
         for (const [key, value] of Object.entries(form)) {
             if (value !== undefined) {
-                const dbKey =
-                    key === "sexualOrientation" ? "sexual_orientation" : key;
+                let dbKey: string;
 
-                if (key === "username") {
-                    const [existingUser] = await this.orm.query(
-                        `
-                            SELECT id
-                            FROM profiles
-                            WHERE username = $1
-                        `,
-                        [value]
-                    );
-
-                    if (existingUser)
-                        throw new Error("Username is already taken");
+                if (key === "sexualOrientation") {
+                    dbKey = "sexual_orientation";
+                } else if (key === "firstName") {
+                    dbKey = "first_name";
+                } else if (key === "lastName") {
+                    dbKey = "last_name";
+                } else {
+                    dbKey = key;
                 }
 
                 updates.push(`${dbKey} = $${index++}`);

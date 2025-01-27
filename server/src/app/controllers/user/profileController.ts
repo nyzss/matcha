@@ -60,7 +60,8 @@ export class ProfileController {
             for await (const part of files) { // iterate the async generator
                 const fieldsType = [
                     "avatar",
-                    "username",
+                    "firstName",
+                    "lastName",
                     "gender",
                     "biography",
                     "sexualOrientation",
@@ -114,14 +115,11 @@ export class ProfileController {
                 }
             }
 
-            if (form?.username && form?.username === request.user.username) {
-                delete form.username;
-            }
-
             const user = await this.userService.updateProfile(userID, {
                 avatar: form?.avatar,
                 pictures: form?.pictures,
-                username: form?.username,
+                firstName: form?.firstName,
+                lastName: form?.lastName,
                 gender: form?.gender,
                 biography: form?.biography,
                 sexualOrientation: form?.sexualOrientation,
