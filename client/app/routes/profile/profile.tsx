@@ -111,11 +111,21 @@ export default function Profile({
                         </Tooltip>
                         <Badge
                             radius={"md"}
-                            color={data?.user.isOnline ? "green" : "red"}
+                            color={
+                                isMe
+                                    ? "green"
+                                    : data?.user.isOnline
+                                    ? "green"
+                                    : "red"
+                            }
                             variant="light"
                             ml={"auto"}
                         >
-                            {data?.user.isOnline ? "Online" : "Offline"}
+                            {isMe
+                                ? "Online"
+                                : data?.user.isOnline
+                                ? "Online"
+                                : "Offline"}
                         </Badge>
                     </Flex>
                     <Flex
@@ -177,7 +187,7 @@ export default function Profile({
                     <Flex gap={"md"} wrap={"wrap"}>
                         {data?.user.tags && data?.user.tags.length > 0 ? (
                             data?.user.tags?.map((tag) => (
-                                <Badge key={tag} size="lg">
+                                <Badge key={tag} size="lg" variant="light">
                                     {tag}
                                 </Badge>
                             ))
