@@ -38,9 +38,9 @@ import {
     IconUserOff,
 } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import dayjs from "dayjs";
 import { Link, useNavigate } from "react-router";
 import type { Route } from "./+types/profile";
-
 export default function Profile({
     params: { userId: username },
 }: Route.ComponentProps) {
@@ -160,24 +160,30 @@ export default function Profile({
                             </Indicator>
                         </Tooltip>
                         <Flex gap={"sm"} justify={"flex-end"} w={"100%"}>
-                            <Badge
-                                radius={"md"}
-                                mt={4}
-                                color={
-                                    isMe
-                                        ? "green"
-                                        : data?.user.isOnline
-                                        ? "green"
-                                        : "red"
-                                }
-                                variant="light"
+                            <Tooltip
+                                label={`Last seen ${dayjs(
+                                    data?.user.lastConnection
+                                ).fromNow()}`}
                             >
-                                {isMe
-                                    ? "Online"
-                                    : data?.user.isOnline
-                                    ? "Online"
-                                    : "Offline"}
-                            </Badge>
+                                <Badge
+                                    radius={"md"}
+                                    mt={4}
+                                    color={
+                                        isMe
+                                            ? "green"
+                                            : data?.user.isOnline
+                                            ? "green"
+                                            : "red"
+                                    }
+                                    variant="light"
+                                >
+                                    {isMe
+                                        ? "Online"
+                                        : data?.user.isOnline
+                                        ? "Online"
+                                        : "Offline"}
+                                </Badge>
+                            </Tooltip>
                             {!isMe && (
                                 <Menu>
                                     <Menu.Target>
