@@ -16,6 +16,11 @@ interface IProfile {
     age: number;
 }
 
+interface IOtherProfile extends IProfile {
+    isConnected: boolean;
+    isOnline: boolean;
+}
+
 interface IMetadata {
     notifications: number;
     views: number;

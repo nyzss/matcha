@@ -160,13 +160,13 @@ export const checkAuth = async (): Promise<IAuth | false> => {
 
 export const getUser = async (
     username: string
-): Promise<{ user: IProfile; liked: boolean } | null> => {
+): Promise<{ user: IOtherProfile; liked: boolean } | null> => {
     const res = await fetcher("/profile/" + username);
 
     if (!res?.ok) {
         throw new Error("Couldn't find user");
     }
-    const json: { user: IProfile; liked: boolean } = await res?.json();
+    const json: { user: IOtherProfile; liked: boolean } = await res?.json();
     return json;
 };
 

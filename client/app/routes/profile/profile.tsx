@@ -7,9 +7,11 @@ import {
     Card,
     Flex,
     Image,
+    Indicator,
     LoadingOverlay,
     Text,
     Title,
+    Tooltip,
 } from "@mantine/core";
 import { useAuth } from "~/contexts/auth-provider";
 import { getImage, getUser, likeUser, unLikeUser } from "~/lib/api";
@@ -85,13 +87,37 @@ export default function Profile({
             <LoadingOverlay visible={isPending} />
             <Card mih={"100%"}>
                 <Flex direction={"column"} py={16}>
-                    <Avatar
-                        color="initials"
-                        name={`${data?.user.firstName} ${data?.user.lastName}`}
-                        size={100}
-                        mt={8}
-                        src={getImage(data?.user.avatar)}
-                    />
+                    <Flex>
+                        <Tooltip
+                            label="You have both matched each other"
+                            disabled={!data?.user.isConnected}
+                        >
+                            <Indicator
+                                inline
+                                label={<IconHeart size={20} />}
+                                size={26}
+                                offset={10}
+                                flex={"none"}
+                                disabled={!data?.user.isConnected}
+                                withBorder
+                            >
+                                <Avatar
+                                    color="initials"
+                                    name={`${data?.user.firstName} ${data?.user.lastName}`}
+                                    size={100}
+                                    src={getImage(data?.user.avatar)}
+                                />
+                            </Indicator>
+                        </Tooltip>
+                        <Badge
+                            radius={"md"}
+                            color={data?.user.isOnline ? "green" : "red"}
+                            variant="light"
+                            ml={"auto"}
+                        >
+                            {data?.user.isOnline ? "Online" : "Offline"}
+                        </Badge>
+                    </Flex>
                     <Flex
                         direction={{
                             base: "column",
@@ -116,27 +142,25 @@ export default function Profile({
                                 Edit Profile
                             </Button>
                         )) || (
-                            <Box>
+                            <Box ml={"auto"} flex={"none"}>
                                 {(!data?.liked && (
                                     <Button
-                                        ml={{ sm: "auto" }}
                                         variant="light"
                                         c={"red"}
-                                        flex={"none"}
                                         leftSection={<IconHeart />}
                                         onClick={() => mutateLike.mutate()}
+                                        loading={mutateLike.isPending}
                                     >
                                         Match
                                     </Button>
                                 )) || (
                                     <Button
-                                        ml={{ sm: "auto" }}
                                         variant="light"
                                         c={"teal"}
-                                        flex={"none"}
                                         leftSection={<IconHeartBroken />}
                                         color="teal"
                                         onClick={() => mutateUnlike.mutate()}
+                                        loading={mutateUnlike.isPending}
                                     >
                                         Unmatch
                                     </Button>
