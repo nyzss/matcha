@@ -1,5 +1,6 @@
 import { Carousel } from "@mantine/carousel";
 import {
+    ActionIcon,
     Avatar,
     Badge,
     Box,
@@ -9,20 +10,31 @@ import {
     Image,
     Indicator,
     LoadingOverlay,
+    Menu,
     Text,
     Title,
     Tooltip,
 } from "@mantine/core";
 import { useAuth } from "~/contexts/auth-provider";
-import { getImage, getUser, likeUser, unLikeUser } from "~/lib/api";
+import {
+    blockUser,
+    getImage,
+    getUser,
+    likeUser,
+    reportUser,
+    unLikeUser,
+} from "~/lib/api";
 
+import { notifications } from "@mantine/notifications";
 import {
     IconAlertSquareRoundedFilled,
     IconChevronLeft,
+    IconFlag,
     IconHeart,
     IconHeartBroken,
     IconMoodSadSquint,
     IconSettings,
+    IconUserOff,
 } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router";
@@ -58,6 +70,38 @@ export default function Profile({
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["profile", username],
+            });
+        },
+    });
+
+    const mutateBlock = useMutation({
+        mutationFn: async () => {
+            return blockUser(username);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["profile", username],
+            });
+        },
+    });
+
+    const mutateReport = useMutation({
+        mutationFn: async () => {
+            return reportUser(username);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["profile", username],
+            });
+            notifications.show({
+                title: "User reported",
+                message: "The user has been reported",
+            });
+        },
+        onError: () => {
+            notifications.show({
+                title: "Already reported",
+                message: "You've already reported this user",
             });
         },
     });
@@ -109,24 +153,50 @@ export default function Profile({
                                 />
                             </Indicator>
                         </Tooltip>
-                        <Badge
-                            radius={"md"}
-                            color={
-                                isMe
-                                    ? "green"
+                        <Flex gap={"sm"} justify={"flex-end"} w={"100%"}>
+                            <Menu>
+                                <Menu.Target>
+                                    <ActionIcon
+                                        variant="transparent"
+                                        color="dimmed"
+                                    >
+                                        <IconFlag />
+                                    </ActionIcon>
+                                </Menu.Target>
+                                <Menu.Dropdown>
+                                    <Menu.Item
+                                        leftSection={<IconFlag />}
+                                        onClick={() => mutateReport.mutate()}
+                                    >
+                                        Report
+                                    </Menu.Item>
+                                    <Menu.Item
+                                        leftSection={<IconUserOff />}
+                                        color="red"
+                                        onClick={() => mutateBlock.mutate()}
+                                    >
+                                        Block
+                                    </Menu.Item>
+                                </Menu.Dropdown>
+                            </Menu>
+                            <Badge
+                                radius={"md"}
+                                color={
+                                    isMe
+                                        ? "green"
+                                        : data?.user.isOnline
+                                        ? "green"
+                                        : "red"
+                                }
+                                variant="light"
+                            >
+                                {isMe
+                                    ? "Online"
                                     : data?.user.isOnline
-                                    ? "green"
-                                    : "red"
-                            }
-                            variant="light"
-                            ml={"auto"}
-                        >
-                            {isMe
-                                ? "Online"
-                                : data?.user.isOnline
-                                ? "Online"
-                                : "Offline"}
-                        </Badge>
+                                    ? "Online"
+                                    : "Offline"}
+                            </Badge>
+                        </Flex>
                     </Flex>
                     <Flex
                         direction={{

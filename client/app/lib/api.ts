@@ -443,3 +443,39 @@ export const unLikeUser = async (username: string) => {
 
     return await res?.json();
 };
+
+export const blockUser = async (username: string) => {
+    const res = await fetcher(`/profile/${username}/block`, {
+        method: "PUT",
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't block user");
+    }
+
+    return await res?.json();
+};
+
+export const unblockUser = async (username: string) => {
+    const res = await fetcher(`/profile/${username}/block`, {
+        method: "DELETE",
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't unblock user");
+    }
+
+    return await res?.json();
+};
+
+export const reportUser = async (username: string) => {
+    const res = await fetcher(`/profile/${username}/report`, {
+        method: "PUT",
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't report user");
+    }
+
+    return await res?.json();
+};

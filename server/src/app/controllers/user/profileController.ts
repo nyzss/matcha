@@ -211,7 +211,7 @@ export class ProfileController {
 
             return {message: "User reported"};
         } catch (error: Error | any) {
-            return reply.status(404).send({error: error.message});
+            return reply.status(400).send({error: error.message});
         }
     }
 
