@@ -29,6 +29,7 @@ import { notifications } from "@mantine/notifications";
 import {
     IconAlertSquareRoundedFilled,
     IconChevronLeft,
+    IconDots,
     IconFlag,
     IconHeart,
     IconHeartBroken,
@@ -84,6 +85,17 @@ export default function Profile({
             });
         },
     });
+
+    // const mutateUnblock = useMutation({
+    //     mutationFn: async () => {
+    //         return unblockUser(username);
+    //     },
+    //     onSuccess: () => {
+    //         queryClient.invalidateQueries({
+    //             queryKey: ["profile", username],
+    //         });
+    //     },
+    // });
 
     const mutateReport = useMutation({
         mutationFn: async () => {
@@ -154,13 +166,28 @@ export default function Profile({
                             </Indicator>
                         </Tooltip>
                         <Flex gap={"sm"} justify={"flex-end"} w={"100%"}>
+                            <Badge
+                                radius={"md"}
+                                mt={4}
+                                color={
+                                    isMe
+                                        ? "green"
+                                        : data?.user.isOnline
+                                        ? "green"
+                                        : "red"
+                                }
+                                variant="light"
+                            >
+                                {isMe
+                                    ? "Online"
+                                    : data?.user.isOnline
+                                    ? "Online"
+                                    : "Offline"}
+                            </Badge>
                             <Menu>
                                 <Menu.Target>
-                                    <ActionIcon
-                                        variant="transparent"
-                                        color="dimmed"
-                                    >
-                                        <IconFlag />
+                                    <ActionIcon variant="subtle" color="dimmed">
+                                        <IconDots />
                                     </ActionIcon>
                                 </Menu.Target>
                                 <Menu.Dropdown>
@@ -179,23 +206,6 @@ export default function Profile({
                                     </Menu.Item>
                                 </Menu.Dropdown>
                             </Menu>
-                            <Badge
-                                radius={"md"}
-                                color={
-                                    isMe
-                                        ? "green"
-                                        : data?.user.isOnline
-                                        ? "green"
-                                        : "red"
-                                }
-                                variant="light"
-                            >
-                                {isMe
-                                    ? "Online"
-                                    : data?.user.isOnline
-                                    ? "Online"
-                                    : "Offline"}
-                            </Badge>
                         </Flex>
                     </Flex>
                     <Flex
