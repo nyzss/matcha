@@ -158,14 +158,16 @@ export const checkAuth = async (): Promise<IAuth | false> => {
     }
 };
 
-export const getUser = async (username: string): Promise<IProfile | null> => {
+export const getUser = async (
+    username: string
+): Promise<{ user: IProfile; liked: boolean } | null> => {
     const res = await fetcher("/profile/" + username);
 
     if (!res?.ok) {
         throw new Error("Couldn't find user");
     }
-    const json = await res?.json();
-    return json.user;
+    const json: { user: IProfile; liked: boolean } = await res?.json();
+    return json;
 };
 
 export const updateUser = async (
@@ -416,4 +418,28 @@ export const getNotifications = async () => {
 
     const data: INotificationsList = await res.json();
     return data;
+};
+
+export const likeUser = async (username: string) => {
+    const res = await fetcher(`/profile/${username}/like`, {
+        method: "PUT",
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't match user");
+    }
+
+    return await res?.json();
+};
+
+export const unLikeUser = async (username: string) => {
+    const res = await fetcher(`/profile/${username}/like`, {
+        method: "DELETE",
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't unmatch user");
+    }
+
+    return await res?.json();
 };

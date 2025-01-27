@@ -12,27 +12,52 @@ import {
     Title,
 } from "@mantine/core";
 import { useAuth } from "~/contexts/auth-provider";
-import { getImage, getUser } from "~/lib/api";
+import { getImage, getUser, likeUser, unLikeUser } from "~/lib/api";
 
 import {
     IconAlertSquareRoundedFilled,
     IconChevronLeft,
+    IconHeart,
+    IconHeartBroken,
     IconMoodSadSquint,
     IconSettings,
 } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router";
 import type { Route } from "./+types/profile";
 
 export default function Profile({
     params: { userId: username },
 }: Route.ComponentProps) {
+    const queryClient = useQueryClient();
     const { data, isPending, isError } = useQuery({
         queryKey: ["profile", username],
         queryFn: async () => {
             return getUser(username);
         },
         retry: false,
+    });
+
+    const mutateLike = useMutation({
+        mutationFn: async () => {
+            return likeUser(username);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["profile", username],
+            });
+        },
+    });
+
+    const mutateUnlike = useMutation({
+        mutationFn: async () => {
+            return unLikeUser(username);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["profile", username],
+            });
+        },
     });
 
     const { user } = useAuth();
@@ -62,10 +87,10 @@ export default function Profile({
                 <Flex direction={"column"} py={16}>
                     <Avatar
                         color="initials"
-                        name={`${data?.firstName} ${data?.lastName}`}
+                        name={`${data?.user.firstName} ${data?.user.lastName}`}
                         size={100}
                         mt={8}
-                        src={getImage(data?.avatar)}
+                        src={getImage(data?.user.avatar)}
                     />
                     <Flex
                         direction={{
@@ -74,10 +99,10 @@ export default function Profile({
                         }}
                     >
                         <Text size="xl" fw={"bold"} mt={4}>
-                            {data?.firstName} {data?.lastName} (@
-                            {data?.username})
+                            {data?.user.firstName} {data?.user.lastName} (@
+                            {data?.user.username})
                         </Text>
-                        {isMe && (
+                        {(isMe && (
                             <Button
                                 ml={{
                                     sm: "auto",
@@ -85,19 +110,49 @@ export default function Profile({
                                 variant="light"
                                 component={Link}
                                 to={"/settings"}
+                                flex={"none"}
                                 leftSection={<IconSettings />}
                             >
                                 Edit Profile
                             </Button>
+                        )) || (
+                            <Box>
+                                {(!data?.liked && (
+                                    <Button
+                                        ml={{ sm: "auto" }}
+                                        variant="light"
+                                        c={"red"}
+                                        flex={"none"}
+                                        leftSection={<IconHeart />}
+                                        onClick={() => mutateLike.mutate()}
+                                    >
+                                        Match
+                                    </Button>
+                                )) || (
+                                    <Button
+                                        ml={{ sm: "auto" }}
+                                        variant="light"
+                                        c={"teal"}
+                                        flex={"none"}
+                                        leftSection={<IconHeartBroken />}
+                                        color="teal"
+                                        onClick={() => mutateUnlike.mutate()}
+                                    >
+                                        Unmatch
+                                    </Button>
+                                )}
+                            </Box>
                         )}
                     </Flex>
-                    <Text mt={8}>{data?.biography || "No biography set"}</Text>
+                    <Text mt={8}>
+                        {data?.user.biography || "No biography set"}
+                    </Text>
                     <Text fw={"bold"} size="md" mt={8} mb={4}>
                         Interests
                     </Text>
                     <Flex gap={"md"} wrap={"wrap"}>
-                        {data?.tags && data?.tags.length > 0 ? (
-                            data?.tags?.map((tag) => (
+                        {data?.user.tags && data?.user.tags.length > 0 ? (
+                            data?.user.tags?.map((tag) => (
                                 <Badge key={tag} size="lg">
                                     {tag}
                                 </Badge>
@@ -107,9 +162,9 @@ export default function Profile({
                         )}
                     </Flex>
                 </Flex>
-                {data?.pictures && data?.pictures.length > 0 ? (
+                {data?.user.pictures && data?.user.pictures.length > 0 ? (
                     <Carousel withIndicators loop>
-                        {data?.pictures.map((image, index) => (
+                        {data?.user.pictures.map((image, index) => (
                             <Carousel.Slide key={index} h={"100%"}>
                                 <Image
                                     src={getImage(image)}

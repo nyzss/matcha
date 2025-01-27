@@ -16,6 +16,8 @@ export default function Notifications() {
                 return "liked your profile";
             case "View":
                 return "has viewed your profile";
+            case "RequestMatch":
+                return "wants to match with you";
             default:
                 return type;
         }

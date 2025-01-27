@@ -38,9 +38,11 @@ export class ProfileController {
             if (request?.user?.id !== user.id)
                 await this.userService.addView(request?.user?.id, user.id);
 
+            const liked = await this.userService.getLike(user.id, request?.user?.id);
+
             return {
                 user: user,
-
+                liked: liked.like.me
             };
         } catch (error) {
             return reply.status(404).send({ error: "User not found" });
