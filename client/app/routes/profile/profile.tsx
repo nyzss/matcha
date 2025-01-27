@@ -83,19 +83,13 @@ export default function Profile({
             queryClient.invalidateQueries({
                 queryKey: ["profile", username],
             });
+
+            notifications.show({
+                title: "User blocked",
+                message: "The user has been blocked",
+            });
         },
     });
-
-    // const mutateUnblock = useMutation({
-    //     mutationFn: async () => {
-    //         return unblockUser(username);
-    //     },
-    //     onSuccess: () => {
-    //         queryClient.invalidateQueries({
-    //             queryKey: ["profile", username],
-    //         });
-    //     },
-    // });
 
     const mutateReport = useMutation({
         mutationFn: async () => {
@@ -184,28 +178,35 @@ export default function Profile({
                                     ? "Online"
                                     : "Offline"}
                             </Badge>
-                            <Menu>
-                                <Menu.Target>
-                                    <ActionIcon variant="subtle" color="dimmed">
-                                        <IconDots />
-                                    </ActionIcon>
-                                </Menu.Target>
-                                <Menu.Dropdown>
-                                    <Menu.Item
-                                        leftSection={<IconFlag />}
-                                        onClick={() => mutateReport.mutate()}
-                                    >
-                                        Report
-                                    </Menu.Item>
-                                    <Menu.Item
-                                        leftSection={<IconUserOff />}
-                                        color="red"
-                                        onClick={() => mutateBlock.mutate()}
-                                    >
-                                        Block
-                                    </Menu.Item>
-                                </Menu.Dropdown>
-                            </Menu>
+                            {!isMe && (
+                                <Menu>
+                                    <Menu.Target>
+                                        <ActionIcon
+                                            variant="subtle"
+                                            color="dimmed"
+                                        >
+                                            <IconDots />
+                                        </ActionIcon>
+                                    </Menu.Target>
+                                    <Menu.Dropdown>
+                                        <Menu.Item
+                                            leftSection={<IconFlag />}
+                                            onClick={() =>
+                                                mutateReport.mutate()
+                                            }
+                                        >
+                                            Report
+                                        </Menu.Item>
+                                        <Menu.Item
+                                            leftSection={<IconUserOff />}
+                                            color="red"
+                                            onClick={() => mutateBlock.mutate()}
+                                        >
+                                            Block
+                                        </Menu.Item>
+                                    </Menu.Dropdown>
+                                </Menu>
+                            )}
                         </Flex>
                     </Flex>
                     <Flex

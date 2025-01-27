@@ -479,3 +479,17 @@ export const reportUser = async (username: string) => {
 
     return await res?.json();
 };
+
+export const getBlockedUsers = async () => {
+    const url = "/profile/@me/block";
+
+    const res = await fetcher(url);
+
+    if (!res?.ok) {
+        throw new Error("Couldn't fetch blocked users");
+    }
+
+    const data: IBlockedUsers = await res.json();
+
+    return data;
+};

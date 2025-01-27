@@ -2,6 +2,7 @@ import { useAuth } from "~/contexts/auth-provider";
 import {
     fetchConversation,
     fetchMessageHistory,
+    getImage,
     mutateMessage,
     updateReadConversation,
 } from "~/lib/api";
@@ -184,6 +185,7 @@ export default function SingleChat({
                         color="initials"
                         name={`${conversation?.users[0].firstName} ${conversation?.users[0].lastName}`}
                         size={45}
+                        src={getImage(conversation?.users[0].avatar)}
                     />
                     <Title fz={"lg"}>
                         {`${conversation?.users[0].firstName} ${conversation?.users[0].lastName} (@${conversation?.users[0].username})`}{" "}

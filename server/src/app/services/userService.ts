@@ -201,7 +201,7 @@ export class UserService {
 
     async getBlockedUsers(id: number): Promise<any> {
         const blocks = await this.orm.query(
-            `SELECT blocker_id FROM blocks WHERE user_id = $1`,
+            `SELECT user_id FROM blocks WHERE blocker_id = $1`,
             [id]
         );
 
@@ -209,8 +209,8 @@ export class UserService {
             total: blocks.length,
             users: await Promise.all(
                 blocks.map(
-                    async (block: { blocker_id: number }) =>
-                        await this.getUserById(block.blocker_id)
+                    async (block: { user_id: number }) =>
+                        await this.getUserById(block.user_id)
                 )
             ),
         };
