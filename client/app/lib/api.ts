@@ -521,3 +521,21 @@ export const getLiked = async () => {
 
     return data;
 };
+
+export const getNotificationsNumber = async () => {
+    try {
+        const url = "/profile/@me/total-notifications";
+
+        const res = await fetcher(url);
+
+        if (!res?.ok) {
+            throw new Error("Couldn't fetch total notifications");
+        }
+
+        const data: { total: number } = await res.json();
+
+        return data;
+    } catch {
+        return { total: 0 };
+    }
+};

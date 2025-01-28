@@ -1,4 +1,4 @@
-import { Box, Card, Flex, Group, Text, Title } from "@mantine/core";
+import { Card, Flex, Text, Title } from "@mantine/core";
 import { IconBell, IconMoodSmileBeam } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";

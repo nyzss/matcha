@@ -8,4 +8,5 @@ interface IAuthContext {
     metadata: IMetadata | null;
     checkUser: () => Promise<IUser>;
     shouldOnboard: boolean;
+    updateNotifications: () => Promise<void>;
 }
