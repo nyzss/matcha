@@ -181,9 +181,19 @@ export class ProfileController {
     async getProfileLike(request: FastifyRequest, reply: FastifyReply) {
         try {
             const { username } = request.params as { username: string };
-            const user = await this.userService.getUserByUsername(username);
 
-            return await this.userService.getLike(user.id, request?.user?.id);
+            if (request.url.endsWith("/@me/like")) {
+                const user = request.user;
+
+                const likes = await this.userService.getAllLikes(user.id);
+
+                return likes
+            } else {
+                const user = await this.userService.getUserByUsername(username);
+
+                return await this.userService.getLike(user.id, request?.user?.id);
+            }
+
         } catch (error: Error | any) {
             return reply.status(404).send({error: error.message});
         }

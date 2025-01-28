@@ -3,6 +3,7 @@ import { ORM, TableSchema } from "../types/orm";
 import {
     userProfile,
     userProfileLike,
+    userProfileLikes,
     userProfileSettings,
     userProfileView,
 } from "../types/member";
@@ -513,6 +514,20 @@ export class UserService {
                 me: hasLiked,
                 count: likes.length,
             },
+        };
+    }
+
+    async getAllLikes(meId: number): Promise<userProfileLikes> {
+        const likes = await this.orm.query(
+            `SELECT liker_id FROM likes WHERE user_id = $1`,
+            [meId]
+        );
+
+        return {
+            total: likes.length,
+            users: await Promise.all(
+                likes.map(async (like: { liker_id: number}) => await this.getUserById(like.liker_id))
+            )
         };
     }
 

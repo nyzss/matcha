@@ -507,3 +507,17 @@ export const getViews = async () => {
 
     return data;
 };
+
+export const getLiked = async () => {
+    const url = "/profile/@me/like";
+
+    const res = await fetcher(url);
+
+    if (!res?.ok) {
+        throw new Error("Couldn't fetch users that liked you");
+    }
+
+    const data: IUsersInteraction = await res.json();
+
+    return data;
+};

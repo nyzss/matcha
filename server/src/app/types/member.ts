@@ -75,6 +75,11 @@ export interface userProfileLike {
     },
 }
 
+export interface userProfileLikes {
+    total: number;
+    users: userProfile[];
+}
+
 export interface userProfileView {
     total: number;
     users: userProfile[];

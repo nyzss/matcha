@@ -1,19 +1,19 @@
 import { Box, LoadingOverlay, Text } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
-import { getViews } from "~/lib/api";
+import { getLiked } from "~/lib/api";
 import List from "./list";
 
-export default function ViewsList() {
+export default function LikedList() {
     const { data, isPending } = useQuery({
         queryKey: ["views"],
-        queryFn: getViews,
+        queryFn: getLiked,
     });
 
     return (
         <Box pos={"relative"} py={"sm"}>
             <LoadingOverlay visible={isPending} />
             <Text mb={"sm"} c={"dimmed"}>
-                Users who viewed your profile will appear here.{" "}
+                Users who liked your profile will appear here.{" "}
             </Text>
             {data && <List data={data} />}
         </Box>
