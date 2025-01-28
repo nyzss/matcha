@@ -10,18 +10,33 @@ export const transporter = nodemailer.createTransport({
     },
 });
 
-export const sendMail = async (to: string, code: string) => {
-    const link = `${process.env.FRONTEND_URL}/verify?code=${code}`;
+export const sendMail = async (
+    to: string,
+    code: string,
+    type: "confirmation" | "reset" = "confirmation"
+) => {
+    const link =
+        type === "confirmation"
+            ? `${process.env.FRONTEND_URL}/verify?code=${code}`
+            : `${process.env.FRONTEND_URL}/reset?code=${code}`;
+
+    const html =
+        type === "confirmation"
+            ? templateMailConfirmation(code, link)
+            : templatePasswordReset(link);
 
     return await transporter.sendMail({
         from: '"Matcha" <okoca@matchaa.me>',
+        subject:
+            type === "confirmation"
+                ? "Confirm Your Account"
+                : "Reset Your Password",
         to,
-        subject: "Confirm your email",
-        html: templateMail(code, link),
+        html,
     });
 };
 
-export const templateMail = (code: string, link: string) => {
+export const templateMailConfirmation = (code: string, link: string) => {
     return `
         <!DOCTYPE html>
         <html lang="en">
@@ -118,6 +133,104 @@ export const templateMail = (code: string, link: string) => {
                             below:
                         </p>
                         <a href="${link}" class="email-button">Confirm Account</a>
+                    </div>
+                    <div class="email-footer">
+                        <p>&copy; 2024 Matcha. School project<sup>™</sup></p>
+                    </div>
+                </div>
+            </body>
+        </html>
+    `;
+};
+
+export const templatePasswordReset = (link: string) => {
+    return `
+        <!DOCTYPE html>
+        <html lang="en">
+            <head>
+                <meta charset="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <title>Reset Your Password</title>
+                <link rel="preconnect" href="https://fonts.googleapis.com" />
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+                <link
+                    href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
+                    rel="stylesheet"
+                />
+                <style>
+                    body {
+                        font-family: "Inter", sans-serif;
+                        font-optical-sizing: auto;
+                        background-color: #f9fafb;
+                        color: #111827;
+                        margin: 0;
+                        padding: 0;
+                    }
+                    .email-container {
+                        max-width: 600px;
+                        margin: 40px auto;
+                        background-color: #ffffff;
+                        border: 1px solid #e5e7eb;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                        overflow: hidden;
+                        padding: 20px;
+                    }
+                    .email-header {
+                        font-size: 32px;
+                        font-weight: 800;
+                        padding: 10px 0;
+                        border-bottom: 1px solid #e5e7eb;
+                        color: #0d0d0d;
+                    }
+                    .email-body {
+                        padding: 20px 0;
+                    }
+                    .email-body p {
+                        margin: 16px 0;
+                        font-size: 16px;
+                        line-height: 1.5;
+                        color: #111827;
+                    }
+                    .email-button {
+                        display: inline-block;
+                        margin-top: 20px;
+                        padding: 10px 22px;
+                        font-size: 15px;
+                        color: #ffffff;
+                        background-color: #000000;
+                        text-decoration: none;
+                        border-radius: 4px;
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                        transition: background-color 0.3s, transform 0.2s;
+                        font-weight: 600;
+                    }
+                    .email-button:hover {
+                        background-color: #333333;
+                        transform: translateY(-1px);
+                    }
+                    .email-footer {
+                        padding: 20px 0;
+                        border-top: 1px solid #e5e7eb;
+                        font-size: 14px;
+                        color: #6b7280;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="email-container">
+                    <div class="email-header">Reset Your Password</div>
+                    <div class="email-body">
+                        <p>
+                            We received a request to reset your password. Click the button below to set a new password:
+                        </p>
+                        <a href="${link}" class="email-button">Reset Password</a>
+                        <p>
+                            If you didn't request a password reset, please ignore this email or contact support if you have concerns.
+                        </p>
+                        <p>
+                            This link will expire in 1 hour for security reasons.
+                        </p>
                     </div>
                     <div class="email-footer">
                         <p>&copy; 2024 Matcha. School project<sup>™</sup></p>

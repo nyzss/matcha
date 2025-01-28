@@ -61,7 +61,7 @@ export class AuthService {
 
             //TODO: to not hit the rate limiting of resend (email provider)
             if (process.env.NODE_ENV === "production") {
-                sendMail(newUser.email, emailVerification.value);
+                sendMail(newUser.email, emailVerification.value, "confirmation");
             }
 
             const accessToken = this.jwt.sign(
@@ -194,5 +194,16 @@ export class AuthService {
         await this.orm.query(`UPDATE users SET verified = true WHERE id = $1`, [
             emailVerification.user_id,
         ]);
+    }
+
+    async checkResetPassword(code: string): Promise<void> {
+        const [resetPassword] = await this.orm.query(
+            `SELECT * FROM reset_passwords WHERE value = $1`,
+            [code] 
+        );
+
+        if (!resetPassword) {
+            throw new Error("Invalid verification code");
+        }
     }
 }

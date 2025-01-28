@@ -23,6 +23,7 @@ import {
     notificationSchema,
     emailVerificationSchema,
     reportSchema,
+    resetPasswordSchema,
 } from "./app/schemas/orm/userSchemas";
 import { reSearchSchema, matcheSchema } from "./app/schemas/orm/searchSchemas";
 
@@ -127,6 +128,11 @@ const buildApp = async (
     await app.orm.createTableWithRelations(
         "email_verifications",
         emailVerificationSchema
+    );
+
+    await app.orm.createTableWithRelations(
+        "reset_passwords",
+        resetPasswordSchema
     );
 
     return app;

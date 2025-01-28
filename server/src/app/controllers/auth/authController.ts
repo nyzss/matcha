@@ -101,6 +101,30 @@ export class AuthController {
                 .send({ error: "Couldn't verify email." });
         }
     }
+
+    async checkResetPassword(
+        request: FastifyRequest<{ Querystring: { code: string } }>,
+        reply: FastifyReply
+    ) {
+        try {
+            if (!request.query.code) {
+                return await reply.status(400).send({
+                    error: "No verification token provided in query params. (should be: /reset-password?code=<token>)",
+                });
+            }
+
+            await this.authService.checkResetPassword(request.query.code);
+
+            return await reply.send({
+                status: "ok",
+            });
+        } catch (error) {
+            return await reply
+                .status(403)
+                .send({ error: "Non-valid password reset token" });
+        }
+    }
+
     async updateLocation(
         request: FastifyRequest,
         reply: FastifyReply

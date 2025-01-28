@@ -321,3 +321,31 @@ export const emailVerificationSchema: TableSchema = {
         }
     }
 }
+
+export const resetPasswordSchema: TableSchema = {
+    id: {
+        type: 'number',
+        primary: true,
+        nullable: false,
+        autoIncrement: true,
+    },
+    value: {
+        type: "string",
+        nullable: false,
+    },
+    created_at: {
+        type: 'date',
+        nullable: false,
+        defaultValue: 'CURRENT_TIMESTAMP',
+    },
+    user_id: {
+        type: "number",
+        nullable: false,
+        relation: {
+            type: "one-to-one",
+            table: "users",
+            field: "id",
+            onDelete: "SET NULL"
+        }
+    },
+}
