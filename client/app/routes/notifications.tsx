@@ -1,19 +1,16 @@
 import { Card, Flex, Text, Title } from "@mantine/core";
 import { IconBell, IconMoodSmileBeam } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { Link } from "react-router";
 import { useAuth } from "~/contexts/auth-provider";
 import { getNotifications } from "~/lib/api";
 
 export default function Notifications() {
     const { updateNotifications } = useAuth();
-    const { data, isSuccess } = useQuery({
+    const { data, isSuccess, isFetching } = useQuery({
         queryKey: ["notifications"],
         queryFn: getNotifications,
-        select: (data) => {
-            updateNotifications();
-            return data;
-        },
     });
 
     const notificationType = (type: string) => {
@@ -24,10 +21,18 @@ export default function Notifications() {
                 return "has viewed your profile";
             case "RequestMatch":
                 return "wants to match with you";
+            case "Connected":
+                return "has connected with you";
+            case "UnConnected":
+                return "has unconnected with you";
             default:
                 return type;
         }
     };
+
+    useEffect(() => {
+        updateNotifications();
+    }, [isFetching]);
 
     return (
         <Flex direction={"column"} gap={"sm"}>
