@@ -489,7 +489,21 @@ export const getBlockedUsers = async () => {
         throw new Error("Couldn't fetch blocked users");
     }
 
-    const data: IBlockedUsers = await res.json();
+    const data: IUsersInteraction = await res.json();
+
+    return data;
+};
+
+export const getViews = async () => {
+    const url = "/profile/@me/view";
+
+    const res = await fetcher(url);
+
+    if (!res?.ok) {
+        throw new Error("Couldn't fetch profile views");
+    }
+
+    const data: IUsersInteraction = await res.json();
 
     return data;
 };

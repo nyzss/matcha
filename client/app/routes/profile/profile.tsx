@@ -33,6 +33,7 @@ import {
     IconFlag,
     IconHeart,
     IconHeartBroken,
+    IconMessage,
     IconMoodSadSquint,
     IconSettings,
     IconUserOff,
@@ -251,16 +252,31 @@ export default function Profile({
                                         Match
                                     </Button>
                                 )) || (
-                                    <Button
-                                        variant="light"
-                                        c={"teal"}
-                                        leftSection={<IconHeartBroken />}
-                                        color="teal"
-                                        onClick={() => mutateUnlike.mutate()}
-                                        loading={mutateUnlike.isPending}
-                                    >
-                                        Unmatch
-                                    </Button>
+                                    <Box>
+                                        <Button
+                                            variant="light"
+                                            c={"teal"}
+                                            leftSection={<IconHeartBroken />}
+                                            color="teal"
+                                            onClick={() =>
+                                                mutateUnlike.mutate()
+                                            }
+                                            loading={mutateUnlike.isPending}
+                                        >
+                                            Unmatch
+                                        </Button>
+                                        {data?.user.isConnected && (
+                                            <Button
+                                                leftSection={<IconMessage />}
+                                                ml={4}
+                                                variant="subtle"
+                                                // component={Link}
+                                                // to
+                                            >
+                                                Chat
+                                            </Button>
+                                        )}
+                                    </Box>
                                 )}
                             </Box>
                         )}

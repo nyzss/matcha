@@ -54,7 +54,7 @@ interface INotificationsList {
     notifications: INotification[];
 }
 
-interface IBlockedUsers {
+interface IUsersInteraction {
     total: number;
     users: IProfile[];
 }
