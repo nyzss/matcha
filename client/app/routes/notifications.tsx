@@ -21,6 +21,10 @@ export default function Notifications() {
                 return "has viewed your profile";
             case "RequestMatch":
                 return "wants to match with you";
+            case "Connected":
+                return "has connected with you";
+            case "UnConnected":
+                return "has unconnected with you";
             default:
                 return type;
         }
