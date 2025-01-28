@@ -338,6 +338,11 @@ export const resetPasswordSchema: TableSchema = {
         nullable: false,
         defaultValue: 'CURRENT_TIMESTAMP',
     },
+    valid: {
+        type: 'boolean',
+        nullable: false,
+        defaultValue: true,
+    },
     user_id: {
         type: "number",
         nullable: false,

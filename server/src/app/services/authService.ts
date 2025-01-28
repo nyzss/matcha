@@ -5,6 +5,7 @@ import {RegisterForm, AuthResult, LoginForm, JwtPayload} from "../types/auth";
 import fastifyJwt, {VerifyPayloadType} from "@fastify/jwt";
 import crypto from "node:crypto"
 import { sendMail } from '../utils/mail';
+import { randomUrl } from '../utils/resetUtils';
 
 export class AuthService {
     private orm: ORM;
@@ -196,14 +197,48 @@ export class AuthService {
         ]);
     }
 
-    async checkResetPassword(code: string): Promise<void> {
+    async checkResetPassword(code: string): Promise<number> {
         const [resetPassword] = await this.orm.query(
             `SELECT * FROM reset_passwords WHERE value = $1`,
             [code] 
         );
 
-        if (!resetPassword) {
+        if (!resetPassword || !resetPassword.valid) {
             throw new Error("Invalid verification code");
         }
+
+        return resetPassword.user_id;
+    }
+
+    async resetPassword(id: number, password: string): Promise<void> {
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        await this.orm.query(
+            `UPDATE users SET password = $1 WHERE id = $2`,
+            [hashedPassword, id]
+        )
+
+        await this.orm.query(
+            `UPDATE reset_passwords SET valid = false WHERE user_id = $1`,
+            [id]
+        )
+    }
+
+    async createResetPassword(email: string) {
+        const [user] = await this.orm.query(
+            `SELECT * FROM users where email = $1`,
+            [email]
+        );
+
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        const [resetPassword] = await this.orm.query(
+            `INSERT INTO reset_passwords (user_id, value) VALUES ($1, $2) RETURNING value`,
+            [user.id, randomUrl()]
+        )
+
+        sendMail(email, resetPassword.value, "reset");
     }
 }

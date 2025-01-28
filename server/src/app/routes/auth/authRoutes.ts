@@ -28,6 +28,10 @@ const authRoutes: FastifyPluginAsync = async (app) => {
 
     app.get("/verify-email", authController.verifyEmail.bind(authController));
 
+    app.post("/reset-password", authController.resetPassword.bind(authController));
+
+    app.post("/create-reset-password", authController.createResetPassword.bind(authController));
+
     app.get("/check-reset-password", authController.checkResetPassword.bind(authController));
 
     app.post("/location",

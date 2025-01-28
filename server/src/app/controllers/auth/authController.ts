@@ -102,6 +102,46 @@ export class AuthController {
         }
     }
 
+    async resetPassword(
+        request: FastifyRequest<{ Body: { code: string, password: string } }>,
+        reply: FastifyReply
+    ) {
+        try {
+            const {code, password} = request.body;
+            const userId = await this.authService.checkResetPassword(code);
+
+            await this.authService.resetPassword(userId, password);
+
+            return await reply.send({
+                status: "ok",
+                message: "Password reset.",
+            });
+            
+        } catch (error) {
+            return await reply
+                .status(400)
+                .send({ error: "Couldn't reset password." });
+        }
+    }
+
+    async createResetPassword(
+        request: FastifyRequest<{ Body: { email: string } }>,
+        reply: FastifyReply
+    ) {
+        try {
+            await this.authService.createResetPassword(request.body.email);
+
+            return await reply.send({
+                status: "ok",
+                message: "Reset password email sent.",
+            });
+        } catch (error) {
+            return await reply
+                .status(400)
+                .send({ error: "Couldn't send reset password email." });
+        }
+    }
+
     async checkResetPassword(
         request: FastifyRequest<{ Querystring: { code: string } }>,
         reply: FastifyReply
