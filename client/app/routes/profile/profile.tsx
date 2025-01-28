@@ -18,6 +18,7 @@ import {
 import { useAuth } from "~/contexts/auth-provider";
 import {
     blockUser,
+    createConversation,
     getImage,
     getUser,
     likeUser,
@@ -46,6 +47,9 @@ export default function Profile({
     params: { userId: username },
 }: Route.ComponentProps) {
     const queryClient = useQueryClient();
+    const { user } = useAuth();
+    const navigate = useNavigate();
+
     const { data, isPending, isError } = useQuery({
         queryKey: ["profile", username],
         queryFn: async () => {
@@ -113,9 +117,20 @@ export default function Profile({
         },
     });
 
-    const { user } = useAuth();
-    const navigate = useNavigate();
-
+    const mutateConversation = useMutation({
+        mutationFn: async (userId: number) => {
+            return createConversation(userId);
+        },
+        onSuccess: (value) => {
+            navigate(`/messages/${value.id}`);
+        },
+        onError: () => {
+            notifications.show({
+                title: "Conversation error",
+                message: "Couldn't start the conversation",
+            });
+        },
+    });
     if (isError) {
         return (
             <Box h={"100vh"}>
@@ -270,8 +285,11 @@ export default function Profile({
                                                 leftSection={<IconMessage />}
                                                 ml={4}
                                                 variant="subtle"
-                                                // component={Link}
-                                                // to
+                                                onClick={() =>
+                                                    mutateConversation.mutate(
+                                                        data?.user.id
+                                                    )
+                                                }
                                             >
                                                 Chat
                                             </Button>

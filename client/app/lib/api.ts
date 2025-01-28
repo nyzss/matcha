@@ -284,7 +284,7 @@ export const mutateMessage = async (
     return await res?.json();
 };
 
-export const mutateConversation = async (
+export const createConversation = async (
     userId: string | number
 ): Promise<IConversation> => {
     const res = await fetcher("/conversation/create", {
