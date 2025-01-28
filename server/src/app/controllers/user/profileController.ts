@@ -24,7 +24,8 @@ export class ProfileController {
         if (request.url.endsWith("/@me"))
             return {
                 user: request.user,
-                notifications: (await this.userService.getNotifications(request.user.id)).total,
+                notifications: (await this.userService.getNotifications(request.user.id))
+                    .notifications.filter((notif: { read: boolean }) => notif.read === false),
                 views: (await this.userService.getViews(request.user.id)).total,
                 messages: (await this.chatService.getUnreadMessagesCount(request.user.id)),
             };
@@ -245,6 +246,17 @@ export class ProfileController {
             return blocked;
         } catch (error: Error | any) {
             return reply.status(404).send({error: error.message});
+        }
+    }
+
+    async getNotificationNumber (request: FastifyRequest, reply: FastifyReply) {
+        try {
+            const notifications = await this.userService.getNotificationNumber(request?.user?.id);
+
+            return notifications;
+        } catch (error: Error | any) {
+            return reply.status(400).send({error: error.message});
+            
         }
     }
 

@@ -98,6 +98,17 @@ export class UserService {
         });
     }
 
+    async getNotificationNumber(id: number): Promise<{total: number}> {
+        const notifications = await this.orm.query(
+            `SELECT id FROM notifications WHERE user_id = $1 AND read = false`,
+            [id]
+        )
+
+        return {
+            total: notifications.length
+        }
+    }
+
     async getNotifications(id: number, read: boolean = false): Promise<any> {
         const notifications = await this.orm.query(
             `SELECT sender_id, type, read FROM notifications WHERE user_id = $1`,

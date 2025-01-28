@@ -104,6 +104,14 @@ const authRoutes: FastifyPluginAsync = async (app) => {
         },
         profileController.getProfileNotification.bind(profileController)
     );
+
+    app.get(
+        "/@me/total-notifications",
+        {
+            preHandler: [app.verifyAuth],
+        },
+        profileController.getNotificationNumber.bind(profileController)
+    );
 };
 
 export default authRoutes;

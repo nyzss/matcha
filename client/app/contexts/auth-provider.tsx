@@ -1,17 +1,18 @@
+import { LoadingOverlay } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
+import { useAtom } from "jotai";
+import { createContext, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import {
     authLogin,
     authLogout,
     authRegister,
     checkAuth,
+    getNotificationsNumber,
     updateUser,
 } from "~/lib/api";
-import { createContext, useContext, useEffect, useState } from "react";
-import { useAtom } from "jotai";
 import { userAtom } from "~/lib/store";
-import { LoadingOverlay } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
 import type { ILogin, IRegister, IUser } from "~/types/validation";
-import { useNavigate } from "react-router";
 
 export const AuthContext = createContext<IAuthContext | null>(null);
 
@@ -32,6 +33,17 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setUser(result.data);
             return null;
         }
+    };
+
+    const updateNotifications = async () => {
+        const notifications = await getNotificationsNumber();
+
+        setMetadata((prev) => ({
+            ...prev,
+            notifications: notifications.total,
+            views: prev?.views ?? 0,
+            messages: prev?.messages ?? 0,
+        }));
     };
 
     const register = async (
@@ -119,6 +131,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 metadata,
                 checkUser,
                 shouldOnboard,
+                updateNotifications,
             }}
         >
             {children}

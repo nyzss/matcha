@@ -240,10 +240,10 @@ export class ChatService {
         }
 
         if (
-            await this.userService.userConnectedTo(
+            !(await this.userService.userConnectedTo(
                 conversation.users[0].id,
                 conversation.users[1].id
-            )
+            ))
         )
             throw new Error("User is not connected");
 
@@ -259,6 +259,7 @@ export class ChatService {
             {
                 event: SocketEvent.messageCreate,
                 data: {
+                    type: "Message",
                     id: result[0].id,
                     conversationId: conversationId,
                     sender: conversation.users.find(

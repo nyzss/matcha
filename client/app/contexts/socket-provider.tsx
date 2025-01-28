@@ -7,11 +7,11 @@ export default function SocketProvider({
 }: {
     children: React.ReactNode;
 }) {
-    const { user } = useAuth();
+    const { user, updateNotifications } = useAuth();
 
     useEffect(() => {
         if (user) {
-            setup();
+            setup(user, updateNotifications);
         } else {
             cleanUp();
         }

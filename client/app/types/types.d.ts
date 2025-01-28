@@ -16,6 +16,7 @@ interface IConversation {
 
 interface IMessage {
     id: number;
+    type: string;
     conversationId: string;
     sender: IProfile;
     content: string;
@@ -43,18 +44,21 @@ interface ISuggestionProfile {
     lastName: string;
 }
 
-type INotification = {
-    type: string;
-    sender: IProfile;
-    read: boolean;
-};
-
-interface INotificationsList {
-    total: number;
-    notifications: INotification[];
-}
-
 interface IUsersInteraction {
     total: number;
     users: IProfile[];
+}
+
+interface IBaseNotification {
+    type: string;
+    sender: IProfile;
+}
+
+interface INotificationRead extends IBaseNotification {
+    read: boolean;
+}
+
+interface INotificationReadList {
+    total: number;
+    notifications: INotificationRead[];
 }
