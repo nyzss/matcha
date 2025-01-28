@@ -53,3 +53,8 @@ interface INotificationsList {
     total: number;
     notifications: INotification[];
 }
+
+interface IUsersInteraction {
+    total: number;
+    users: IProfile[];
+}

@@ -158,14 +158,16 @@ export const checkAuth = async (): Promise<IAuth | false> => {
     }
 };
 
-export const getUser = async (username: string): Promise<IProfile | null> => {
+export const getUser = async (
+    username: string
+): Promise<{ user: IOtherProfile; liked: boolean } | null> => {
     const res = await fetcher("/profile/" + username);
 
     if (!res?.ok) {
         throw new Error("Couldn't find user");
     }
-    const json = await res?.json();
-    return json.user;
+    const json: { user: IOtherProfile; liked: boolean } = await res?.json();
+    return json;
 };
 
 export const updateUser = async (
@@ -282,7 +284,7 @@ export const mutateMessage = async (
     return await res?.json();
 };
 
-export const mutateConversation = async (
+export const createConversation = async (
     userId: string | number
 ): Promise<IConversation> => {
     const res = await fetcher("/conversation/create", {
@@ -415,5 +417,107 @@ export const getNotifications = async () => {
     }
 
     const data: INotificationsList = await res.json();
+    return data;
+};
+
+export const likeUser = async (username: string) => {
+    const res = await fetcher(`/profile/${username}/like`, {
+        method: "PUT",
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't match user");
+    }
+
+    return await res?.json();
+};
+
+export const unLikeUser = async (username: string) => {
+    const res = await fetcher(`/profile/${username}/like`, {
+        method: "DELETE",
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't unmatch user");
+    }
+
+    return await res?.json();
+};
+
+export const blockUser = async (username: string) => {
+    const res = await fetcher(`/profile/${username}/block`, {
+        method: "PUT",
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't block user");
+    }
+
+    return await res?.json();
+};
+
+export const unblockUser = async (username: string) => {
+    const res = await fetcher(`/profile/${username}/block`, {
+        method: "DELETE",
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't unblock user");
+    }
+
+    return await res?.json();
+};
+
+export const reportUser = async (username: string) => {
+    const res = await fetcher(`/profile/${username}/report`, {
+        method: "PUT",
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't report user");
+    }
+
+    return await res?.json();
+};
+
+export const getBlockedUsers = async () => {
+    const url = "/profile/@me/block";
+
+    const res = await fetcher(url);
+
+    if (!res?.ok) {
+        throw new Error("Couldn't fetch blocked users");
+    }
+
+    const data: IUsersInteraction = await res.json();
+
+    return data;
+};
+
+export const getViews = async () => {
+    const url = "/profile/@me/view";
+
+    const res = await fetcher(url);
+
+    if (!res?.ok) {
+        throw new Error("Couldn't fetch profile views");
+    }
+
+    const data: IUsersInteraction = await res.json();
+
+    return data;
+};
+
+export const getLiked = async () => {
+    const url = "/profile/@me/like";
+
+    const res = await fetcher(url);
+
+    if (!res?.ok) {
+        throw new Error("Couldn't fetch users that liked you");
+    }
+
+    const data: IUsersInteraction = await res.json();
+
     return data;
 };

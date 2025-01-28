@@ -2,6 +2,7 @@ import { useAuth } from "~/contexts/auth-provider";
 import {
     fetchConversation,
     fetchMessageHistory,
+    getImage,
     mutateMessage,
     updateReadConversation,
 } from "~/lib/api";
@@ -184,6 +185,7 @@ export default function SingleChat({
                         color="initials"
                         name={`${conversation?.users[0].firstName} ${conversation?.users[0].lastName}`}
                         size={45}
+                        src={getImage(conversation?.users[0].avatar)}
                     />
                     <Title fz={"lg"}>
                         {`${conversation?.users[0].firstName} ${conversation?.users[0].lastName} (@${conversation?.users[0].username})`}{" "}
@@ -198,7 +200,8 @@ export default function SingleChat({
                 offsetScrollbars
             >
                 <Flex direction={"column"} gap={"md"} mb={100} mt={50}>
-                    {messageHistory &&
+                    {(messageHistory &&
+                        messageHistory.messages.length > 0 &&
                         messageHistory.messages.map((msg) => {
                             const isMe = msg.sender.id === user?.id;
 
@@ -259,7 +262,11 @@ export default function SingleChat({
                                     </Flex>
                                 </Flex>
                             );
-                        })}
+                        })) || (
+                        <Flex justify={"center"} align={"center"} h={"100%"}>
+                            <Text c={"dimmed"}>Send a message!</Text>
+                        </Flex>
+                    )}
                 </Flex>
             </ScrollArea>
             <Box mt={"auto"} mb={"md"}>

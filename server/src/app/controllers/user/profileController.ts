@@ -38,9 +38,11 @@ export class ProfileController {
             if (request?.user?.id !== user.id)
                 await this.userService.addView(request?.user?.id, user.id);
 
+            const liked = await this.userService.getLike(user.id, request?.user?.id);
+
             return {
                 user: user,
-
+                liked: liked.like.me
             };
         } catch (error) {
             return reply.status(404).send({ error: "User not found" });
@@ -60,7 +62,8 @@ export class ProfileController {
             for await (const part of files) { // iterate the async generator
                 const fieldsType = [
                     "avatar",
-                    "username",
+                    "firstName",
+                    "lastName",
                     "gender",
                     "biography",
                     "sexualOrientation",
@@ -114,14 +117,11 @@ export class ProfileController {
                 }
             }
 
-            if (form?.username && form?.username === request.user.username) {
-                delete form.username;
-            }
-
             const user = await this.userService.updateProfile(userID, {
                 avatar: form?.avatar,
                 pictures: form?.pictures,
-                username: form?.username,
+                firstName: form?.firstName,
+                lastName: form?.lastName,
                 gender: form?.gender,
                 biography: form?.biography,
                 sexualOrientation: form?.sexualOrientation,
@@ -181,9 +181,19 @@ export class ProfileController {
     async getProfileLike(request: FastifyRequest, reply: FastifyReply) {
         try {
             const { username } = request.params as { username: string };
-            const user = await this.userService.getUserByUsername(username);
 
-            return await this.userService.getLike(user.id, request?.user?.id);
+            if (request.url.endsWith("/@me/like")) {
+                const user = request.user;
+
+                const likes = await this.userService.getAllLikes(user.id);
+
+                return likes
+            } else {
+                const user = await this.userService.getUserByUsername(username);
+
+                return await this.userService.getLike(user.id, request?.user?.id);
+            }
+
         } catch (error: Error | any) {
             return reply.status(404).send({error: error.message});
         }
@@ -211,7 +221,7 @@ export class ProfileController {
 
             return {message: "User reported"};
         } catch (error: Error | any) {
-            return reply.status(404).send({error: error.message});
+            return reply.status(400).send({error: error.message});
         }
     }
 

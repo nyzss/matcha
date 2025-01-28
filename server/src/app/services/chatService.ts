@@ -49,7 +49,7 @@ export class ChatService {
             };
         }
 
-        if (await this.userService.userConnectedTo(id, meId)) {
+        if (!(await this.userService.userConnectedTo(id, meId))) {
             throw new Error("User is not connected");
         }
 

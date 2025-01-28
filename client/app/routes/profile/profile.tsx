@@ -1,5 +1,6 @@
 import { Carousel } from "@mantine/carousel";
 import {
+    ActionIcon,
     Avatar,
     Badge,
     Box,
@@ -7,26 +8,48 @@ import {
     Card,
     Flex,
     Image,
+    Indicator,
     LoadingOverlay,
+    Menu,
     Text,
     Title,
+    Tooltip,
 } from "@mantine/core";
 import { useAuth } from "~/contexts/auth-provider";
-import { getImage, getUser } from "~/lib/api";
+import {
+    blockUser,
+    createConversation,
+    getImage,
+    getUser,
+    likeUser,
+    reportUser,
+    unLikeUser,
+} from "~/lib/api";
 
+import { notifications } from "@mantine/notifications";
 import {
     IconAlertSquareRoundedFilled,
     IconChevronLeft,
+    IconDots,
+    IconFlag,
+    IconHeart,
+    IconHeartBroken,
+    IconMessage,
     IconMoodSadSquint,
     IconSettings,
+    IconUserOff,
 } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import dayjs from "dayjs";
 import { Link, useNavigate } from "react-router";
 import type { Route } from "./+types/profile";
-
 export default function Profile({
     params: { userId: username },
 }: Route.ComponentProps) {
+    const queryClient = useQueryClient();
+    const { user } = useAuth();
+    const navigate = useNavigate();
+
     const { data, isPending, isError } = useQuery({
         queryKey: ["profile", username],
         queryFn: async () => {
@@ -35,9 +58,79 @@ export default function Profile({
         retry: false,
     });
 
-    const { user } = useAuth();
-    const navigate = useNavigate();
+    const mutateLike = useMutation({
+        mutationFn: async () => {
+            return likeUser(username);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["profile", username],
+            });
+        },
+    });
 
+    const mutateUnlike = useMutation({
+        mutationFn: async () => {
+            return unLikeUser(username);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["profile", username],
+            });
+        },
+    });
+
+    const mutateBlock = useMutation({
+        mutationFn: async () => {
+            return blockUser(username);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["profile", username],
+            });
+
+            notifications.show({
+                title: "User blocked",
+                message: "The user has been blocked",
+            });
+        },
+    });
+
+    const mutateReport = useMutation({
+        mutationFn: async () => {
+            return reportUser(username);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["profile", username],
+            });
+            notifications.show({
+                title: "User reported",
+                message: "The user has been reported",
+            });
+        },
+        onError: () => {
+            notifications.show({
+                title: "Already reported",
+                message: "You've already reported this user",
+            });
+        },
+    });
+
+    const mutateConversation = useMutation({
+        mutationFn: async (userId: number) => {
+            return createConversation(userId);
+        },
+        onSuccess: (value) => {
+            navigate(`/messages/${value.id}`);
+        },
+        onError: () => {
+            notifications.show({
+                title: "Conversation error",
+                message: "Couldn't start the conversation",
+            });
+        },
+    });
     if (isError) {
         return (
             <Box h={"100vh"}>
@@ -60,13 +153,84 @@ export default function Profile({
             <LoadingOverlay visible={isPending} />
             <Card mih={"100%"}>
                 <Flex direction={"column"} py={16}>
-                    <Avatar
-                        color="initials"
-                        name={`${data?.firstName} ${data?.lastName}`}
-                        size={100}
-                        mt={8}
-                        src={getImage(data?.avatar)}
-                    />
+                    <Flex>
+                        <Tooltip
+                            label="You have both matched each other"
+                            disabled={!data?.user.isConnected}
+                        >
+                            <Indicator
+                                inline
+                                label={<IconHeart size={20} />}
+                                size={26}
+                                offset={10}
+                                flex={"none"}
+                                disabled={!data?.user.isConnected}
+                                withBorder
+                            >
+                                <Avatar
+                                    color="initials"
+                                    name={`${data?.user.firstName} ${data?.user.lastName}`}
+                                    size={100}
+                                    src={getImage(data?.user.avatar)}
+                                />
+                            </Indicator>
+                        </Tooltip>
+                        <Flex gap={"sm"} justify={"flex-end"} w={"100%"}>
+                            <Tooltip
+                                label={`Last seen ${dayjs(
+                                    data?.user.lastConnection
+                                ).fromNow()}`}
+                            >
+                                <Badge
+                                    radius={"md"}
+                                    mt={4}
+                                    color={
+                                        isMe
+                                            ? "green"
+                                            : data?.user.isOnline
+                                            ? "green"
+                                            : "red"
+                                    }
+                                    variant="light"
+                                >
+                                    {isMe
+                                        ? "Online"
+                                        : data?.user.isOnline
+                                        ? "Online"
+                                        : "Offline"}
+                                </Badge>
+                            </Tooltip>
+                            {!isMe && (
+                                <Menu>
+                                    <Menu.Target>
+                                        <ActionIcon
+                                            variant="subtle"
+                                            color="dimmed"
+                                        >
+                                            <IconDots />
+                                        </ActionIcon>
+                                    </Menu.Target>
+                                    <Menu.Dropdown>
+                                        <Menu.Item
+                                            leftSection={<IconFlag />}
+                                            onClick={() =>
+                                                mutateReport.mutate()
+                                            }
+                                        >
+                                            Report
+                                        </Menu.Item>
+                                        <Menu.Item
+                                            leftSection={<IconUserOff />}
+                                            color="red"
+                                            onClick={() => mutateBlock.mutate()}
+                                        >
+                                            Block
+                                        </Menu.Item>
+                                    </Menu.Dropdown>
+                                </Menu>
+                            )}
+                        </Flex>
+                    </Flex>
                     <Flex
                         direction={{
                             base: "column",
@@ -74,10 +238,10 @@ export default function Profile({
                         }}
                     >
                         <Text size="xl" fw={"bold"} mt={4}>
-                            {data?.firstName} {data?.lastName} (@
-                            {data?.username})
+                            {data?.user.firstName} {data?.user.lastName} (@
+                            {data?.user.username})
                         </Text>
-                        {isMe && (
+                        {(isMe && (
                             <Button
                                 ml={{
                                     sm: "auto",
@@ -85,20 +249,66 @@ export default function Profile({
                                 variant="light"
                                 component={Link}
                                 to={"/settings"}
+                                flex={"none"}
                                 leftSection={<IconSettings />}
                             >
                                 Edit Profile
                             </Button>
+                        )) || (
+                            <Box ml={"auto"} flex={"none"}>
+                                {(!data?.liked && (
+                                    <Button
+                                        variant="light"
+                                        c={"red"}
+                                        leftSection={<IconHeart />}
+                                        onClick={() => mutateLike.mutate()}
+                                        loading={mutateLike.isPending}
+                                    >
+                                        Match
+                                    </Button>
+                                )) || (
+                                    <Box>
+                                        <Button
+                                            variant="light"
+                                            c={"teal"}
+                                            leftSection={<IconHeartBroken />}
+                                            color="teal"
+                                            onClick={() =>
+                                                mutateUnlike.mutate()
+                                            }
+                                            loading={mutateUnlike.isPending}
+                                        >
+                                            Unmatch
+                                        </Button>
+                                        {data?.user.isConnected && (
+                                            <Button
+                                                leftSection={<IconMessage />}
+                                                ml={4}
+                                                variant="subtle"
+                                                onClick={() =>
+                                                    mutateConversation.mutate(
+                                                        data?.user.id
+                                                    )
+                                                }
+                                            >
+                                                Chat
+                                            </Button>
+                                        )}
+                                    </Box>
+                                )}
+                            </Box>
                         )}
                     </Flex>
-                    <Text mt={8}>{data?.biography || "No biography set"}</Text>
+                    <Text mt={8}>
+                        {data?.user.biography || "No biography set"}
+                    </Text>
                     <Text fw={"bold"} size="md" mt={8} mb={4}>
                         Interests
                     </Text>
                     <Flex gap={"md"} wrap={"wrap"}>
-                        {data?.tags && data?.tags.length > 0 ? (
-                            data?.tags?.map((tag) => (
-                                <Badge key={tag} size="lg">
+                        {data?.user.tags && data?.user.tags.length > 0 ? (
+                            data?.user.tags?.map((tag) => (
+                                <Badge key={tag} size="lg" variant="light">
                                     {tag}
                                 </Badge>
                             ))
@@ -107,9 +317,9 @@ export default function Profile({
                         )}
                     </Flex>
                 </Flex>
-                {data?.pictures && data?.pictures.length > 0 ? (
+                {data?.user.pictures && data?.user.pictures.length > 0 ? (
                     <Carousel withIndicators loop>
-                        {data?.pictures.map((image, index) => (
+                        {data?.user.pictures.map((image, index) => (
                             <Carousel.Slide key={index} h={"100%"}>
                                 <Image
                                     src={getImage(image)}

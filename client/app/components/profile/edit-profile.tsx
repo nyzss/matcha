@@ -42,7 +42,8 @@ export default function EditProfile({
         mode: "uncontrolled",
         initialValues: {
             biography: user?.biography || "",
-            username: user?.username || "",
+            firstName: user?.firstName || "",
+            lastName: user?.lastName || "",
             gender: user?.gender || "",
             tags: user?.tags || [],
             sexualOrientation: user?.sexualOrientation || "",
@@ -149,13 +150,22 @@ export default function EditProfile({
                 </Flex>
 
                 <TextInput
-                    label="Username (this will change your login)"
-                    placeholder="Username"
-                    key={form.key("username")}
+                    label="First Name"
+                    placeholder={user?.firstName || "First Name"}
+                    key={form.key("firstName")}
                     leftSection={<IconUser size={18} />}
                     size="md"
                     leftSectionPointerEvents="none"
-                    {...form.getInputProps("username")}
+                    {...form.getInputProps("firstName")}
+                />
+                <TextInput
+                    label="Last Name"
+                    placeholder={user?.lastName || "Last Name"}
+                    key={form.key("lastName")}
+                    leftSection={<IconUser size={18} />}
+                    size="md"
+                    leftSectionPointerEvents="none"
+                    {...form.getInputProps("lastName")}
                 />
                 <Flex direction={"column"} gap={"2"}>
                     <Textarea

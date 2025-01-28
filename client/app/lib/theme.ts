@@ -1,4 +1,5 @@
 import {
+    ActionIcon,
     Button,
     Card,
     createTheme,
@@ -107,6 +108,11 @@ export const theme = createTheme({
         Pill: Pill.extend({
             defaultProps: {
                 bg: primaryColor,
+            },
+        }),
+        ActionIcon: ActionIcon.extend({
+            defaultProps: {
+                radius: "md",
             },
         }),
         DatePickerInput: DatePickerInput.extend({

@@ -3,6 +3,7 @@ import { ORM, TableSchema } from "../types/orm";
 import {
     userProfile,
     userProfileLike,
+    userProfileLikes,
     userProfileSettings,
     userProfileView,
 } from "../types/member";
@@ -201,7 +202,7 @@ export class UserService {
 
     async getBlockedUsers(id: number): Promise<any> {
         const blocks = await this.orm.query(
-            `SELECT blocker_id FROM blocks WHERE user_id = $1`,
+            `SELECT user_id FROM blocks WHERE blocker_id = $1`,
             [id]
         );
 
@@ -209,8 +210,8 @@ export class UserService {
             total: blocks.length,
             users: await Promise.all(
                 blocks.map(
-                    async (block: { blocker_id: number }) =>
-                        await this.getUserById(block.blocker_id)
+                    async (block: { user_id: number }) =>
+                        await this.getUserById(block.user_id)
                 )
             ),
         };
@@ -356,21 +357,16 @@ export class UserService {
 
         for (const [key, value] of Object.entries(form)) {
             if (value !== undefined) {
-                const dbKey =
-                    key === "sexualOrientation" ? "sexual_orientation" : key;
+                let dbKey: string;
 
-                if (key === "username") {
-                    const [existingUser] = await this.orm.query(
-                        `
-                            SELECT id
-                            FROM profiles
-                            WHERE username = $1
-                        `,
-                        [value]
-                    );
-
-                    if (existingUser)
-                        throw new Error("Username is already taken");
+                if (key === "sexualOrientation") {
+                    dbKey = "sexual_orientation";
+                } else if (key === "firstName") {
+                    dbKey = "first_name";
+                } else if (key === "lastName") {
+                    dbKey = "last_name";
+                } else {
+                    dbKey = key;
                 }
 
                 updates.push(`${dbKey} = $${index++}`);
@@ -518,6 +514,20 @@ export class UserService {
                 me: hasLiked,
                 count: likes.length,
             },
+        };
+    }
+
+    async getAllLikes(meId: number): Promise<userProfileLikes> {
+        const likes = await this.orm.query(
+            `SELECT liker_id FROM likes WHERE user_id = $1`,
+            [meId]
+        );
+
+        return {
+            total: likes.length,
+            users: await Promise.all(
+                likes.map(async (like: { liker_id: number}) => await this.getUserById(like.liker_id))
+            )
         };
     }
 

@@ -38,7 +38,8 @@ export interface userSettings {
 
 export interface userProfileSettings {
     avatar?: string,
-    username?: string,
+    firstName?: string,
+    lastName?: string,
     gender?: TUserGender,
     biography?: string,
     sexualOrientation?: TUserSexualOrientation,
@@ -72,6 +73,11 @@ export interface userProfileLike {
         me: boolean;
         count: number;
     },
+}
+
+export interface userProfileLikes {
+    total: number;
+    users: userProfile[];
 }
 
 export interface userProfileView {
