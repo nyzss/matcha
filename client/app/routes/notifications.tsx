@@ -2,12 +2,18 @@ import { Card, Flex, Text, Title } from "@mantine/core";
 import { IconBell, IconMoodSmileBeam } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
+import { useAuth } from "~/contexts/auth-provider";
 import { getNotifications } from "~/lib/api";
 
 export default function Notifications() {
+    const { updateNotifications } = useAuth();
     const { data, isSuccess } = useQuery({
         queryKey: ["notifications"],
         queryFn: getNotifications,
+        select: (data) => {
+            updateNotifications();
+            return data;
+        },
     });
 
     const notificationType = (type: string) => {
