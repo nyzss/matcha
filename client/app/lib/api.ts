@@ -416,7 +416,7 @@ export const getNotifications = async () => {
         throw new Error("Couldn't fetch notifications");
     }
 
-    const data: INotificationsList = await res.json();
+    const data: INotificationReadList = await res.json();
     return data;
 };
 

@@ -1,5 +1,5 @@
 import { useAuth } from "~/contexts/auth-provider";
-import { fetchAllConversations } from "~/lib/api";
+import { fetchAllConversations, getImage } from "~/lib/api";
 import {
     Avatar,
     Box,
@@ -74,9 +74,9 @@ export default function MessagesPage() {
                                 <Group>
                                     <Avatar
                                         color="initials"
-                                        // TODO: check length of conv.users, if more than 1 change Avatar to group
                                         name={`${conv.users[0].firstName} ${conv.users[0].lastName}`}
                                         size={60}
+                                        src={getImage(conv.users[0].avatar)}
                                     />
                                     <Flex direction={"column"}>
                                         <Text
