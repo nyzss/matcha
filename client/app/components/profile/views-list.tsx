@@ -13,7 +13,7 @@ export default function ViewsList() {
         <Box pos={"relative"} py={"sm"}>
             <LoadingOverlay visible={isPending} />
             <Text mb={"sm"} c={"dimmed"}>
-                Users who viewed your profile will appear here.{" "}
+                Users who haved viewed your profile will appear here.{" "}
             </Text>
             {data && <List data={data} />}
         </Box>

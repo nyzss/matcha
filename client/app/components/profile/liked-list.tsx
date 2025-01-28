@@ -13,7 +13,7 @@ export default function LikedList() {
         <Box pos={"relative"} py={"sm"}>
             <LoadingOverlay visible={isPending} />
             <Text mb={"sm"} c={"dimmed"}>
-                Users who liked your profile will appear here.{" "}
+                Users who have liked your profile will appear here.{" "}
             </Text>
             {data && <List data={data} />}
         </Box>

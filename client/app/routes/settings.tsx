@@ -10,15 +10,11 @@ export default function Settings() {
             <Tabs defaultValue="edit-profile">
                 <Tabs.List>
                     <Tabs.Tab value="edit-profile">Edit Information</Tabs.Tab>
-                    <Tabs.Tab value="liked">Liked</Tabs.Tab>
                     <Tabs.Tab value="views">Views</Tabs.Tab>
                     <Tabs.Tab value="blocked">Blocked Users</Tabs.Tab>
                 </Tabs.List>
                 <Tabs.Panel value="edit-profile">
                     <EditProfile />
-                </Tabs.Panel>
-                <Tabs.Panel value="liked">
-                    <LikedList />
                 </Tabs.Panel>
                 <Tabs.Panel value="views">
                     <ViewsList />
