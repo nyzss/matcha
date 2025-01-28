@@ -203,7 +203,10 @@ export class AuthService {
             [code] 
         );
 
-        if (!resetPassword || !resetPassword.valid) {
+        const now = new Date().getTime();
+        const created = new Date(resetPassword.created_at).getTime();
+        const diff = now - created;
+        if (!resetPassword || !resetPassword.valid || diff > 1000 * 60 * 60) {
             throw new Error("Invalid verification code");
         }
 
