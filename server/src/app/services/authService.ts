@@ -5,6 +5,7 @@ import {RegisterForm, AuthResult, LoginForm, JwtPayload} from "../types/auth";
 import fastifyJwt, {VerifyPayloadType} from "@fastify/jwt";
 import crypto from "node:crypto"
 import { sendMail } from '../utils/mail';
+import { randomUrl } from '../utils/resetUtils';
 
 export class AuthService {
     private orm: ORM;
@@ -61,7 +62,7 @@ export class AuthService {
 
             //TODO: to not hit the rate limiting of resend (email provider)
             if (process.env.NODE_ENV === "production") {
-                sendMail(newUser.email, emailVerification.value);
+                sendMail(newUser.email, emailVerification.value, "confirmation");
             }
 
             const accessToken = this.jwt.sign(
@@ -194,5 +195,52 @@ export class AuthService {
         await this.orm.query(`UPDATE users SET verified = true WHERE id = $1`, [
             emailVerification.user_id,
         ]);
+    }
+
+    async checkResetPassword(code: string): Promise<number> {
+        const [resetPassword] = await this.orm.query(
+            `SELECT * FROM reset_passwords WHERE value = $1 
+                    AND valid = true 
+                    AND created_at >= NOW() - INTERVAL '1 hour'`,
+            [code] 
+        );
+
+        if (!resetPassword) {
+            throw new Error("Invalid or expired verification code");
+        }
+
+        return resetPassword.user_id;
+    }
+
+    async resetPassword(id: number, password: string): Promise<void> {
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        await this.orm.query(
+            `UPDATE users SET password = $1 WHERE id = $2`,
+            [hashedPassword, id]
+        )
+
+        await this.orm.query(
+            `UPDATE reset_passwords SET valid = false WHERE user_id = $1`,
+            [id]
+        )
+    }
+
+    async createResetPassword(email: string) {
+        const [user] = await this.orm.query(
+            `SELECT * FROM users where email = $1`,
+            [email]
+        );
+
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        const [resetPassword] = await this.orm.query(
+            `INSERT INTO reset_passwords (user_id, value) VALUES ($1, $2) RETURNING value`,
+            [user.id, randomUrl()]
+        )
+
+        sendMail(email, resetPassword.value, "reset");
     }
 }

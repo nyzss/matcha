@@ -101,6 +101,71 @@ export class AuthController {
                 .send({ error: "Couldn't verify email." });
         }
     }
+
+    async resetPassword(
+        request: FastifyRequest<{ Body: { token: string, password: string } }>,
+        reply: FastifyReply
+    ) {
+        try {
+            const {token, password} = request.body;
+
+            const userId = await this.authService.checkResetPassword(token);
+
+            await this.authService.resetPassword(userId, password);
+
+            return await reply.send({
+                status: "ok",
+                message: "Password reset.",
+            });
+            
+        } catch (error) {
+            return await reply
+                .status(400)
+                .send({ error: "Couldn't reset password." });
+        }
+    }
+
+    async createResetPassword(
+        request: FastifyRequest<{ Body: { email: string } }>,
+        reply: FastifyReply
+    ) {
+        try {
+            await this.authService.createResetPassword(request.body.email);
+
+            return await reply.send({
+                status: "ok",
+                message: "Reset password email sent.",
+            });
+        } catch (error) {
+            return await reply
+                .status(400)
+                .send({ error: "Couldn't send reset password email." });
+        }
+    }
+
+    async checkResetPassword(
+        request: FastifyRequest<{ Querystring: { token: string } }>,
+        reply: FastifyReply
+    ) {
+        try {
+            if (!request.query.token) {
+                return await reply.status(400).send({
+                    error: "No verification token provided in query params. (should be: /reset-password?code=<token>)",
+                });
+            }
+
+            await this.authService.checkResetPassword(request.query.token);
+
+            return await reply.send({
+                status: "ok",
+            });
+        } catch (error) {
+            return await reply
+                .status(403)
+                .send({ error: "Non-valid or expired password reset token" });
+        }
+    }
+
     async updateLocation(
         request: FastifyRequest,
         reply: FastifyReply

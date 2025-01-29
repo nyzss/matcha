@@ -1,4 +1,5 @@
 import type { IFilter, ILogin, IRegister, IUser } from "~/types/validation";
+import { AuthEvent } from "./event";
 
 export const BASE_URL =
     `${import.meta.env.VITE_BACKEND_API_URL}/api/` || "https://localhost/api/";
@@ -30,8 +31,8 @@ export const fetcher = async (path: string, options?: RequestInit) => {
         });
 
         if (res.status === 401) {
-            // store.set(userAtom, null);
-            console.log("delogged");
+            const authEvent = new AuthEvent();
+            authEvent.trigger(false);
         }
 
         return res;
@@ -538,4 +539,47 @@ export const getNotificationsNumber = async () => {
     } catch {
         return { total: 0 };
     }
+};
+
+export const createResetPassword = async (email: string) => {
+    const res = await fetcher("/auth/create-reset-password", {
+        method: "POST",
+        body: JSON.stringify({
+            email,
+        }),
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't create reset password");
+    }
+
+    return await res?.json();
+};
+
+export const resetPassword = async (password: string, token: string) => {
+    const res = await fetcher("/auth/reset-password", {
+        method: "POST",
+        body: JSON.stringify({
+            password,
+            token,
+        }),
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't reset password");
+    }
+
+    return await res?.json();
+};
+
+export const checkResetPassword = async (token: string) => {
+    const res = await fetcher(`/auth/check-reset-password?token=${token}`);
+
+    if (!res?.ok) {
+        throw new Error("Couldn't check reset password");
+    }
+
+    const data = await res.json();
+
+    return data;
 };

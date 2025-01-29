@@ -31,7 +31,7 @@ test("User creation", async (t: TestContext) => {
             password: "password123",
             birthDate: "2004-11-01",
             firstName: randomName,
-            lastName: "LastName",
+            lastName: "TEST_USER_LastName",
         };
 
         const resp = await app.inject({
@@ -74,7 +74,7 @@ test("User creation", async (t: TestContext) => {
                 password: "password123",
                 birthDate: "2004-11-01",
                 firstName: randomName,
-                lastName: "LastName",
+                lastName: "TEST_USER_LastName",
             };
 
             const resp = await app.inject({
@@ -108,7 +108,7 @@ test("User creation", async (t: TestContext) => {
                 // birthdate missing in this case
                 // birthDate: "2004-11-01",
                 firstName: randomName,
-                lastName: "LastName",
+                lastName: "TEST_USER_LastName",
             };
 
             const resp = await app.inject({
@@ -132,5 +132,8 @@ test("User creation", async (t: TestContext) => {
         }
     );
 
+    await app.orm.query(
+        `DELETE FROM profiles WHERE last_name = 'TEST_USER_LastName'`
+    );
     await app.close();
 });

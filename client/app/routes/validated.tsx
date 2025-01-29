@@ -50,7 +50,6 @@ export default function EmailValidated() {
 
         verifyEmail(code)
             .then((val) => {
-                console.log("EMAIL VALIDATED", val);
                 setSuccess(val);
             })
             .finally(() => {

@@ -62,3 +62,5 @@ interface INotificationReadList {
     total: number;
     notifications: INotificationRead[];
 }
+
+type CustomAuthEvent = CustomEvent<{ authenticated: boolean }>;

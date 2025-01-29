@@ -38,7 +38,7 @@ export const userSchema: TableSchema = {
             type: 'one-to-one',
             table: 'profiles',
             field: 'id',
-            onDelete: 'SET NULL'
+            onDelete: 'CASCADE'
         }
     }
 }
@@ -113,7 +113,7 @@ export const publicUserSchema: TableSchema = {
             type: 'one-to-one',
             table: 'users',
             field: 'id',
-            onDelete: 'SET NULL'
+            onDelete: 'CASCADE'
         }
     }
 }
@@ -312,7 +312,7 @@ export const emailVerificationSchema: TableSchema = {
     },
     user_id: {
         type: "number",
-        nullable: false,
+        nullable: true,
         relation: {
             type: "one-to-one",
             table: "users",
@@ -320,4 +320,37 @@ export const emailVerificationSchema: TableSchema = {
             onDelete: "SET NULL"
         }
     }
+}
+
+export const resetPasswordSchema: TableSchema = {
+    id: {
+        type: 'number',
+        primary: true,
+        nullable: false,
+        autoIncrement: true,
+    },
+    value: {
+        type: "string",
+        nullable: false,
+    },
+    created_at: {
+        type: 'date',
+        nullable: false,
+        defaultValue: 'CURRENT_TIMESTAMP',
+    },
+    valid: {
+        type: 'boolean',
+        nullable: false,
+        defaultValue: true,
+    },
+    user_id: {
+        type: "number",
+        nullable: true,
+        relation: {
+            type: "one-to-one",
+            table: "users",
+            field: "id",
+            onDelete: "SET NULL"
+        }
+    },
 }

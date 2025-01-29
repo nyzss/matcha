@@ -109,6 +109,16 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         });
     }, []);
 
+    // authEvent.subscribe((event) => {
+    //     if (event.detail.authenticated === false) {
+    //         checkUser();
+    //     }
+    // });
+
+    // return () => {
+    //     authEvent.unsubscribe();
+    // };
+
     const logged = !!user;
 
     if (loading) {
