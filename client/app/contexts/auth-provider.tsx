@@ -11,7 +11,6 @@ import {
     getNotificationsNumber,
     updateUser,
 } from "~/lib/api";
-import { AuthEvent } from "~/lib/event";
 import { userAtom } from "~/lib/store";
 import type { ILogin, IRegister, IUser } from "~/types/validation";
 
@@ -108,18 +107,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 }
             }
         });
-
-        const authEvent = new AuthEvent();
-
-        authEvent.subscribe((event) => {
-            if (event.detail.authenticated === false) {
-                navigate("/login");
-            }
-        });
-
-        return () => {
-            authEvent.unsubscribe();
-        };
     }, []);
 
     // authEvent.subscribe((event) => {

@@ -1,10 +1,12 @@
 import { loginSchema } from "~/lib/validation";
 import {
+    Anchor,
     Box,
     Button,
     Flex,
     Modal,
     PasswordInput,
+    Text,
     TextInput,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
@@ -12,7 +14,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { IconLock, IconUser } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
 import { useAuth } from "~/contexts/auth-provider";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import type { ILogin } from "~/types/validation";
 
 export function LoginModal() {
@@ -87,6 +89,15 @@ export default function LoginComponent({ close }: { close?: () => void }) {
                         withAsterisk
                         {...form.getInputProps("password")}
                     />
+                    <Anchor
+                        c={"dimmed"}
+                        component={Link}
+                        to={"/forgot-password"}
+                        size="sm"
+                        ta={"end"}
+                    >
+                        Forgot your password?
+                    </Anchor>
                 </Flex>
                 <Button type="submit" my={"lg"}>
                     Login
