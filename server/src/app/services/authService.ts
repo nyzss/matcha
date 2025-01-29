@@ -1,4 +1,4 @@
-import fastify, { FastifyInstance } from 'fastify';
+import fastify, { FastifyInstance, FastifyReply } from 'fastify';
 import bcrypt from 'bcrypt';
 import { ORM } from '../types/orm';
 import {RegisterForm, AuthResult, LoginForm, JwtPayload} from "../types/auth";
@@ -172,15 +172,48 @@ export class AuthService {
         };
     }
 
-    async verifyToken(token: string): Promise<JwtPayload> {
+    async verifyToken(token: string, refreshToken: string | null = null, reply: FastifyReply | null = null): Promise<JwtPayload> {
         try {
             const user: JwtPayload = await this.jwt.verify(token);
 
             return user;
         } catch (error) {
+            
+            if (refreshToken && reply) {
+                try {
+                    const user: JwtPayload = await this.jwt.verify(refreshToken);
+                    const accessToken = this.jwt.sign(
+                        user,
+                        { expiresIn: '24h' }
+                    );
+                    
+                    const newRefreshToken = this.jwt.sign(
+                        user,
+                        { expiresIn: '7d' }
+                    );
+
+                    reply.setCookie('accessToken', accessToken, {
+                        httpOnly: true,
+                        secure: true,
+                        maxAge: 60 * 60,
+                    });
+                    
+                    reply.setCookie('refreshToken', newRefreshToken, {
+                        httpOnly: true,
+                        secure: true,
+                        maxAge: 60 * 60 * 24 * 7,
+                    });
+                    
+                    return user;
+                } catch (error) {
+                    throw new Error('Invalid or expired refresh token');
+                }
+            }
+            
             throw new Error('Invalid or expired access token');
         }
     }
+    
 
     async verifyEmail(code: string): Promise<void> {
         const [emailVerification] = await this.orm.query(

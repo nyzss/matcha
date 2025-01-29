@@ -28,20 +28,17 @@ export class AuthMiddleware {
     ) {
         const cookies = request.cookies;
 
-        if (!cookies.accessToken)
+        if (!cookies.accessToken || !cookies.refreshToken)
             return reply.status(401).send({ error: 'Unauthorized: No access token provided' });
 
         try {
 
-            const verify: JwtPayload = await this.authService.verifyToken(cookies.accessToken);
+            const verify: JwtPayload = await this.authService.verifyToken(cookies.accessToken, cookies.refreshToken, reply);
 
             const user = await this.userService.getUserById(verify.id);
 
             request.user = user;
             await this.localisationService.updateUserLocation(user.id, "62.4.16.169")
-
-
-            //test code
 
             const researchService = new ResearchService(this.app);
 
