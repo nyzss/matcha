@@ -1,4 +1,5 @@
 import type { IFilter, ILogin, IRegister, IUser } from "~/types/validation";
+import { AuthEvent } from "./event";
 
 export const BASE_URL =
     `${import.meta.env.VITE_BACKEND_API_URL}/api/` || "https://localhost/api/";
@@ -30,8 +31,8 @@ export const fetcher = async (path: string, options?: RequestInit) => {
         });
 
         if (res.status === 401) {
-            // store.set(userAtom, null);
-            console.log("delogged");
+            const authEvent = new AuthEvent();
+            authEvent.trigger(false);
         }
 
         return res;
