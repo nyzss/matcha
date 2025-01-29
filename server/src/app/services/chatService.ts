@@ -56,7 +56,7 @@ export class ChatService {
         const result = await this.orm.query(
             `INSERT INTO conversations (created_at) VALUES (NOW()) RETURNING *`
         );
-
+        
         const newConversation = result[0];
 
         await this.orm.query(
@@ -65,7 +65,7 @@ export class ChatService {
         );
 
         return {
-            id: conversation.id,
+            id: newConversation.id,
             users: users,
         };
     }

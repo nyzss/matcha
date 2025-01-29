@@ -6,6 +6,7 @@ import {UserService} from "./userService";
 import {NotificationType} from "../types/socket";
 import { userProfile } from '../types/member';
 
+
 export class ResearchService {
     private orm: ORM;
     private localisationService: LocalisationService;
@@ -107,62 +108,83 @@ export class ResearchService {
 
     async getSuggestions(userId: number, filter: FilterOptions | null = null): Promise<{ users: any[], total: number }> {
         const profile = await this.userService.getUserById(userId);
-
+        
         if (!profile) {
             throw new Error("User not found");
         }
-
+    
         const research: ResearchOptions = await this.getUserResearch(userId);
         const userLocation: locate | null = await this.localisationService.getUserLocation(userId);
-
+    
         if (!userLocation) {
-            return {
-                users: [],
-                total: 0
-            };
+            return { users: [], total: 0 };
         }
-
+    
         const nearbyUsers = await this.localisationService.getNearbyLatAndLon(userLocation.lat, userLocation.lon, research.location);
-
+        
         if (!nearbyUsers) {
-            return {
-                users: [],
-                total: 0
-            };
+            return { users: [], total: 0 };
         }
-
+    
         const blockedUsers = await this.userService.getBlockedUsersId(userId);
         const reportedUsers = await this.userService.getBlockedByUsersId(userId);
         const matchedUsers = await this.getAlreadyMatchedUsersId(userId);
         const declinedUsers = await this.getUsersNotWantingToBeMatched(userId);
-
+    
         const users = nearbyUsers
-            .filter((user: userProfile) => user.id !== userId)
-            .filter((user: any) => {
-                const isAgeMatch = user.age >= research.ageMin && user.age <= (research.ageMax || research.ageMin);
-                const isFameMatch = user.fameRating >= research.fameRatingMin && user.fameRating <= (research.fameRatingMax || research.fameRatingMin);
-                const areTagsMatch = !research.tags.length || research.tags.some(tag => user.tags && user.tags.includes(tag));
-
-                const isSexualOrientationMatch = !profile.sexualOrientation || user.sexualOrientation === profile.sexualOrientation;
-                const isGenderMatch = !profile.gender || user.gender === profile.gender;
-
-                return isAgeMatch && isFameMatch && areTagsMatch && isSexualOrientationMatch && isGenderMatch;
-            }).filter((user: any) => !blockedUsers.includes(user.id) && !reportedUsers.includes(user.id) && !matchedUsers.includes(user.id) && !declinedUsers.includes(user.id));
-
+        .filter((user: userProfile) => user.id !== userId)
+        .filter((user: any) => {
+            const userGender = user.gender ?? "Unknown";
+            const profileGender = profile.gender ?? "Unknown";
+            const userSexualOrientation = user.sexualOrientation ?? "Both";
+            const profileSexualOrientation = profile.sexualOrientation ?? "Both";
+    
+            const isAgeMatch = user.age >= research.ageMin && user.age <= (research.ageMax || research.ageMin);
+            const isFameMatch = user.fameRating >= research.fameRatingMin && user.fameRating <= (research.fameRatingMax || research.fameRatingMin);
+            const areTagsMatch = !research.tags.length || research.tags.some(tag => user.tags && user.tags.includes(tag));
+    
+            const isSexualOrientationMatch = 
+                (profileSexualOrientation === "Both" || userSexualOrientation === "Both") || 
+                (profileSexualOrientation === "Woman" && userSexualOrientation === "Man") ||
+                (profileSexualOrientation === "Man" && userSexualOrientation === "Woman") ||
+                (profileSexualOrientation === "Woman" && userSexualOrientation === "Woman") ||
+                (profileSexualOrientation === "Man" && userSexualOrientation === "Man") ||
+                (profileSexualOrientation === "Other" && userSexualOrientation !== "Neither") ||
+                (userSexualOrientation === "Other" && profileSexualOrientation !== "Neither") ||
+                (profileSexualOrientation === "Neither" && userSexualOrientation === "Neither");
+    
+            const isGenderMatch = profileGender === "Beyond Binary" || userGender === "Beyond Binary" ||
+                (profileGender === userGender) || 
+                (profileGender === "Man" && userGender === "Woman") ||
+                (profileGender === "Woman" && userGender === "Man");
+    
+            if (!isSexualOrientationMatch || !isGenderMatch) {
+                console.log({
+                    profileGender,
+                    profileSexualOrientation,
+                    userGender,
+                    userSexualOrientation,
+                    isSexualOrientationMatch,
+                    isGenderMatch
+                });
+            }
+        
+            return isAgeMatch && isFameMatch && areTagsMatch && isSexualOrientationMatch && isGenderMatch;
+        }).filter((user: any) => !blockedUsers.includes(user.id) && !reportedUsers.includes(user.id) && !matchedUsers.includes(user.id) && !declinedUsers.includes(user.id));
+        
         const filteredUsers = users.filter((user: any) => {
             const matchesAge = filter?.age ? user.age === filter.age : true;
             const matchesFameRating = filter?.fameRating ? user.fameRating === filter.fameRating : true;
             const matchesLocation = filter?.location ? user.distance <= filter.location : true;
             const matchesTags = filter?.tags ? filter.tags.every(tag => user.tags?.includes(tag)) : true;
-
             return matchesAge && matchesFameRating && matchesLocation && matchesTags;
         });
-
+    
         const sortedUsers = filter?.sort
             ? [...filteredUsers].sort((a, b) => {
                 const field = filter.sort?.field;
                 const order = filter.sort?.order === "desc" ? -1 : 1;
-
+    
                 if (field === "age") {
                     return (a.age - b.age) * order;
                 } else if (field === "location") {
@@ -177,7 +199,7 @@ export class ResearchService {
                 return 0;
             })
             : filteredUsers;
-
+    
         return {
             users: sortedUsers.map((user: any) => ({
                 id: user.id,
@@ -196,6 +218,9 @@ export class ResearchService {
             total: sortedUsers.length
         };
     }
+    
+    
+    
 
     async acceptSuggestion(userId: number, targetId: number) {
         const suggestion = (await this.getSuggestions(userId))
