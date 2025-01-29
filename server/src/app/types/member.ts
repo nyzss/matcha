@@ -22,8 +22,9 @@ export const userSexualOrientation = [
     "Other",
 ] as const;
 
-export type TUserGender = typeof userGender;
-export type TUserSexualOrientation = typeof userSexualOrientation;
+export type TUserGender = (typeof userGender)[number];
+export type TUserSexualOrientation = (typeof userSexualOrientation)[number];
+
 
 export interface userSettings {
     email: string;
