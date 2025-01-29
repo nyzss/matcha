@@ -103,12 +103,13 @@ export class AuthController {
     }
 
     async resetPassword(
-        request: FastifyRequest<{ Body: { code: string, password: string } }>,
+        request: FastifyRequest<{ Body: { token: string, password: string } }>,
         reply: FastifyReply
     ) {
         try {
-            const {code, password} = request.body;
-            const userId = await this.authService.checkResetPassword(code);
+            const {token, password} = request.body;
+
+            const userId = await this.authService.checkResetPassword(token);
 
             await this.authService.resetPassword(userId, password);
 
@@ -143,17 +144,17 @@ export class AuthController {
     }
 
     async checkResetPassword(
-        request: FastifyRequest<{ Querystring: { code: string } }>,
+        request: FastifyRequest<{ Querystring: { token: string } }>,
         reply: FastifyReply
     ) {
         try {
-            if (!request.query.code) {
+            if (!request.query.token) {
                 return await reply.status(400).send({
                     error: "No verification token provided in query params. (should be: /reset-password?code=<token>)",
                 });
             }
 
-            await this.authService.checkResetPassword(request.query.code);
+            await this.authService.checkResetPassword(request.query.token);
 
             return await reply.send({
                 status: "ok",
@@ -161,7 +162,7 @@ export class AuthController {
         } catch (error) {
             return await reply
                 .status(403)
-                .send({ error: "Non-valid password reset token" });
+                .send({ error: "Non-valid or expired password reset token" });
         }
     }
 

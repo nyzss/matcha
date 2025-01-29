@@ -1,15 +1,9 @@
 import { z } from "zod";
 
 export const loginSchema = z.object({
-    username: z
-        .string()
-        .min(2, { message: "Username must be at least 2 characters long" })
-        .max(24, { message: "Username must be at most 24 characters long" }),
+    username: z.string(),
 
-    password: z
-        .string()
-        .min(8, { message: "Password must be at least 8 characters long" })
-        .max(64, { message: "Password must be at most 64 characters long" }),
+    password: z.string(),
 });
 
 export const registerSchema = z.object({
@@ -40,6 +34,14 @@ export const registerSchema = z.object({
 
     password: z
         .string()
-        .min(8, { message: "Password must be at least 8 characters long" })
+        .min(6, { message: "Password must be at least 6 characters long" })
         .max(64, { message: "Password must be at most 64 characters long" }),
+});
+
+export const resetPasswordSchema = z.object({
+    password: z
+        .string()
+        .min(6, { message: "Password must be at least 6 characters long" })
+        .max(64, { message: "Password must be at most 64 characters long" }),
+    token: z.string(),
 });

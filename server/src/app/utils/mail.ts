@@ -18,7 +18,7 @@ export const sendMail = async (
     const link =
         type === "confirmation"
             ? `${process.env.FRONTEND_URL}/verify?code=${code}`
-            : `${process.env.FRONTEND_URL}/reset?code=${code}`;
+            : `${process.env.FRONTEND_URL}/reset-password?token=${code}`;
 
     const html =
         type === "confirmation"

@@ -1,6 +1,6 @@
 import { FastifyPluginAsync } from "fastify";
 import { AuthController } from "../../controllers/auth/authController";
-import { loginSchema, registerSchema } from "../../schemas/zod/authSchemas";
+import { loginSchema, registerSchema, resetPasswordSchema } from "../../schemas/zod/authSchemas";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 const authRoutes: FastifyPluginAsync = async (app) => {
     const authController: AuthController = new AuthController(app);
@@ -28,7 +28,13 @@ const authRoutes: FastifyPluginAsync = async (app) => {
 
     app.get("/verify-email", authController.verifyEmail.bind(authController));
 
-    app.post("/reset-password", authController.resetPassword.bind(authController));
+    app.post("/reset-password",
+        {
+            schema: {
+                body: resetPasswordSchema
+            }
+        }
+        , authController.resetPassword.bind(authController));
 
     app.post("/create-reset-password", authController.createResetPassword.bind(authController));
 

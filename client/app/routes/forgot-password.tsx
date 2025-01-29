@@ -18,7 +18,7 @@ import { createResetPassword } from "~/lib/api";
 
 export default function ForgotPassword() {
     const resetMutation = useMutation({
-        mutationFn: createResetPassword,
+        mutationFn: (email: string) => createResetPassword(email),
         onSuccess: () => {
             notifications.show({
                 title: "Email sent",
@@ -27,7 +27,7 @@ export default function ForgotPassword() {
         },
         onError: () => {
             notifications.show({
-                title: "Couldn't send email",
+                title: "Couldn't reset password",
                 message: "Something went wrong, please try again later",
                 color: "red",
             });
@@ -45,7 +45,6 @@ export default function ForgotPassword() {
 
     const handleSubmit = form.onSubmit((values) => {
         resetMutation.mutate(values.email);
-        console.log(values);
     });
 
     return (
@@ -59,6 +58,7 @@ export default function ForgotPassword() {
                     <TextInput
                         type="email"
                         label="Email"
+                        placeholder="acme@matchaa.me"
                         required
                         withAsterisk
                         {...form.getInputProps("email")}

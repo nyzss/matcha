@@ -544,6 +544,9 @@ export const getNotificationsNumber = async () => {
 export const createResetPassword = async (email: string) => {
     const res = await fetcher("/auth/create-reset-password", {
         method: "POST",
+        body: JSON.stringify({
+            email,
+        }),
     });
 
     if (!res?.ok) {
@@ -551,4 +554,32 @@ export const createResetPassword = async (email: string) => {
     }
 
     return await res?.json();
+};
+
+export const resetPassword = async (password: string, token: string) => {
+    const res = await fetcher("/auth/reset-password", {
+        method: "POST",
+        body: JSON.stringify({
+            password,
+            token,
+        }),
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't reset password");
+    }
+
+    return await res?.json();
+};
+
+export const checkResetPassword = async (token: string) => {
+    const res = await fetcher(`/auth/check-reset-password?token=${token}`);
+
+    if (!res?.ok) {
+        throw new Error("Couldn't check reset password");
+    }
+
+    const data = await res.json();
+
+    return data;
 };

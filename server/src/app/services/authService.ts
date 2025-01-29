@@ -199,15 +199,14 @@ export class AuthService {
 
     async checkResetPassword(code: string): Promise<number> {
         const [resetPassword] = await this.orm.query(
-            `SELECT * FROM reset_passwords WHERE value = $1`,
+            `SELECT * FROM reset_passwords WHERE value = $1 
+                    AND valid = true 
+                    AND created_at >= NOW() - INTERVAL '1 hour'`,
             [code] 
         );
 
-        const now = new Date().getTime();
-        const created = new Date(resetPassword.created_at).getTime();
-        const diff = now - created;
-        if (!resetPassword || !resetPassword.valid || diff > 1000 * 60 * 60) {
-            throw new Error("Invalid verification code");
+        if (!resetPassword) {
+            throw new Error("Invalid or expired verification code");
         }
 
         return resetPassword.user_id;

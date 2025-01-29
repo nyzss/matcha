@@ -6,7 +6,7 @@ import classes from "./auth.module.css";
 export default function AuthLayout() {
     const navigate = useNavigate();
     const redirection = () => {
-        navigate("/");
+        navigate(-1);
     };
 
     return (
@@ -24,7 +24,7 @@ export default function AuthLayout() {
                 <Paper p={"xl"}>
                     <Button variant="subtle" onClick={redirection} mt={30}>
                         <IconArrowLeft size={16} style={{ marginRight: 4 }} />{" "}
-                        Go Home
+                        Go Back
                     </Button>
                     <Outlet />
                 </Paper>
