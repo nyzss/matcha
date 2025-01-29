@@ -23,6 +23,7 @@ export default function ForgotPassword() {
             notifications.show({
                 title: "Email sent",
                 message: "Check your email for the reset link",
+                autoClose: false,
             });
         },
         onError: () => {

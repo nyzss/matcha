@@ -10,12 +10,13 @@ export default function ResetPassword() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
 
-    const error = (n?: number) => {
+    const error = () => {
         navigate("/forgot-password");
         notifications.show({
             title: "Invalid token",
-            message: "The token is invalid, please try again" + n,
+            message: "The token is invalid, please try again",
             color: "red",
+            autoClose: false,
         });
     };
 
@@ -32,6 +33,7 @@ export default function ResetPassword() {
                 title: "Successfuly reset password",
                 message:
                     "You will be redirected to the login page, please login with your new password",
+                autoClose: false,
             });
 
             setTimeout(() => {
@@ -39,7 +41,7 @@ export default function ResetPassword() {
             }, 500);
         },
         onError: () => {
-            error(1);
+            error();
         },
     });
 
@@ -47,10 +49,10 @@ export default function ResetPassword() {
 
     useEffect(() => {
         if (!token) {
-            error(2);
+            error();
         } else {
             checkResetPassword(token).catch(() => {
-                error(3);
+                error();
             });
         }
     }, [token]);
