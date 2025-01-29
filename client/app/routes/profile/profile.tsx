@@ -12,8 +12,10 @@ import {
     LoadingOverlay,
     Menu,
     Text,
+    ThemeIcon,
     Title,
     Tooltip,
+    useMantineTheme,
 } from "@mantine/core";
 import { useAuth } from "~/contexts/auth-provider";
 import {
@@ -29,6 +31,7 @@ import {
 import { notifications } from "@mantine/notifications";
 import {
     IconAlertSquareRoundedFilled,
+    IconBolt,
     IconChevronLeft,
     IconDots,
     IconFlag,
@@ -49,6 +52,7 @@ export default function Profile({
     const queryClient = useQueryClient();
     const { user } = useAuth();
     const navigate = useNavigate();
+    const theme = useMantineTheme();
 
     const { data, isPending, isError } = useQuery({
         queryKey: ["profile", username],
@@ -176,6 +180,21 @@ export default function Profile({
                             </Indicator>
                         </Tooltip>
                         <Flex gap={"sm"} justify={"flex-end"} w={"100%"}>
+                            <Tooltip label="Fame rating">
+                                <Flex justify={"center"} mt={1}>
+                                    <ThemeIcon
+                                        variant="transparent"
+                                        color="teal"
+                                        size={"sm"}
+                                        mt={1}
+                                    >
+                                        <IconBolt />
+                                    </ThemeIcon>
+                                    <Text fw={"bold"} fz={"h5"} c="teal">
+                                        {data?.user.fameRating || 0}
+                                    </Text>
+                                </Flex>
+                            </Tooltip>
                             <Tooltip
                                 label={`Last seen ${dayjs(
                                     data?.user.lastConnection
@@ -200,6 +219,7 @@ export default function Profile({
                                         : "Offline"}
                                 </Badge>
                             </Tooltip>
+
                             {!isMe && (
                                 <Menu>
                                     <Menu.Target>

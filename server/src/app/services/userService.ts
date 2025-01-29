@@ -261,7 +261,8 @@ export class UserService {
                     p.biography,
                     p.sexual_orientation as "sexualOrientation",
                     p.pictures,
-                    p.tags
+                    p.tags,
+                    p.fame_rating as "fameRating"
                 FROM profiles p
                          JOIN users u ON p.user_id = u.id
                 WHERE u.id = $1
@@ -286,6 +287,7 @@ export class UserService {
             pictures: user.pictures || [],
             tags: user.tags || [],
             verified: user.verified || false,
+            fameRating: user.fameRating || 0,
         };
     }
 

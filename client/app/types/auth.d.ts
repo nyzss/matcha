@@ -20,6 +20,7 @@ interface IOtherProfile extends IProfile {
     isConnected: boolean;
     isOnline: boolean;
     lastConnection: string;
+    fameRating: number;
 }
 
 interface IMetadata {
