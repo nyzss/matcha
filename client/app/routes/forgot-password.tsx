@@ -10,10 +10,30 @@ import {
     Title,
 } from "@mantine/core";
 import { isEmail, useForm } from "@mantine/form";
+import { notifications } from "@mantine/notifications";
 import { IconArrowLeft } from "@tabler/icons-react";
+import { useMutation } from "@tanstack/react-query";
 import { Link } from "react-router";
+import { createResetPassword } from "~/lib/api";
 
 export default function ForgotPassword() {
+    const resetMutation = useMutation({
+        mutationFn: createResetPassword,
+        onSuccess: () => {
+            notifications.show({
+                title: "Email sent",
+                message: "Check your email for the reset link",
+            });
+        },
+        onError: () => {
+            notifications.show({
+                title: "Couldn't send email",
+                message: "Something went wrong, please try again later",
+                color: "red",
+            });
+        },
+    });
+
     const form = useForm<{ email: string }>({
         initialValues: {
             email: "",
@@ -24,12 +44,11 @@ export default function ForgotPassword() {
     });
 
     const handleSubmit = form.onSubmit((values) => {
+        resetMutation.mutate(values.email);
         console.log(values);
     });
 
     return (
-        // <Container h={"100vh"} my={30}>
-        //     <Center h={"100%"}>
         <Flex direction={"column"} my={30}>
             <Title ta={"center"}>Forgot your password?</Title>
             <Text c="dimmed" fz="sm" ta="center">
@@ -61,7 +80,5 @@ export default function ForgotPassword() {
                 </Card>
             </form>
         </Flex>
-        //     {/* </Center>
-        // </Container> */}
     );
 }

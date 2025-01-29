@@ -540,3 +540,15 @@ export const getNotificationsNumber = async () => {
         return { total: 0 };
     }
 };
+
+export const createResetPassword = async (email: string) => {
+    const res = await fetcher("/auth/create-reset-password", {
+        method: "POST",
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't create reset password");
+    }
+
+    return await res?.json();
+};
