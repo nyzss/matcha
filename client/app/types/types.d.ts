@@ -64,3 +64,6 @@ interface INotificationReadList {
 }
 
 type CustomAuthEvent = CustomEvent<{ authenticated: boolean }>;
+
+type TFieldOptions = "age" | "location" | "fame_rating" | "common_tags";
+type TOrderOptions = "asc" | "desc";

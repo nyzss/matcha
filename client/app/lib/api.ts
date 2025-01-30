@@ -344,10 +344,23 @@ export const updateUserLocation = async (data: GeolocationPosition) => {
     }
 };
 
-export const getSuggestions = async () => {
-    const res = await fetcher("/research/suggestion", {
-        method: "GET",
-    });
+export const getSuggestions = async (
+    sort: TFieldOptions | null,
+    order: TOrderOptions | null
+) => {
+    let url = "/research/suggestion";
+    const params = new URLSearchParams(
+        Object.entries({
+            sortField: sort as string,
+            sortOrder: order as string,
+        }).filter(([_, value]) => value !== null)
+    );
+    const res = await fetcher(
+        `${url}${params.toString() ? `?${params.toString()}` : ""}`,
+        {
+            method: "GET",
+        }
+    );
 
     if (!res?.ok) {
         throw new Error("Couldn't fetch suggestions");

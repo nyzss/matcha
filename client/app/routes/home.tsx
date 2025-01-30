@@ -4,9 +4,12 @@ import {
     Button,
     Card,
     Container,
+    Divider,
     Flex,
     LoadingOverlay,
     Paper,
+    Popover,
+    Radio,
     Rating,
     Text,
     ThemeIcon,
@@ -24,9 +27,11 @@ import { getImage, getSuggestions, matchUser } from "~/lib/api";
 
 export default function Home() {
     const theme = useMantineTheme();
+    const [sortField, setSortField] = useState<TFieldOptions | null>(null);
+    const [order, setOrder] = useState<TOrderOptions | null>(null);
     const { data, isPending, isFetching, refetch } = useQuery({
-        queryKey: ["suggestions"],
-        queryFn: getSuggestions,
+        queryKey: ["suggestions", sortField, order],
+        queryFn: () => getSuggestions(sortField, order),
     });
 
     const [index, setIndex] = useState<number>(0);
@@ -71,7 +76,87 @@ export default function Home() {
             }}
         >
             <Flex h={"100%"} direction={"column"} gap={"sm"}>
-                <Filter />
+                <Flex justify={"space-between"} gap={"sm"}>
+                    <Filter />
+                    <Flex>
+                        <Popover>
+                            <Popover.Target>
+                                <Button variant="subtle">Add filter</Button>
+                            </Popover.Target>
+                            <Popover.Dropdown>
+                                <Flex direction={"column"}>
+                                    <Radio.Group
+                                        name="sort"
+                                        label="Sort"
+                                        description="Field by which the results will be sorted"
+                                        value={sortField}
+                                        onChange={(value) =>
+                                            setSortField(value as TFieldOptions)
+                                        }
+                                    >
+                                        <Flex
+                                            direction={"column"}
+                                            mt={"xs"}
+                                            gap={"sm"}
+                                        >
+                                            <Radio value={"age"} label="Age" />
+                                            <Radio
+                                                value={"location"}
+                                                label="Location"
+                                            />
+                                            <Radio
+                                                value={"fame_rating"}
+                                                label="Fame rating"
+                                            />
+                                            <Radio
+                                                value={"common_tags"}
+                                                label="Common tags"
+                                            />
+                                        </Flex>
+                                    </Radio.Group>
+                                    <Divider my={"sm"} />
+                                    <Radio.Group
+                                        name="order"
+                                        label={<Text>Order</Text>}
+                                        description="Order in which the results will be sorted"
+                                        value={order}
+                                        onChange={(value) =>
+                                            setOrder(value as TOrderOptions)
+                                        }
+                                    >
+                                        <Flex
+                                            direction={"column"}
+                                            mt={"xs"}
+                                            gap={"xs"}
+                                        >
+                                            <Radio
+                                                value={"asc"}
+                                                label="Ascending"
+                                            />
+                                            <Radio
+                                                value={"desc"}
+                                                label="Descending"
+                                            />
+                                        </Flex>
+                                    </Radio.Group>
+
+                                    <Button
+                                        mt={"md"}
+                                        mb={"sm"}
+                                        fullWidth
+                                        variant="subtle"
+                                        onClick={() => {
+                                            setOrder(null);
+                                            setSortField(null);
+                                        }}
+                                    >
+                                        Reset
+                                    </Button>
+                                </Flex>
+                            </Popover.Dropdown>
+                        </Popover>
+                    </Flex>
+                </Flex>
 
                 <Box pos={"relative"} h={"100%"}>
                     <LoadingOverlay
