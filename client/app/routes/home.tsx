@@ -90,9 +90,14 @@ export default function Home() {
                                         label="Sort"
                                         description="Field by which the results will be sorted"
                                         value={sortField}
-                                        onChange={(value) =>
-                                            setSortField(value as TFieldOptions)
-                                        }
+                                        onChange={(value) => {
+                                            setSortField(
+                                                value as TFieldOptions
+                                            );
+                                            if (order === null) {
+                                                setOrder("asc");
+                                            }
+                                        }}
                                     >
                                         <Flex
                                             direction={"column"}
@@ -120,9 +125,12 @@ export default function Home() {
                                         label={<Text>Order</Text>}
                                         description="Order in which the results will be sorted"
                                         value={order}
-                                        onChange={(value) =>
-                                            setOrder(value as TOrderOptions)
-                                        }
+                                        onChange={(value) => {
+                                            setOrder(value as TOrderOptions);
+                                            if (sortField === null) {
+                                                setSortField("age");
+                                            }
+                                        }}
                                     >
                                         <Flex
                                             direction={"column"}
