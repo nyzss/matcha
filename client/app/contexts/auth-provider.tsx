@@ -40,6 +40,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         setMetadata((prev) => ({
             ...prev,
+            privacy: prev?.privacy ?? { email: "" },
             notifications: notifications.total,
             views: prev?.views ?? 0,
             messages: prev?.messages ?? 0,

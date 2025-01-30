@@ -583,3 +583,21 @@ export const checkResetPassword = async (token: string) => {
 
     return data;
 };
+
+export const updateEmail = async (email: string, password: string) => {
+    const res = await fetcher("/profile/@me/privacy", {
+        method: "PUT",
+        body: JSON.stringify({
+            email,
+            password,
+        }),
+    });
+
+    if (!res?.ok) {
+        throw new Error("Couldn't update email");
+    }
+
+    const data = await res.json();
+
+    return data;
+};

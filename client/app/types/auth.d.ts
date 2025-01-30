@@ -27,6 +27,7 @@ interface IMetadata {
     notifications: number;
     views: number;
     messages: number;
+    privacy: { email: string };
 }
 
 type IAuth = IMetadata & {
