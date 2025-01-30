@@ -23,10 +23,11 @@ client="$dir ./client"
 $pkg install -P false $client &
 $pkg install -P false $server &
 
-docker compose up -d db --build &
+docker compose up -d db --build
 
 sleep 3
 $pkg run $client build
+$pkg run $server build
 $pkg run $server start &
 
 sleep 3

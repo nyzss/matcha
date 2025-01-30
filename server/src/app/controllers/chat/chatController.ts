@@ -19,7 +19,7 @@ export class ChatController {
             return conversation;
         } catch (error: Error | any) {
             console.log(error)
-            return reply.status(500).send({ error: error?.message });
+            return reply.status(400).send({ error: error?.message });
         }
     }
 
@@ -31,7 +31,7 @@ export class ChatController {
             const conversation = await this.chatService.getConversation(id, meId);
             return conversation
         } catch (error: Error | any) {
-            return reply.status(500).send({ error: error?.message });
+            return reply.status(400).send({ error: error?.message });
         }
     }
 
@@ -43,7 +43,7 @@ export class ChatController {
             await this.chatService.readConversation(id, meId);
             return { success: true };
         } catch (error: Error | any) {
-            return reply.status(500).send({ error: error?.message });
+            return reply.status(400).send({ error: error?.message });
         }
     }
 
@@ -57,7 +57,7 @@ export class ChatController {
             return message;
         } catch (error: Error | any) {
             console.log(error)
-            return reply.status(500).send({error: error?.message});
+            return reply.status(400).send({error: error?.message});
         }
     }
 
@@ -69,7 +69,7 @@ export class ChatController {
             const messages = await this.chatService.getMessages(id, meId);
             return messages;
         } catch (error: Error | any) {
-            return reply.status(500).send({error: error?.message});
+            return reply.status(400).send({error: error?.message});
         }
     }
 
@@ -80,7 +80,7 @@ export class ChatController {
             const conversations = await this.chatService.getConversations(meId);
             return conversations;
         } catch (error: Error | any) {
-            return reply.status(500).send({error: error?.message});
+            return reply.status(400).send({error: error?.message});
         }
     }
 

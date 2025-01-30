@@ -11,16 +11,28 @@ import {
     TextInput,
 } from "@mantine/core";
 
+import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { IconSearch } from "@tabler/icons-react";
 import { useEffect, useMemo } from "react";
-import { Link, NavLink, Outlet, useLocation } from "react-router";
+import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import { useAuth } from "~/contexts/auth-provider";
 import { routes } from "./routes";
 import ToggleTheme from "./toggleTheme";
 import UserBox from "./user-box";
 
 export default function AppLayout() {
+    const navigate = useNavigate();
+    const form = useForm({
+        initialValues: {
+            search: "",
+        },
+    });
+
+    const onSubmit = form.onSubmit((values) => {
+        navigate(`/profile/${values.search}`);
+    });
+
     const [opened, { toggle, close }] = useDisclosure();
     const { logged, metadata } = useAuth();
     const location = useLocation();
@@ -173,12 +185,17 @@ export default function AppLayout() {
                         direction={"column"}
                         gap={"md"}
                     >
-                        <TextInput
-                            leftSection={<IconSearch size={16} />}
-                            leftSectionPointerEvents="none"
-                            placeholder="Search"
-                            width={"100%"}
-                        />
+                        <form onSubmit={onSubmit}>
+                            <Flex direction={"row"}>
+                                <TextInput
+                                    leftSection={<IconSearch size={16} />}
+                                    leftSectionPointerEvents="none"
+                                    placeholder="Search"
+                                    width={"100%"}
+                                    {...form.getInputProps("search")}
+                                />
+                            </Flex>
+                        </form>
 
                         <ToggleTheme />
 

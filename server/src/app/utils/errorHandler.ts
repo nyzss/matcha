@@ -11,8 +11,8 @@ export default ((err: FastifyError, req: FastifyRequest, reply: FastifyReply) =>
     }
     console.log(err)
 
-    return reply.code(err.statusCode || 500).send({
+    return reply.code(err.statusCode || 400).send({
         message: err.message || "Internal Server Error",
-        statusCode: err.statusCode || 500,
+        statusCode: err.statusCode || 400,
     });
 });
