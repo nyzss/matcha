@@ -3,27 +3,29 @@ import {UserService} from "../../services/userService";
 import {userProfileSettings} from "../../types/member";
 import {ChatService} from "../../services/chatService";
 
-import fs from "fs";
-import pump from "pump";
-
-import { v4 as uuidv4 } from 'uuid';
 import {deleteFile, uploadFile} from "../../utils/mediaUtils";
+import {AuthService} from "../../services/authService";
 
 export class ProfileController {
     private app: FastifyInstance;
     private userService: UserService;
     private chatService: ChatService;
+    private authService: AuthService;
 
     constructor(app: FastifyInstance) {
         this.app = app;
         this.userService = new UserService(app);
         this.chatService = new ChatService(app);
+        this.authService = new AuthService(app);
     }
 
     async getProfile(request: FastifyRequest, reply: FastifyReply) {
         if (request.url.endsWith("/@me"))
             return {
                 user: request.user,
+                privacy: {
+                    email: await this.authService.getUserMail(request.user.id),
+                },
                 notifications: (await this.userService.getNotifications(request.user.id))
                     .notifications.filter((notif: { read: boolean }) => notif.read === false),
                 views: (await this.userService.getViews(request.user.id)).total,
@@ -267,6 +269,22 @@ export class ProfileController {
             return notifications;
         } catch (error: Error | any) {
             return reply.status(404).send({error: error.message});
+        }
+    }
+
+    async updateProfilePrivacy(request: FastifyRequest, reply: FastifyReply) {
+        try {
+            if (!request.body)
+                return reply.status(400).send({error: "Invalid request"});
+
+            const { email, password } = request.body as { email: string, password: string };
+            const user = request.user;
+
+            await this.authService.changeEmail(user.id, email, password);
+
+            return {message: "Privacy updated"};
+        } catch (error: Error | any) {
+            return reply.status(400).send({error: error.message});
         }
     }
 }

@@ -276,4 +276,34 @@ export class AuthService {
 
         sendMail(email, resetPassword.value, "reset");
     }
+
+    async changeEmail(id: number, email: string, password: string) {
+        const [user] = await this.orm.query(
+            `SELECT * FROM users WHERE id = $1`,
+            [id]
+        );
+
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            throw new Error('Invalid password');
+        }
+
+        await this.orm.query(
+            `UPDATE users SET email = $1 WHERE id = $2`,
+            [email, id]
+        )
+    }
+
+    async getUserMail(id: number) {
+        const [user] = await this.orm.query(
+            `SELECT email FROM users WHERE id = $1`,
+            [id]
+        );
+
+        return user.email;
+    }
 }
