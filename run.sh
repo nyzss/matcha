@@ -6,6 +6,8 @@
 # check if .env file exists and export its content
 [ ! -f .env ] || export $(grep -v '^#' .env | xargs)
 
+export NODE_ENV=development
+
 pkg="npm"
 dir="--prefix"
 
@@ -29,7 +31,7 @@ $pkg run $server dev &
 
 sleep 3
 
-caddy run &
+caddy run -c ./dev/Caddyfile &
 
 sleep 3
 

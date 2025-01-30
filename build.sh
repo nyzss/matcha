@@ -1,4 +1,11 @@
+#!/bin/bash
 
+# Running for prod
+
+# check if .env file exists and export its content
+[ ! -f .env ] || export $(grep -v '^#' .env | xargs)
+
+export NODE_ENV=production
 
 pkg="npm"
 dir="--prefix"
@@ -13,18 +20,18 @@ fi
 server="$dir ./server"
 client="$dir ./client"
 
-$pkg install $client &
-$pkg install $server &
+$pkg install -P false $client &
+$pkg install -P false $server &
 
+docker compose up -d db --build &
 
-$pkg run $client build &
-$pkg run $server build &
-
-$pkg run $client start &
+sleep 3
+$pkg run $client build
 $pkg run $server start &
 
-sleep 6
-caddy run &
+sleep 3
+
+caddy run -c ./prod/Caddyfile &
 
 wait
-
+docker compose down

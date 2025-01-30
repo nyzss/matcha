@@ -38,14 +38,9 @@ export class AuthMiddleware {
             const user = await this.userService.getUserById(verify.id);
 
             request.user = user;
-            await this.localisationService.updateUserLocation(user.id, "62.4.16.169")
 
-            const researchService = new ResearchService(this.app);
-
-            const research = await researchService.getSuggestions(user.id);
-
-
-            console.log(research)
+            // await this.localisationService.updateUserLocation(user.id, request.ip) // in prod
+            await this.localisationService.updateUserLocation(user.id, "62.210.35.18")
         } catch (error) {
             return reply.status(401).send({ error: 'Unauthorized: Invalid or expired access token' });
         }
