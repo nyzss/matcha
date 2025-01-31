@@ -73,7 +73,11 @@ const buildApp = async (
         parseOptions: {},
     });
 
-    await app.register(fastifyMultipart);
+    await app.register(fastifyMultipart, {
+        limits: {
+            fileSize: 10 * 1024 * 1024,
+        }
+    });
 
     await app.register(customPostgresORM, {
         postgresConfig: {

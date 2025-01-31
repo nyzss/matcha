@@ -11,7 +11,7 @@ import {
 import { notifications } from "@mantine/notifications";
 import { IconMail } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import EditProfile from "~/components/profile/edit-profile";
 import { useAuth } from "~/contexts/auth-provider";
@@ -21,7 +21,7 @@ export default function Onboarding() {
     const [pinValue, setPinValue] = useState<string>();
     const [pinError, setPinError] = useState<boolean>();
 
-    const { user, checkUser } = useAuth();
+    const { user, checkUser, shouldOnboard } = useAuth();
     const navigate = useNavigate();
     const { primaryColor } = useMantineTheme();
 
@@ -68,11 +68,15 @@ export default function Onboarding() {
         }
     };
 
-    // useEffect(() => {
-    //     if (!shouldOnboard) {
-    //         navigate("/");
-    //     }
-    // }, [shouldOnboard]);
+    useEffect(() => {
+        if (!shouldOnboard) {
+            navigate("/");
+        }
+    }, [shouldOnboard]);
+
+    useEffect(() => {
+        checkUser();
+    }, []);
 
     return (
         <Container h={"100%"} mt={65} size={"md"}>

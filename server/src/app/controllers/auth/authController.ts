@@ -174,6 +174,7 @@ export class AuthController {
             const { lat, lon } = request.body as { lat: number, lon: number };
 
             await this.localisationService.updateUserLocation(request.user.id, request.ip, lat, lon)
+            // await this.localisationService.updateUserLocation(request.user.id, "62.210.35.18", lat, lon)
 
             return await reply.send({
                 status: "ok",

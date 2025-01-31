@@ -31,7 +31,7 @@ export default function EditProfile({
 }) {
     const queryClient = useQueryClient();
 
-    const { user, update } = useAuth();
+    const { user, update, checkUser } = useAuth();
     const [avatarSrc, setAvatarSrc] = useState<string>(
         getImage(user?.avatar) || ""
     );
@@ -75,6 +75,7 @@ export default function EditProfile({
     const handleSubmit = form.onSubmit(async (values: IUser) => {
         const success = await update(values);
         if (success) {
+            checkUser();
             queryClient.invalidateQueries({
                 queryKey: ["profile", "@me"],
             });
@@ -118,7 +119,7 @@ export default function EditProfile({
                     )
             );
         });
-    }, []);
+    }, [user]);
 
     return (
         <form onSubmit={handleSubmit}>

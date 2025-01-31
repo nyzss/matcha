@@ -93,19 +93,12 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const shouldOnboard =
-        !!user &&
-        !user.verified &&
-        !user.biography &&
-        !user.gender &&
-        !user.sexualOrientation &&
-        user.pictures?.length === 0;
+        (!!user && user.pictures?.length === 0) || !user?.avatar;
 
     useEffect(() => {
         checkUser().then((data) => {
-            if (data) {
-                if (shouldOnboard) {
-                    navigate("/onboarding");
-                }
+            if (data && (shouldOnboard || !data?.user.verified)) {
+                navigate("/onboarding");
             }
         });
     }, []);
