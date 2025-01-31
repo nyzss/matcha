@@ -87,13 +87,27 @@ export class ResearchService {
     }
 
     async getAlreadyMatchedUsersId(userId: number) {
-        const matches = await this.orm.query(
+        const researchMatches = await this.orm.query(
             `SELECT * FROM research_matches
             WHERE author_id = $1`,
             [userId]
         )  || [];
 
-        return matches.map((match: any) => match.target_id);
+            const mutualLikes = await this.orm.query(
+            `SELECT DISTINCT l1.user_id as connected_user_id
+            FROM likes l1 
+            JOIN likes l2 ON l1.user_id = l2.liker_id AND l1.liker_id = l2.user_id
+            WHERE l1.liker_id = $1`,
+            [userId]
+            ) || [];
+
+
+        const matchedIds = [
+            ...researchMatches.map((match: { target_id: number }) => match.target_id),
+            ...mutualLikes.map((like: { connected_user_id: number }) => like.connected_user_id)
+        ];
+
+        return [...new Set(matchedIds)];
     }
 
     async getUsersNotWantingToBeMatched(userId: number) {
