@@ -195,7 +195,7 @@ export class AuthService {
                     reply.setCookie('accessToken', accessToken, {
                         httpOnly: true,
                         secure: true,
-                        maxAge: 60 * 60,
+                        maxAge: 60 * 60 * 24,
                     });
                     
                     reply.setCookie('refreshToken', newRefreshToken, {

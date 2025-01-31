@@ -28,7 +28,7 @@ export class AuthController {
             }).setCookie('accessToken', result.accessToken, {
                 httpOnly: true,
                 secure: true,
-                maxAge: 60 * 60,
+                maxAge: 60 * 60 * 24,
                 path: '/',
                 sameSite: 'none'
             }).send({
@@ -52,7 +52,7 @@ export class AuthController {
             }).setCookie('accessToken', result.accessToken, {
                 httpOnly: true,
                 secure: true,
-                maxAge: 60 * 60,
+                maxAge: 60 * 60 * 24,
                 path: '/',
                 sameSite: 'none'
             }).send({

@@ -97,6 +97,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         checkUser().then((data) => {
+            const shouldOnboard = !!data && data.user.pictures?.length === 0;
             if (data && (shouldOnboard || !data?.user.verified)) {
                 navigate("/onboarding");
             }

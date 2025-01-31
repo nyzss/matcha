@@ -130,46 +130,81 @@ export class ResearchService {
         const reportedUsers = await this.userService.getBlockedByUsersId(userId);
         const matchedUsers = await this.getAlreadyMatchedUsersId(userId);
         const declinedUsers = await this.getUsersNotWantingToBeMatched(userId);
-    
+
+
+        const isMatch = (user: userProfile, profile: userProfile) => {
+            const { gender: userGender, sexualOrientation: userOrientation } = user;
+            const { gender: profileGender, sexualOrientation: profileOrientation } = profile;
+
+            if (userOrientation === "Neither" || profileOrientation === "Neither") {
+                return userOrientation === "Neither" && profileOrientation === "Neither";
+            }
+
+            if (userOrientation === "Both") {
+                if (profileOrientation === "Both") {
+                    return true;
+                }
+                if (profileOrientation === "Man") {
+                    return userGender === "Man";
+                }
+                if (profileOrientation === "Woman") {
+                    return userGender === "Woman";
+                }
+            }
+
+            if (userGender === "Man") {
+                if (userOrientation === "Woman") {
+                    return profileGender === "Woman" && 
+                            (profileOrientation === "Man" || profileOrientation === "Both");
+                }
+                if (userOrientation === "Man") {
+                    return profileGender === "Man" && 
+                            (profileOrientation === "Man" || profileOrientation === "Both");
+                }
+            }
+
+            if (userGender === "Woman") {
+                if (userOrientation === "Man") {
+                    return profileGender === "Man" && 
+                            (profileOrientation === "Woman" || profileOrientation === "Both");
+                }
+                if (userOrientation === "Woman") {
+                    return profileGender === "Woman" && 
+                            (profileOrientation === "Woman" || profileOrientation === "Both");
+                }
+            }
+
+            if (userGender === "Beyond Binary") {
+                if (userOrientation === "Man") {
+                    return profileGender === "Man" && 
+                            (profileOrientation === "Both" || profileOrientation === "Other");
+                }
+                if (userOrientation === "Woman") {
+                    return profileGender === "Woman" && 
+                            (profileOrientation === "Both" || profileOrientation === "Other");
+                }
+                if (userOrientation === "Both") {
+                    return profileOrientation === "Both" || profileOrientation === "Other";
+                }
+            }
+
+            if (userOrientation === "Other" || profileOrientation === "Other") {
+                return true;
+            }
+
+            return false;
+        };
+
+
         const users = nearbyUsers
         .filter((user: userProfile) => user.id !== userId)
         .filter((user: any) => {
-            const userGender = user.gender ?? "Unknown";
-            const profileGender = profile.gender ?? "Unknown";
-            const userSexualOrientation = user.sexualOrientation ?? "Both";
-            const profileSexualOrientation = profile.sexualOrientation ?? "Both";
     
             const isAgeMatch = user.age >= research.ageMin && user.age <= (research.ageMax || research.ageMin);
             const isFameMatch = user.fameRating >= research.fameRatingMin && user.fameRating <= (research.fameRatingMax || research.fameRatingMin);
             const areTagsMatch = !research.tags.length || research.tags.some(tag => user.tags && user.tags.includes(tag));
     
-            const isSexualOrientationMatch = 
-                (profileSexualOrientation === "Both" || userSexualOrientation === "Both") || 
-                (profileSexualOrientation === "Woman" && userSexualOrientation === "Man") ||
-                (profileSexualOrientation === "Man" && userSexualOrientation === "Woman") ||
-                (profileSexualOrientation === "Woman" && userSexualOrientation === "Woman") ||
-                (profileSexualOrientation === "Man" && userSexualOrientation === "Man") ||
-                (profileSexualOrientation === "Other" && userSexualOrientation !== "Neither") ||
-                (userSexualOrientation === "Other" && profileSexualOrientation !== "Neither") ||
-                (profileSexualOrientation === "Neither" && userSexualOrientation === "Neither");
-    
-            const isGenderMatch = profileGender === "Beyond Binary" || userGender === "Beyond Binary" ||
-                (profileGender === userGender) || 
-                (profileGender === "Man" && userGender === "Woman") ||
-                (profileGender === "Woman" && userGender === "Man");
-    
-            if (!isSexualOrientationMatch || !isGenderMatch) {
-                console.log({
-                    profileGender,
-                    profileSexualOrientation,
-                    userGender,
-                    userSexualOrientation,
-                    isSexualOrientationMatch,
-                    isGenderMatch
-                });
-            }
-        
-            return isAgeMatch && isFameMatch && areTagsMatch && isSexualOrientationMatch && isGenderMatch;
+            return isAgeMatch && isFameMatch && areTagsMatch && isMatch(user, profile);
         }).filter((user: any) => !blockedUsers.includes(user.id) && !reportedUsers.includes(user.id) && !matchedUsers.includes(user.id) && !declinedUsers.includes(user.id));
         
         const filteredUsers = users.filter((user: any) => {
@@ -244,7 +279,7 @@ export class ResearchService {
             [userId, targetId, MatchStatus.ACCEPTED]
         );
 
-        await this.userService.setLike(userId, targetId);
+        await this.userService.setLike(targetId, userId);
         await this.userService.notifyUser(targetId, userId, NotificationType.requestMatch)
 
         return suggestion;
